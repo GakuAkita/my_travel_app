@@ -79,7 +79,7 @@ class ExpenseStore extends ChangeNotifier {
         loadAllExpenseDataWithNotify(travelBasic, isStateNotify: true);
         // リスナーを更新する
         _removeListener();
-        final ret = _addListeners(travelBasic);
+        _addListeners(travelBasic);
       }
     } else {
       print("ExpenseStore: Travel and User are same. Do nothing.");

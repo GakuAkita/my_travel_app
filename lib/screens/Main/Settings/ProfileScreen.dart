@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/Services/AuthService.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
 
 import '../../../Services/FirebaseDatabaseService.dart';
@@ -27,8 +26,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _loading = true;
     Future.microtask(() async {
-      _userId = AuthService.currentUser?.uid ?? "Unable to get uid";
-
       final userNameSnapshot =
           await FirebaseDatabaseService.currentUserProfileRef?.get();
 
@@ -55,7 +52,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  String? _userId;
   String? _userName;
   String? _userEmail;
   String _newName = "";

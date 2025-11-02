@@ -526,9 +526,9 @@ class FirebaseDatabaseService {
       final expensesMap = expensesSnap.value as Map;
       List<ExpenseInfo> allExpenses = [];
 
-      for (final t in participants.entries) {
-        //print("--participant: ${t.key}, ${t.value}--");
-      }
+      // for (final t in participants.entries) {
+      //   //print("--participant: ${t.key}, ${t.value}--");
+      // }
       for (final entry in expensesMap.entries) {
         final val = entry.value;
         final ExpenseInfo bufExpense = ExpenseInfo.convFromMapToExpenseInfo(
