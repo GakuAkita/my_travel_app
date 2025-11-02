@@ -1,16 +1,20 @@
-# my_travel_app
+# My Travel App
 
-A new Flutter project.
+グループ旅行の計画と管理を支援するFlutterアプリケーション。割り勘計算、旅行行程管理、経費管理などの機能を提供します。
 
-## Getting Started
+## 📱 機能
 
-This project is a starting point for a Flutter application.
+### 主要機能
 
-A few resources to get you started if this is your first Flutter project:
+- **グループ管理**: グループの作成・削除・参加管理
+- **旅行管理**: 複数の旅行を作成し、参加者を設定
+- **割り勘計算**: 経費を入力すると自動で割り勘計算と精算金額を算出
+- **行程管理（Itinerary）**: 旅行のスケジュールをMarkdown形式で管理し、URLリンクも利用可能
+- **経費管理**: 旅行中の経費を記録・編集・削除
+- **ユーザー認証**: Firebase Authenticationを使用したログイン・サインアップ
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 画面構成
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Itinerary画面**: 旅行の行程を表示・編集
+- **Expenses画面**: 経費一覧と割り勘結果を表示
+- **Settings画面**: プロフィール設定、旅行選択、グループ管理
