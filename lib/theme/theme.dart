@@ -1,0 +1,53 @@
+import 'package:flutter/material.dart';
+
+final ThemeData customDarkBlueTheme = ThemeData(
+  brightness: Brightness.dark,
+  scaffoldBackgroundColor: Colors.grey[900],
+  primaryColor: Colors.lightBlueAccent,
+  appBarTheme: AppBarTheme(
+    backgroundColor: Colors.lightBlueAccent,
+    iconTheme: IconThemeData(color: Colors.grey[900]),
+    titleTextStyle: TextStyle(
+      color: Colors.grey[900],
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  colorScheme: ColorScheme.dark(
+    primary: Colors.lightBlueAccent, // メインカラー（青）
+    secondary: Colors.cyanAccent, // セカンダリカラー（青系）
+    surface: Colors.grey[850]!, // 背景色（暗い灰色）
+    error: Colors.redAccent, // エラー色（赤）
+    onPrimary: Colors.black, // メインカラー上の文字色（黒）
+    onSecondary: Colors.black, // セカンダリカラー上の文字色（黒）
+    onSurface: Colors.white, // 背景色上の文字色（白）
+    onError: Colors.white, // エラー色上の文字色（白）
+  ),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: Colors.lightBlueAccent, // 青いFAB背景
+    foregroundColor: Colors.black, // FABアイコン色（黒）
+  ),
+  buttonTheme: ButtonThemeData(
+    buttonColor: Colors.lightBlueAccent, // ボタン背景色（青）
+    textTheme: ButtonTextTheme.primary, // ボタンのテキスト色（白）
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.lightBlueAccent, // ボタン背景色（青）
+      foregroundColor: Colors.black, // ボタンテキスト色（黒）
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+  ),
+  textTheme: TextTheme(
+    bodyLarge: TextStyle(color: Colors.white), // メインテキスト（白）
+    bodyMedium: TextStyle(
+      color: Colors.white,
+    ), // サブテキスト（白）(もともとwhite70だったが、ちょっと灰色っぽい感じをうけた)
+    titleLarge: TextStyle(color: Colors.lightBlueAccent), // タイトル（青）
+  ),
+  splashColor: Colors.transparent, // 波紋の非表示
+  iconTheme: IconThemeData(color: Colors.lightBlueAccent), // アイコンの色（青）
+  dividerColor: Colors.grey[700], // 区切り線の色（灰色）
+  useMaterial3: true,
+);
