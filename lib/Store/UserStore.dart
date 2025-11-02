@@ -168,7 +168,7 @@ class UserStore extends ChangeNotifier {
   }
 
   Future<ResultInfo> _loadUserStoreData() async {
-    final uidRet = await _loadCurrentUserId();
+    final _ = await _loadCurrentUserId();
     if (_currentUserId == null) {
       return ResultInfo.success(
         message: "No user is logged in. UserStore is cleared.",
