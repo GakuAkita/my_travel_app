@@ -27,8 +27,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _loading = true;
     Future.microtask(() async {
-      _userId = AuthService.currentUser?.uid ?? "Unable to get uid";
-
       final userNameSnapshot =
           await FirebaseDatabaseService.currentUserProfileRef?.get();
 
@@ -55,7 +53,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  String? _userId;
   String? _userName;
   String? _userEmail;
   String _newName = "";

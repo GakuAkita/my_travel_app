@@ -38,7 +38,6 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
   List<GroupTravels> _joinedGroupTravel = [];
 
   /* RealtimeDatabaseにあるshown_travelの情報を取ってきて、それをベースにチェックボックスを作りたい。 */
-  String? _adminTravelId;
   String? _adminGroupId;
   List<TravelerInfo> _possibleTravelers = [];
 
@@ -57,13 +56,11 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
       final data = snapshot.value as Map<dynamic, dynamic>;
       //ここでgroupIdとtravelIdがとれた。
       _adminGroupId = data["groupId"];
-      _adminTravelId = data["travelId"];
     }
 
     if (_selectedTravelId != null && _selectedGroupId != null) {
       //もし引数が両方nullでなかったら上書きする
       _adminGroupId = _selectedGroupId;
-      _adminTravelId = _selectedTravelId;
     }
 
     final membersSnapshot =

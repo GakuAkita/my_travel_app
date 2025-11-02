@@ -219,9 +219,9 @@ class ItineraryStore extends ChangeNotifier {
         bufList.add(ItinerarySection.convToItinerarySection(section));
       }
 
-      for (final s in bufList) {
-        //print("Itinerary Section:${s.content} ");
-      }
+      // for (final s in bufList) {
+      //   //print("Itinerary Section:${s.content} ");
+      // }
       _itinerarySections = bufList;
       return ResultInfo.success();
     } catch (e) {
