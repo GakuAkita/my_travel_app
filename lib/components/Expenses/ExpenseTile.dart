@@ -18,21 +18,11 @@ class ExpenseTile extends StatelessWidget {
     return nameShown;
   }
 
-  int _betterHash(String str) {
-    // より分散の良いハッシュ関数
-    int hash = 0;
-    for (int i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.codeUnitAt(i);
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
-  }
-
   // members全体をソートして、各UIDのインデックス（順序）を取得
   Map<String, int> _getUidColorIndexMap() {
     // members全体のUIDをハッシュ値でソート
     final List<String> sortedUids = members.keys.toList();
-    sortedUids.sort((a, b) => _betterHash(a).compareTo(_betterHash(b)));
+    sortedUids.sort((a, b) => a.hashCode.compareTo(b.hashCode));
 
     // UIDとそのインデックス（順序）のマップを作成
     final Map<String, int> uidColorIndexMap = {};
