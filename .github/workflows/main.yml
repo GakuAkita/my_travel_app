@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build Android App
 
 on:
   workflow_dispatch:
@@ -29,8 +29,8 @@ jobs:
       - name: Build the app
         run: flutter build apk --release
 
-      # - name: Deploy to Firebase
-      #   uses: wzieba/firebase-action@v1
-      #   with:
-      #     action: deploy
-      #     projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+      - name: Upload the app
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
