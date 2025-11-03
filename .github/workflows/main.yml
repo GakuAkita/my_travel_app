@@ -25,6 +25,11 @@ jobs:
         env:
           GOOGLE_SERVICE: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > ./android/app/google-services.json
+
+      - name: copy .env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: echo $ENV_FILE | base64 --decode --ignore-garbage > ./.env
       
       - name: Build the app
         run: flutter build apk --release
