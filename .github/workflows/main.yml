@@ -23,7 +23,7 @@ jobs:
 
       - name: print google-services.json
         run: cat ./android/app/google-services.json
-                
+
       - name: Build the app
         run: flutter build apk
 
