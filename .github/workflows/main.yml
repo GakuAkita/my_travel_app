@@ -21,7 +21,7 @@ jobs:
           GOOGLE_SERVICE: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > ./android/app/google-services.json
 
-      -name: print google-services.json
+      - name: print google-services.json
         run: cat ./android/app/google-services.json
                 
       - name: Build the app
