@@ -7,7 +7,7 @@ on:
 #       - main  
 
 jobs:
-  build:
+  build_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
