@@ -12,23 +12,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+          
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'          
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: copy google-service
-        env:
-          GOOGLE_SERVICE: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > ./android/app/google-services.json
+      # - name: copy google-service
+      #   env:
+      #     GOOGLE_SERVICE: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      #   run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > ./android/app/google-services.json
 
-      - name: print google-services.json
-        run: cat ./android/app/google-services.json
+      # - name: print google-services.json
+      #   run: cat ./android/app/google-services.json
 
-      - name: Build the app
-        run: flutter build apk
+      # - name: Build the app
+      #   run: flutter build apk
 
-      - name: Deploy to Firebase
-        uses: wzieba/firebase-action@v1
-        with:
-          action: deploy
-          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+      # - name: Deploy to Firebase
+      #   uses: wzieba/firebase-action@v1
+      #   with:
+      #     action: deploy
+      #     projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
