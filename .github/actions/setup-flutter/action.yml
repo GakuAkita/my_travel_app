@@ -12,6 +12,10 @@ inputs:
   env-file-content:
     description: 'Base64 encoded ENV file content'
     required: true
+  firebase-json:
+    description: 'Base64 encoded Firebase JSON'
+    required: false
+    default: null
 
 runs:
   using: 'composite'
@@ -32,4 +36,9 @@ runs:
     - name: copy .env
       shell: bash
       run: echo "${{ inputs.env-file-content }}" | base64 --decode --ignore-garbage > ./.env
+
+    - name: copy firebase.json
+      if: inputs.firebase-json != '' && inputs.firebase-json != 'null'
+      shell: bash
+      run: echo "${{ inputs.firebase-json }}" | base64 --decode --ignore-garbage > ./firebase.json
 

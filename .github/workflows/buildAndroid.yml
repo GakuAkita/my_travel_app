@@ -1,0 +1,31 @@
+name: Build Android App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+          
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: '3.29.2'
+          google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          env-file-content: ${{ secrets.ENV_FILE }}
+      
+      - name: Build the app
+        run: flutter build apk --release
+
+      - name: Upload the app
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 1

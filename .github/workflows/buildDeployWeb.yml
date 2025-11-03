@@ -1,4 +1,4 @@
-name: Build Android App
+name: Build and Deploy Web App
 
 on:
   workflow_dispatch:
@@ -19,13 +19,10 @@ jobs:
           flutter-version: '3.29.2'
           google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           env-file-content: ${{ secrets.ENV_FILE }}
+          firebase-json: ${{ secrets.FIREBASE_JSON }}
       
-      - name: Build the app
-        run: flutter build apk --release
+      - name: Build the Web
+        run: flutter build web --release
 
-      - name: Upload the app
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 5
+      - name: Deploy the Web
+        run: firebase deploy --only hosting
