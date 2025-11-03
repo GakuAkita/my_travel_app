@@ -52,3 +52,5 @@ android/local.properties
 
 # Firebase configuration (contains sensitive app IDs)
 firebase.json
+
+.firebase/*cache*
