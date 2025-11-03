@@ -1,0 +1,28 @@
+name: Build Android App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+          
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: '3.29.2'
+          google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          env-file-content: ${{ secrets.ENV_FILE }}
+          firebase-json: ${{ secrets.FIREBASE_JSON }}
+      
+      - name: Build the Web
+        run: flutter build web --release
+
+      - name: Deploy the Web
+        run: firebase deploy --only hosting
