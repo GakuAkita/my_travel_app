@@ -12,7 +12,7 @@
 - done:::itinerary DBに保存する
 - done:::表示旅行選択を切り替えたときにitineraryも変わるか
 - done:::エラー時の表示
-- publicにできるようにgitignoreを整備
+- done:::publicにできるようにgitignoreを整備
 - done:::itineraryのURLがリンクがちゃんと動くか
 - done::Expenseの編集を開くときの挙動が遅い
 - done:::下へドラッグで更新

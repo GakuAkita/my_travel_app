@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/screens/Main/Expenses/AddEditExpenseScreen.dart';
+import 'package:my_travel_app/utils/UidColorHelper.dart';
 
 class ExpenseTile extends StatelessWidget {
   final ExpenseInfo expense;
@@ -18,73 +19,25 @@ class ExpenseTile extends StatelessWidget {
     return nameShown;
   }
 
-  int _betterHash(String str) {
-    // より分散の良いハッシュ関数
-    int hash = 0;
-    for (int i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.codeUnitAt(i);
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
-  }
-
-  // members全体をソートして、各UIDのインデックス（順序）を取得
-  Map<String, int> _getUidColorIndexMap() {
-    // members全体のUIDをハッシュ値でソート
-    final List<String> sortedUids = members.keys.toList();
-    sortedUids.sort((a, b) => _betterHash(a).compareTo(_betterHash(b)));
-
-    // UIDとそのインデックス（順序）のマップを作成
-    final Map<String, int> uidColorIndexMap = {};
-    for (int i = 0; i < sortedUids.length; i++) {
-      uidColorIndexMap[sortedUids[i]] = i;
-    }
-
-    return uidColorIndexMap;
-  }
-
   List<Widget> _buildReimbursedBadges(BuildContext context) {
     final List<String> uids = expense.reimbursedBy.keys.toList();
     if (uids.isEmpty) return [];
 
     // members全体でのUIDの順序を取得
-    final Map<String, int> uidColorIndexMap = _getUidColorIndexMap();
-
-    // 基本となる色のリスト（Material Designの色相から）
-    final List<Color> colorPalette = [
-      Color.fromARGB(255, 232, 245, 233), // Light Green
-      Color.fromARGB(255, 227, 242, 253), // Light Blue
-      Color.fromARGB(255, 255, 243, 224), // Light Orange
-      Color.fromARGB(255, 245, 224, 233), // Light Pink
-      Color.fromARGB(255, 237, 231, 246), // Light Purple
-      Color.fromARGB(255, 255, 236, 179), // Light Amber
-      Color.fromARGB(255, 224, 247, 250), // Light Cyan
-      Color.fromARGB(255, 255, 228, 225), // Light Red
-    ];
-
-    final List<Color> textColorPalette = [
-      Color.fromARGB(255, 27, 94, 32), // Dark Green
-      Color.fromARGB(255, 13, 71, 161), // Dark Blue
-      Color.fromARGB(255, 230, 81, 0), // Dark Orange
-      Color.fromARGB(255, 136, 14, 79), // Dark Pink
-      Color.fromARGB(255, 74, 20, 140), // Dark Purple
-      Color.fromARGB(255, 255, 143, 0), // Dark Amber
-      Color.fromARGB(255, 0, 96, 100), // Dark Cyan
-      Color.fromARGB(255, 183, 28, 28), // Dark Red
-    ];
+    final Map<String, int> uidColorIndexMap =
+        UidColorHelper.getUidColorIndexMap(members);
 
     return uids.map((uid) {
-      // members全体での順序を取得して、そのインデックスで色を決定
-      int orderIndex = uidColorIndexMap[uid] ?? 0;
-      int colorIndex = orderIndex % colorPalette.length;
-
       String head = TravelerBasic.getProfileNameFromUid(uid, members);
       if (head.length >= 2) {
         head = head.substring(0, 2);
       }
 
-      final badgeColor = colorPalette[colorIndex];
-      final textColor = textColorPalette[colorIndex];
+      final badgeColor = UidColorHelper.getColorForUid(uid, uidColorIndexMap);
+      final textColor = UidColorHelper.getTextColorForUid(
+        uid,
+        uidColorIndexMap,
+      );
 
       return Container(
         margin: const EdgeInsets.only(right: 6),
