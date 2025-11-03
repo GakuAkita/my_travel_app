@@ -28,9 +28,27 @@ class ExpenseTile extends StatelessWidget {
     return hash;
   }
 
+  // members全体をソートして、各UIDのインデックス（順序）を取得
+  Map<String, int> _getUidColorIndexMap() {
+    // members全体のUIDをハッシュ値でソート
+    final List<String> sortedUids = members.keys.toList();
+    sortedUids.sort((a, b) => _betterHash(a).compareTo(_betterHash(b)));
+
+    // UIDとそのインデックス（順序）のマップを作成
+    final Map<String, int> uidColorIndexMap = {};
+    for (int i = 0; i < sortedUids.length; i++) {
+      uidColorIndexMap[sortedUids[i]] = i;
+    }
+
+    return uidColorIndexMap;
+  }
+
   List<Widget> _buildReimbursedBadges(BuildContext context) {
     final List<String> uids = expense.reimbursedBy.keys.toList();
     if (uids.isEmpty) return [];
+
+    // members全体でのUIDの順序を取得
+    final Map<String, int> uidColorIndexMap = _getUidColorIndexMap();
 
     // 基本となる色のリスト（Material Designの色相から）
     final List<Color> colorPalette = [
@@ -56,8 +74,9 @@ class ExpenseTile extends StatelessWidget {
     ];
 
     return uids.map((uid) {
-      // UIDのハッシュ値から直接色を決定（同じUIDには常に同じ色）
-      int colorIndex = _betterHash(uid).abs() % colorPalette.length;
+      // members全体での順序を取得して、そのインデックスで色を決定
+      int orderIndex = uidColorIndexMap[uid] ?? 0;
+      int colorIndex = orderIndex % colorPalette.length;
 
       String head = TravelerBasic.getProfileNameFromUid(uid, members);
       if (head.length >= 2) {
