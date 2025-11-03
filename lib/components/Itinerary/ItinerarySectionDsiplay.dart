@@ -98,51 +98,42 @@ class ItinerarySectionDisplay extends StatelessWidget {
           ],
         )
         : itiSection.type == ItinerarySectionType.defaultTable
-        ? Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: Table(
-            columnWidths: {
-              for (int i = 0; i < itiSection.tableData!.flexes.length; i++)
-                i: FlexColumnWidth(itiSection.tableData!.flexes[i].toDouble()),
-            },
-            border: TableBorder.all(
-              color: Theme.of(context).colorScheme.primary,
+        ? Table(
+          columnWidths: {
+            for (int i = 0; i < itiSection.tableData!.flexes.length; i++)
+              i: FlexColumnWidth(itiSection.tableData!.flexes[i].toDouble()),
+          },
+          border: TableBorder.all(color: Theme.of(context).colorScheme.primary),
+          children: [
+            // ヘッダー行
+            TableRow(
+              children: [
+                for (int i = 0; i < itiSection.tableData!.header.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Center(
+                      child: BasicText(text: itiSection.tableData!.header[i]),
+                    ),
+                  ),
+              ],
             ),
-            children: [
-              // ヘッダー行
+            // データ行
+            for (final row in itiSection.tableData!.tableCells)
               TableRow(
                 children: [
                   for (int i = 0; i < itiSection.tableData!.header.length; i++)
                     Padding(
                       padding: const EdgeInsets.all(8),
-                      child: Center(
-                        child: BasicText(text: itiSection.tableData!.header[i]),
+                      child: WhiteMarkdownBody(
+                        data: row.length > i ? row[i] : '',
+                        onTapLink:
+                            (text, href, title) =>
+                                _handleLinkTap(context, href),
                       ),
                     ),
                 ],
               ),
-              // データ行
-              for (final row in itiSection.tableData!.tableCells)
-                TableRow(
-                  children: [
-                    for (
-                      int i = 0;
-                      i < itiSection.tableData!.header.length;
-                      i++
-                    )
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: WhiteMarkdownBody(
-                          data: row.length > i ? row[i] : '',
-                          onTapLink:
-                              (text, href, title) =>
-                                  _handleLinkTap(context, href),
-                        ),
-                      ),
-                  ],
-                ),
-            ],
-          ),
+          ],
         )
         : itiSection.type == ItinerarySectionType.space
         /** @TODO
