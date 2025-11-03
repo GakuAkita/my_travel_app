@@ -2,12 +2,12 @@ name: Build and Deploy Web App
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main  
+#   push:
+#     branches:
+#       - main  
 
 jobs:
-  build:
+  build_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,8 +21,11 @@ jobs:
           env-file-content: ${{ secrets.ENV_FILE }}
           firebase-json: ${{ secrets.FIREBASE_JSON }}
       
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
       - name: Build the Web
         run: flutter build web --release
 
       - name: Deploy the Web
-        run: firebase deploy --only hosting
+        run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
