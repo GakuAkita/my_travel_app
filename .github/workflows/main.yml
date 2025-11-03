@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build Android App
 
 on:
   workflow_dispatch:
@@ -12,23 +12,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: copy google-service
-        env:
-          GOOGLE_SERVICE: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > ./android/app/google-services.json
-
-      - name: print google-services.json
-        run: cat ./android/app/google-services.json
-
-      - name: Build the app
-        run: flutter build apk
-
-      - name: Deploy to Firebase
-        uses: wzieba/firebase-action@v1
+          
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter
         with:
-          action: deploy
-          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          flutter-version: '3.29.2'
+          google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          env-file-content: ${{ secrets.ENV_FILE }}
+      
+      - name: Build the app
+        run: flutter build apk --release
+
+      - name: Upload the app
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 5
