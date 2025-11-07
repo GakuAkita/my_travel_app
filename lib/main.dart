@@ -26,7 +26,9 @@ import 'constants.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  await dotenv.load(fileName: ".env");
+  /* webに上げるとき、デフォルト状態だと.envを認識してくれないらしい */
+  /* https://zenn.dev/tsukatsuka1783/articles/64c9e06d516a3e */
+  await dotenv.load(fileName: "env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
