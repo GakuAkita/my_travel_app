@@ -49,6 +49,7 @@ android/local.properties
 
 # Environment variables
 .env
+env
 
 # Firebase configuration (contains sensitive app IDs)
 firebase.json

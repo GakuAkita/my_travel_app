@@ -35,7 +35,7 @@ runs:
 
     - name: copy .env
       shell: bash
-      run: echo "${{ inputs.env-file-content }}" | base64 --decode --ignore-garbage > ./.env
+      run: echo "${{ inputs.env-file-content }}" | base64 --decode --ignore-garbage > ./env
 
     - name: copy firebase.json
       if: inputs.firebase-json != '' && inputs.firebase-json != 'null'
