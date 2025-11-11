@@ -18,7 +18,8 @@
 - done:::下へドラッグで更新
 - done::何時にログインしたかを記録する
 - done::割り勘の明細作成(functions側か？)
-- 自動デプロイ with actions
+- done:::自動デプロイ with actions
+- itinerary同時編集ロック
 - 外貨対応
 
 - UXバグ：
