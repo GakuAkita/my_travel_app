@@ -29,6 +29,7 @@
 - done:::グループ名がかぶるときに弾く
 - done:::グループ削除のときの対応
 - done:::listener(特に割り勘の部分)変更を通知を受けたときに自動で更新
+- dependabotにワーニング解決
 
 optional
 - ViewModel化
