@@ -12,7 +12,6 @@ class VersionInfoScreen extends StatefulWidget {
 class _VersionInfoScreenState extends State<VersionInfoScreen> {
   String _version = '';
   String _buildNumber = '';
-  String _appName = '';
   bool _loading = true;
 
   @override
@@ -26,7 +25,6 @@ class _VersionInfoScreenState extends State<VersionInfoScreen> {
     setState(() {
       _version = packageInfo.version;
       _buildNumber = packageInfo.buildNumber;
-      _appName = packageInfo.appName;
       _loading = false;
     });
   }
