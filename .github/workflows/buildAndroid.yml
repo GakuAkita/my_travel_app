@@ -20,34 +20,6 @@ jobs:
       - name: Manage version tag
         id: version_tag
         uses: ./.github/actions/manage-version-tag
-      
-      - name: Calculate version string for pubspec
-        id: version_string
-        run: |
-          BUILD_VERSION="${{ steps.version_tag.outputs.build_version }}"
-          
-          # バージョン番号を抽出(v1.2.3形式から1.2.3を取得)
-          VERSION_NUM=${BUILD_VERSION#v}
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NUM"
-          
-          # pubspec.yamlのバージョン形式に合わせる(1.2.3+123形式)
-          # versionCodeは常に増加する必要があるため、MAJOR*1000000 + MINOR*1000 + PATCH で計算
-          # 各セグメントは3桁(0-999)まで対応
-          # 例: v1.0.1 → 1.0.1+1000001, v1.0.2 → 1.0.2+1000002, v1.1.0 → 1.1.0+1001000
-          # +以降がGoogle Play Storeのバージョンコードとして使用されるらしい。この番号は増加し続けなきゃいけないらしい。
-          BUILD_NUMBER=$((MAJOR * 1000000 + MINOR * 1000 + PATCH))
-          VERSION_STRING="${MAJOR}.${MINOR}.${PATCH}+${BUILD_NUMBER}"
-          
-          echo "version_string=$VERSION_STRING" >> $GITHUB_OUTPUT
-          echo "Version string for pubspec: $VERSION_STRING"
-      
-      - name: Update pubspec.yaml version
-        run: |
-          VERSION_STRING="${{ steps.version_string.outputs.version_string }}"
-          # pubspec.yamlのバージョンを更新
-          sed -i "s/^version:.*/version: $VERSION_STRING/" pubspec.yaml
-          echo "Updated pubspec.yaml version to: $VERSION_STRING"
-          cat pubspec.yaml | grep "^version:"
           
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter

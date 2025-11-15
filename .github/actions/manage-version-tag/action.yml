@@ -23,6 +23,9 @@ outputs:
   build_version:
     description: 'Version to use for build'
     value: ${{ steps.build_version.outputs.build_version }}
+  version_string:
+    description: 'Version string for pubspec.yaml (format: 1.2.3+1000001)'
+    value: ${{ steps.version_string.outputs.version_string }}
 
 runs:
   using: 'composite'
@@ -92,6 +95,36 @@ runs:
         
         echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
         echo "Building with version: $BUILD_VERSION"
+    
+    - name: Calculate version string for pubspec
+      id: version_string
+      shell: bash
+      run: |
+        BUILD_VERSION="${{ steps.build_version.outputs.build_version }}"
+        
+        # バージョン番号を抽出(v1.2.3形式から1.2.3を取得)
+        VERSION_NUM=${BUILD_VERSION#v}
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NUM"
+        
+        # pubspec.yamlのバージョン形式に合わせる(1.2.3+123形式)
+        # versionCodeは常に増加する必要があるため、MAJOR*1000000 + MINOR*1000 + PATCH で計算
+        # 各セグメントは3桁(0-999)まで対応
+        # 例: v1.0.1 → 1.0.1+1000001, v1.0.2 → 1.0.2+1000002, v1.1.0 → 1.1.0+1001000
+        # +以降がGoogle Play Storeのバージョンコードとして使用されるらしい。この番号は増加し続けなきゃいけないらしい。
+        BUILD_NUMBER=$((MAJOR * 1000000 + MINOR * 1000 + PATCH))
+        VERSION_STRING="${MAJOR}.${MINOR}.${PATCH}+${BUILD_NUMBER}"
+        
+        echo "version_string=$VERSION_STRING" >> $GITHUB_OUTPUT
+        echo "Version string for pubspec: $VERSION_STRING"
+    
+    - name: Update pubspec.yaml version
+      shell: bash
+      run: |
+        VERSION_STRING="${{ steps.version_string.outputs.version_string }}"
+        # pubspec.yamlのバージョンを更新
+        sed -i "s/^version:.*/version: $VERSION_STRING/" pubspec.yaml
+        echo "Updated pubspec.yaml version to: $VERSION_STRING"
+        cat pubspec.yaml | grep "^version:"
     
     - name: Create git tag (if new version)
       if: steps.changes.outputs.has_changes == 'true'
