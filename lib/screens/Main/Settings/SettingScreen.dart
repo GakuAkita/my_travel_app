@@ -11,6 +11,7 @@ import '../../Start/StartScreen.dart';
 import 'CreateGroupScreen.dart';
 import 'ProfileScreen.dart';
 import 'TravelManageScreen.dart';
+import 'VersionInfoScreen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -20,11 +21,6 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final AuthService _authService = AuthService();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +77,12 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               SettingMenubar(onPressed: () {}, menuName: "旅行削除"),
             ], //adminだったらこちらを表示
+            SettingMenubar(
+              onPressed: () {
+                Navigator.pushNamed(context, VersionInfoScreen.id);
+              },
+              menuName: "バージョン情報",
+            ),
             TextButton(
               onPressed: () async {
                 //userStore.;/* 初期化 */

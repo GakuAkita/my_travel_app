@@ -11,6 +11,7 @@ import 'package:my_travel_app/screens/Main/Settings/DeleteGroupScreen.dart';
 import 'package:my_travel_app/screens/Main/Settings/GeneralManagerSelectScreen.dart';
 import 'package:my_travel_app/screens/Main/Settings/ProfileScreen.dart';
 import 'package:my_travel_app/screens/Main/Settings/TravelManageScreen.dart';
+import 'package:my_travel_app/screens/Main/Settings/VersionInfoScreen.dart';
 import 'package:my_travel_app/screens/Main/itinerary/ItineraryTableEditScreen.dart';
 import 'package:my_travel_app/screens/Start/LoginScreen.dart';
 import 'package:my_travel_app/screens/Start/SignUpScreen.dart';
@@ -140,6 +141,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => GeneralManagerSelectScreen(),
             );
+          case VersionInfoScreen.id:
+            return MaterialPageRoute(builder: (_) => VersionInfoScreen());
           default:
             return MaterialPageRoute(builder: (_) => StartScreen());
         }
