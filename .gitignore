@@ -57,3 +57,5 @@ firebase.json
 .firebase/*cache*
 
 macos/Flutter/GeneratedPluginRegistrant.swift
+
+.vscode
