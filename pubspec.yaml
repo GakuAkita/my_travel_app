@@ -16,6 +16,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
+
+# ローカルでビルドするときはここが昔のままなので、ローカルビルドしたものは配布しないこと
+# 必ずGitHub Actionsでビルドしたものを配布すること。mainへのpushを禁止しているので、actions上でpubspec.yamlを編集してpushするとブロックされる
+# したがって、actionsで一時的にこのpubscpec.yamlを書き換えて、ビルドすることにする。
 version: 1.0.2+1000002
 
 environment:
