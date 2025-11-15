@@ -13,8 +13,6 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _rotationController;
-  late Animation<double> _imageFadeAnimation;
-  late Animation<double> _imageScaleAnimation;
   late Animation<double> _imageRotationAnimation;
   late Animation<double> _textFadeAnimation;
 
@@ -32,21 +30,6 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    // 画像のフェードインとスケールアニメーション
-    _imageFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-      ),
-    );
-
-    _imageScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-      ),
-    );
-
     // 回転アニメーション（360度回転、継続的に繰り返し）
     _imageRotationAnimation = Tween<double>(begin: 0.0, end: 2 * pi).animate(
       CurvedAnimation(parent: _rotationController, curve: Curves.linear),
@@ -60,11 +43,11 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // フェードインアニメーションを開始
-    _controller.forward().then((_) {
-      // フェードイン完了後、回転を開始（無限に繰り返し）
-      _rotationController.repeat();
-    });
+    // ロゴは最初から回転を開始（無限に繰り返し）
+    _rotationController.repeat();
+
+    // テキストのフェードインアニメーションを開始
+    _controller.forward();
   }
 
   @override
@@ -82,24 +65,17 @@ class _SplashScreenState extends State<SplashScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 画像のアニメーション
+            // 画像のアニメーション（最初から回転）
             AnimatedBuilder(
-              animation: Listenable.merge([_controller, _rotationController]),
+              animation: _rotationController,
               builder: (context, child) {
-                return Opacity(
-                  opacity: _imageFadeAnimation.value,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform:
-                        Matrix4.identity()
-                          ..setEntry(3, 2, 0.001) // perspective for 3D effect
-                          ..rotateY(_imageRotationAnimation.value)
-                          ..scale(
-                            _imageScaleAnimation.value,
-                            _imageScaleAnimation.value,
-                          ),
-                    child: child,
-                  ),
+                return Transform(
+                  alignment: Alignment.center,
+                  transform:
+                      Matrix4.identity()
+                        ..setEntry(3, 2, 0.001) // perspective for 3D effect
+                        ..rotateY(_imageRotationAnimation.value),
+                  child: child,
                 );
               },
               child: const Image(
