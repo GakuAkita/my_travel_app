@@ -52,7 +52,6 @@ class _VersionInfoScreenState extends State<VersionInfoScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const SizedBox(height: 16),
-                        _buildInfoRow("アプリ名", _appName),
                         _buildInfoRow("バージョン", _version),
                         _buildInfoRow("ビルド番号", _buildNumber),
                       ],
