@@ -9,9 +9,17 @@ on:
 jobs:
   build_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # タグを作成・プッシュするために必要
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得してタグを確認するため
+          
+      - name: Manage version tag
+        id: version_tag
+        uses: ./.github/actions/manage-version-tag
           
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter
@@ -28,4 +36,4 @@ jobs:
         run: flutter build web --release
 
       - name: Deploy the Web
-        run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }} --message "Deploy version ${{ steps.version_tag.outputs.build_version }}"

@@ -1,0 +1,138 @@
+name: 'Manage Version Tag'
+description: 'Calculate version from latest tag and create new tag if there are changes'
+
+outputs:
+  latest_tag:
+    description: 'Latest tag found (empty if none)'
+    value: ${{ steps.version.outputs.latest_tag }}
+  new_version:
+    description: 'New version to be created'
+    value: ${{ steps.version.outputs.new_version }}
+  major:
+    description: 'Major version number'
+    value: ${{ steps.version.outputs.major }}
+  minor:
+    description: 'Minor version number'
+    value: ${{ steps.version.outputs.minor }}
+  patch:
+    description: 'Patch version number'
+    value: ${{ steps.version.outputs.patch }}
+  has_changes:
+    description: 'Whether there are changes since last tag'
+    value: ${{ steps.changes.outputs.has_changes }}
+  build_version:
+    description: 'Version to use for build'
+    value: ${{ steps.build_version.outputs.build_version }}
+  version_string:
+    description: 'Version string for pubspec.yaml (format: 1.2.3+1000001)'
+    value: ${{ steps.version_string.outputs.version_string }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get latest tag and calculate version
+      id: version
+      shell: bash
+      run: |
+        # 最新のタグを取得(vで始まるタグのみ)
+        LATEST_TAG=$(git describe --tags --match "v*" --abbrev=0 2>/dev/null || echo "")
+        
+        if [ -z "$LATEST_TAG" ]; then
+          # タグが存在しない場合はv1.0.0から開始
+          NEW_VERSION="v1.0.0"
+          MAJOR=1
+          MINOR=0
+          PATCH=0
+        else
+          # タグからバージョン番号を抽出(v1.2.3形式を想定）
+          VERSION_NUM=${LATEST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NUM"
+          
+          # パッチバージョンをインクリメント
+          PATCH=$((PATCH + 1))
+          NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+        fi
+        
+        echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+        echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "major=$MAJOR" >> $GITHUB_OUTPUT
+        echo "minor=$MINOR" >> $GITHUB_OUTPUT
+        echo "patch=$PATCH" >> $GITHUB_OUTPUT
+        
+        echo "Latest tag: $LATEST_TAG"
+        echo "New version: $NEW_VERSION"
+    
+    - name: Check if there are changes since last tag
+      id: changes
+      shell: bash
+      run: |
+        LATEST_TAG="${{ steps.version.outputs.latest_tag }}"
+        
+        if [ -z "$LATEST_TAG" ]; then
+          # タグが存在しない場合は変更ありとみなす
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "No previous tag found, building new version"
+        else
+          # 前回のタグから変更があるかチェック
+          if git diff --quiet $LATEST_TAG HEAD; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes since $LATEST_TAG, will use existing tag version"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected since $LATEST_TAG, building new version"
+          fi
+        fi
+    
+    - name: Determine build version
+      id: build_version
+      shell: bash
+      run: |
+        if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
+          BUILD_VERSION="${{ steps.version.outputs.new_version }}"
+        else
+          BUILD_VERSION="${{ steps.version.outputs.latest_tag }}"
+        fi
+        
+        echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
+        echo "Building with version: $BUILD_VERSION"
+    
+    - name: Calculate version string for pubspec
+      id: version_string
+      shell: bash
+      run: |
+        BUILD_VERSION="${{ steps.build_version.outputs.build_version }}"
+        
+        # バージョン番号を抽出(v1.2.3形式から1.2.3を取得)
+        VERSION_NUM=${BUILD_VERSION#v}
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NUM"
+        
+        # pubspec.yamlのバージョン形式に合わせる(1.2.3+123形式)
+        # versionCodeは常に増加する必要があるため、MAJOR*1000000 + MINOR*1000 + PATCH で計算
+        # 各セグメントは3桁(0-999)まで対応
+        # 例: v1.0.1 → 1.0.1+1000001, v1.0.2 → 1.0.2+1000002, v1.1.0 → 1.1.0+1001000
+        # +以降がGoogle Play Storeのバージョンコードとして使用されるらしい。この番号は増加し続けなきゃいけないらしい。
+        BUILD_NUMBER=$((MAJOR * 1000000 + MINOR * 1000 + PATCH))
+        VERSION_STRING="${MAJOR}.${MINOR}.${PATCH}+${BUILD_NUMBER}"
+        
+        echo "version_string=$VERSION_STRING" >> $GITHUB_OUTPUT
+        echo "Version string for pubspec: $VERSION_STRING"
+    
+    - name: Update pubspec.yaml version
+      shell: bash
+      run: |
+        VERSION_STRING="${{ steps.version_string.outputs.version_string }}"
+        # pubspec.yamlのバージョンを更新
+        sed -i "s/^version:.*/version: $VERSION_STRING/" pubspec.yaml
+        echo "Updated pubspec.yaml version to: $VERSION_STRING"
+        cat pubspec.yaml | grep "^version:"
+    
+    - name: Create git tag (if new version)
+      if: steps.changes.outputs.has_changes == 'true'
+      shell: bash
+      run: |
+        NEW_VERSION="${{ steps.version.outputs.new_version }}"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
+        git push origin "$NEW_VERSION"
+
