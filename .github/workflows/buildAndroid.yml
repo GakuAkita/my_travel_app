@@ -17,68 +17,14 @@ jobs:
         with:
           fetch-depth: 0  # 全履歴を取得してタグを確認するため
           
-      - name: Get latest tag and calculate version
-        id: version
-        run: |
-          # 最新のタグを取得(vで始まるタグのみ)
-          LATEST_TAG=$(git describe --tags --match "v*" --abbrev=0 2>/dev/null || echo "")
-          
-          if [ -z "$LATEST_TAG" ]; then
-            # タグが存在しない場合はv1.0.0から開始
-            NEW_VERSION="v1.0.0"
-            MAJOR=1
-            MINOR=0
-            PATCH=0
-          else
-            # タグからバージョン番号を抽出（v1.2.3形式を想定）
-            VERSION_NUM=${LATEST_TAG#v}
-            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NUM"
-            
-            # パッチバージョンをインクリメント
-            PATCH=$((PATCH + 1))
-            NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
-          fi
-          
-          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "major=$MAJOR" >> $GITHUB_OUTPUT
-          echo "minor=$MINOR" >> $GITHUB_OUTPUT
-          echo "patch=$PATCH" >> $GITHUB_OUTPUT
-          
-          echo "Latest tag: $LATEST_TAG"
-          echo "New version: $NEW_VERSION"
+      - name: Manage version tag
+        id: version_tag
+        uses: ./.github/actions/manage-version-tag
       
-      - name: Check if there are changes since last tag
-        id: changes
+      - name: Calculate version string for pubspec
+        id: version_string
         run: |
-          LATEST_TAG="${{ steps.version.outputs.latest_tag }}"
-          
-          if [ -z "$LATEST_TAG" ]; then
-            # タグが存在しない場合は変更ありとみなす
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "No previous tag found, building new version"
-          else
-            # 前回のタグから変更があるかチェック
-            if git diff --quiet $LATEST_TAG HEAD; then
-              echo "has_changes=false" >> $GITHUB_OUTPUT
-              echo "No changes since $LATEST_TAG, will use existing tag version"
-            else
-              echo "has_changes=true" >> $GITHUB_OUTPUT
-              echo "Changes detected since $LATEST_TAG, building new version"
-            fi
-          fi
-      
-      - name: Determine build version
-        id: build_version
-        run: |
-          if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
-            BUILD_VERSION="${{ steps.version.outputs.new_version }}"
-          else
-            BUILD_VERSION="${{ steps.version.outputs.latest_tag }}"
-          fi
-          
-          echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
-          echo "Building with version: $BUILD_VERSION"
+          BUILD_VERSION="${{ steps.version_tag.outputs.build_version }}"
           
           # バージョン番号を抽出(v1.2.3形式から1.2.3を取得)
           VERSION_NUM=${BUILD_VERSION#v}
@@ -97,7 +43,7 @@ jobs:
       
       - name: Update pubspec.yaml version
         run: |
-          VERSION_STRING="${{ steps.build_version.outputs.version_string }}"
+          VERSION_STRING="${{ steps.version_string.outputs.version_string }}"
           # pubspec.yamlのバージョンを更新
           sed -i "s/^version:.*/version: $VERSION_STRING/" pubspec.yaml
           echo "Updated pubspec.yaml version to: $VERSION_STRING"
@@ -116,15 +62,6 @@ jobs:
       - name: Upload the app
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-${{ steps.build_version.outputs.build_version }}.apk
+          name: app-release-${{ steps.version_tag.outputs.build_version }}.apk
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 1
-      
-      - name: Create git tag (if new version)
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          NEW_VERSION="${{ steps.version.outputs.new_version }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
-          git push origin "$NEW_VERSION"
