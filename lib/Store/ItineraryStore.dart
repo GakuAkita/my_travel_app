@@ -91,7 +91,9 @@ class ItineraryStore extends ChangeNotifier {
     _currentUserId = userId;
   }
 
-  void setEditMode(bool val) {
+  void setEditMode(bool val) async {
+    /* リモートで誰かがリモートロックしていないかチェックする */
+
     _editMode = val;
     notifyListeners();
   }

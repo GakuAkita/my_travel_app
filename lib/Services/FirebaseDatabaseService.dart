@@ -173,6 +173,11 @@ class FirebaseDatabaseService {
     String travelId,
   ) => singleTravelItineraryRef(groupId, travelId).child("sections");
 
+  static DatabaseReference singleTravelItineraryOnEditRef(
+    String groupId,
+    String travelId,
+  ) => singleTravelItineraryRef(groupId, travelId).child("on_edit");
+
   /***
  * 他人のuid配下を使ってデータ操作
  */
