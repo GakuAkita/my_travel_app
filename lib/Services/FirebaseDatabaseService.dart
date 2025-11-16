@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
 import 'package:my_travel_app/CommonClass/ExchangeData.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
+import 'package:my_travel_app/CommonClass/OnItineraryEdit.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
@@ -561,6 +562,27 @@ class FirebaseDatabaseService {
       return ResultInfo.success(data: allExpenses);
     } catch (e) {
       print("Error in getTravelExpenses:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo<OnItineraryEdit?>> getSingleTravelItineraryOnEdit(
+    String groupId,
+    String travelId,
+  ) async {
+    try {
+      final snap =
+          await singleTravelItineraryOnEditRef(groupId, travelId).get();
+      if (!snap.exists) {
+        print("Probably there is no itinerary on edit...");
+        return ResultInfo.success(data: null);
+      }
+      final rawMap = snap.value as Map?;
+      if (rawMap == null) return ResultInfo.success(data: null);
+      final OnItineraryEdit onEdit = OnItineraryEdit.convFromMap(rawMap);
+      return ResultInfo.success(data: onEdit);
+    } catch (e) {
+      print("Error in getSingleTravelItineraryOnEdit:$e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
