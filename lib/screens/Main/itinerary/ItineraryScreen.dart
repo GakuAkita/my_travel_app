@@ -4,7 +4,6 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/components/CircleIconButton.dart';
 import 'package:my_travel_app/components/Itinerary/ItinerarySectionDsiplay.dart';
-import 'package:my_travel_app/components/SimpleSwitch.dart';
 import 'package:my_travel_app/components/SimpleTextButton.dart';
 import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/screens/Main/itinerary/ItineraryTableEditScreen.dart';
@@ -12,6 +11,7 @@ import 'package:provider/provider.dart';
 
 import '../../../Store/UserStore.dart';
 import '../../../components/BasicText.dart';
+import '../../../components/ConfirmableSwitch.dart';
 import '../../../components/Itinerary/ItineraryMarkdownSectionEdit.dart';
 
 class ItineraryScreen extends StatefulWidget {
@@ -54,32 +54,32 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                         children: [
                           BasicText(text: "総監督モード"),
                           SizedBox(width: 10),
-                          SimpleSwitch(
-                            initialValue: itineraryStore.editMode,
-                            onChanged: (newValue) {
-                              print("総監督モード ${newValue}");
+                          ValidatedSwitch(
+                            initialStatus: itineraryStore.editMode,
+                            onWillChange: (newValue) async {
+                              return false;
                             },
                           ),
                           // ConfirmableSwitch(
                           //   initialStatus: itineraryStore.editMode,
-                          //   onWillChange: (newValue) async {
-                          //     if (newValue) {
-                          //       // trueにする前にFirebaseの状態をチェック
-                          //       return await itineraryStore.canSetEditMode();
-                          //     }
-                          //     return true;
-                          //   },
-                          //   onConfirmedChanged: (val, response) {
+                          //   onConfirmedChanged: (val, response) async {
                           //     if (response == null) {
                           //       /**
                           //        *  Dialogを出したけどユーザーが
                           //        *  他の部分をタップしたとき
                           //        *  */
-                          //       return;
+                          //       return false;
                           //     }
                           //     print(
                           //       "current previous editMode:${itineraryStore.editMode}",
                           //     );
+                          //
+                          //     // ここで適切かチェックできる
+                          //     // 例: 何らかの条件で変更を拒否する場合は false を返す
+                          //     // if (someCondition) {
+                          //     //   return false; // スイッチの状態を変更しない
+                          //     // }
+                          //
                           //     itineraryStore.setEditMode(val);
                           //     /* trueからfalse&&保存のときはFirebaseに保存 */
                           //     if (!val /* trueからfalse */ && response /*保存*/ ) {
@@ -91,7 +91,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           //         print(
                           //           "ここに来ることはまずない。\ngroupId:${userStore.shownTravelBasic!.groupId} traveId:${userStore.shownTravelBasic!.travelId}",
                           //         );
-                          //         return;
+                          //         return false;
                           //       }
                           //       itineraryStore.saveData(
                           //         userStore.shownTravelBasic!.groupId!,
@@ -105,6 +105,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           //         "current editMode:${itineraryStore.editMode}",
                           //       );
                           //     }
+                          //
+                          //     return true; // 状態変更を許可
                           //   },
                           // ),
                         ],
