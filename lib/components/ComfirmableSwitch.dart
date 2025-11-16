@@ -81,8 +81,8 @@ class _ConfirmableSwitchState extends State<ConfirmableSwitch> {
         _controller.value = true;
       }
     } else {
-      _controller.value = true;
       widget.onConfirmedChanged(true, false);
+      _controller.value = true;
     }
   }
 

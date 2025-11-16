@@ -116,6 +116,22 @@ class ItineraryStore extends ChangeNotifier {
 
     final groupId = _shownTravelBasic!.groupId!;
     final travelId = _shownTravelBasic!.travelId!;
+
+    /**
+     *
+     * */
+    final getRet = await FirebaseDatabaseService.getSingleTravelItineraryOnEdit(
+      groupId,
+      travelId,
+    );
+    if (!getRet.isSuccess) {
+      /* 失敗する */
+      print("Unable to get edit mode: ${getRet.error?.errorMessage}");
+      return;
+    } else {
+      /* ここでもし、誰かが編集していたらブロックする */
+    }
+
     final onEdit = OnItineraryEdit(
       uid: travelerBasic.uid,
       email: travelerBasic.email,
