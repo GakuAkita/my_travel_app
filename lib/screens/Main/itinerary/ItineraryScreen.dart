@@ -3,8 +3,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/components/CircleIconButton.dart';
-import 'package:my_travel_app/components/ComfirmableSwitch.dart';
 import 'package:my_travel_app/components/Itinerary/ItinerarySectionDsiplay.dart';
+import 'package:my_travel_app/components/SimpleSwitch.dart';
 import 'package:my_travel_app/components/SimpleTextButton.dart';
 import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/screens/Main/itinerary/ItineraryTableEditScreen.dart';
@@ -54,53 +54,59 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                         children: [
                           BasicText(text: "総監督モード"),
                           SizedBox(width: 10),
-                          ConfirmableSwitch(
-                            initialStatus: itineraryStore.editMode,
-                            onWillChange: (newValue) async {
-                              if (newValue) {
-                                // trueにする前にFirebaseの状態をチェック
-                                return await itineraryStore.canSetEditMode();
-                              }
-                              return true;
-                            },
-                            onConfirmedChanged: (val, response) {
-                              if (response == null) {
-                                /**
-                                 *  Dialogを出したけどユーザーが
-                                 *  他の部分をタップしたとき
-                                 *  */
-                                return;
-                              }
-                              print(
-                                "current previous editMode:${itineraryStore.editMode}",
-                              );
-                              itineraryStore.setEditMode(val);
-                              /* trueからfalse&&保存のときはFirebaseに保存 */
-                              if (!val /* trueからfalse */ && response /*保存*/ ) {
-                                /*Firebaseに保存。非同期で走らせる*/
-                                if (userStore.shownTravelBasic!.groupId ==
-                                        null ||
-                                    userStore.shownTravelBasic!.travelId ==
-                                        null) {
-                                  print(
-                                    "ここに来ることはまずない。\ngroupId:${userStore.shownTravelBasic!.groupId} traveId:${userStore.shownTravelBasic!.travelId}",
-                                  );
-                                  return;
-                                }
-                                itineraryStore.saveData(
-                                  userStore.shownTravelBasic!.groupId!,
-                                  userStore.shownTravelBasic!.travelId!,
-                                );
-                              } else if (!val /* trueからfalse */ &&
-                                  !response /* キャンセル */ ) {
-                                /* Firebaseから既存のを読み込みsectionsにセット */
-                              } else {
-                                print(
-                                  "current editMode:${itineraryStore.editMode}",
-                                );
-                              }
+                          SimpleSwitch(
+                            initialValue: itineraryStore.editMode,
+                            onChanged: (newValue) {
+                              print("総監督モード ${newValue}");
                             },
                           ),
+                          // ConfirmableSwitch(
+                          //   initialStatus: itineraryStore.editMode,
+                          //   onWillChange: (newValue) async {
+                          //     if (newValue) {
+                          //       // trueにする前にFirebaseの状態をチェック
+                          //       return await itineraryStore.canSetEditMode();
+                          //     }
+                          //     return true;
+                          //   },
+                          //   onConfirmedChanged: (val, response) {
+                          //     if (response == null) {
+                          //       /**
+                          //        *  Dialogを出したけどユーザーが
+                          //        *  他の部分をタップしたとき
+                          //        *  */
+                          //       return;
+                          //     }
+                          //     print(
+                          //       "current previous editMode:${itineraryStore.editMode}",
+                          //     );
+                          //     itineraryStore.setEditMode(val);
+                          //     /* trueからfalse&&保存のときはFirebaseに保存 */
+                          //     if (!val /* trueからfalse */ && response /*保存*/ ) {
+                          //       /*Firebaseに保存。非同期で走らせる*/
+                          //       if (userStore.shownTravelBasic!.groupId ==
+                          //               null ||
+                          //           userStore.shownTravelBasic!.travelId ==
+                          //               null) {
+                          //         print(
+                          //           "ここに来ることはまずない。\ngroupId:${userStore.shownTravelBasic!.groupId} traveId:${userStore.shownTravelBasic!.travelId}",
+                          //         );
+                          //         return;
+                          //       }
+                          //       itineraryStore.saveData(
+                          //         userStore.shownTravelBasic!.groupId!,
+                          //         userStore.shownTravelBasic!.travelId!,
+                          //       );
+                          //     } else if (!val /* trueからfalse */ &&
+                          //         !response /* キャンセル */ ) {
+                          //       /* Firebaseから既存のを読み込みsectionsにセット */
+                          //     } else {
+                          //       print(
+                          //         "current editMode:${itineraryStore.editMode}",
+                          //       );
+                          //     }
+                          //   },
+                          // ),
                         ],
                       ),
                     ),
