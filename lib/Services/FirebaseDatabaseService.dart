@@ -566,7 +566,7 @@ class FirebaseDatabaseService {
     }
   }
 
-  static Future<ResultInfo<OnItineraryEdit?>> getSingleTravelItineraryOnEdit(
+  static Future<ResultInfo<OnItineraryEdit>> getSingleTravelItineraryOnEdit(
     String groupId,
     String travelId,
   ) async {
@@ -575,14 +575,34 @@ class FirebaseDatabaseService {
           await singleTravelItineraryOnEditRef(groupId, travelId).get();
       if (!snap.exists) {
         print("Probably there is no itinerary on edit...");
-        return ResultInfo.success(data: null);
+        return ResultInfo.success(data: OnItineraryEdit(on_edit: false));
       }
       final rawMap = snap.value as Map?;
-      if (rawMap == null) return ResultInfo.success(data: null);
-      final OnItineraryEdit onEdit = OnItineraryEdit.convFromMap(rawMap);
+      if (rawMap == null) {
+        return ResultInfo.success(data: OnItineraryEdit(on_edit: false));
+      }
+
+      // Map形式のデータをOnItineraryEditに変換
+      final onEdit = OnItineraryEdit.convFromMap(rawMap);
       return ResultInfo.success(data: onEdit);
     } catch (e) {
       print("Error in getSingleTravelItineraryOnEdit:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo> setSingleTravelItineraryOnEdit(
+    String groupId,
+    String travelId,
+    OnItineraryEdit onEdit,
+  ) async {
+    try {
+      final onEditRef = singleTravelItineraryOnEditRef(groupId, travelId);
+      // uidをキーとして、そのユーザーの編集状態を更新
+      await onEditRef.set(onEdit.toMap());
+      return ResultInfo.success();
+    } catch (e) {
+      print("Error in setSingleTravelItineraryOnEdit:$e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:my_travel_app/CommonClass/OnItineraryEdit.dart';
 import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
+import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 
 import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ItineraryDefaultTable.dart';
@@ -19,6 +21,9 @@ class ItineraryStore extends ChangeNotifier {
   String? get currentUserId => _currentUserId;
 
   List<ItinerarySection> _itinerarySections = [];
+
+  Map<String, TravelerBasic> _allParticipants = {};
+  Map<String, TravelerBasic> get allParticipants => _allParticipants;
 
   bool _editMode = false;
   bool get editMode => _editMode;
@@ -48,6 +53,7 @@ class ItineraryStore extends ChangeNotifier {
     _shownTravelBasic = null;
     _currentUserId = null;
     _itinerarySections = [];
+    _allParticipants = {};
     _itineraryState = ResultInfo.success();
     _editMode = false;
     notifyListeners();
@@ -91,11 +97,46 @@ class ItineraryStore extends ChangeNotifier {
     _currentUserId = userId;
   }
 
-  void setEditMode(bool val) async {
-    /* リモートで誰かがリモートロックしていないかチェックする */
+  Future<void> setEditMode(bool val) async {
+    if (_shownTravelBasic == null ||
+        _shownTravelBasic!.groupId == null ||
+        _shownTravelBasic!.travelId == null) {
+      print("ShownTravelBasic is not set.");
+      return;
+    }
+    if (_currentUserId == null) {
+      print("Current user ID is not set.");
+      return;
+    }
+    final travelerBasic = _allParticipants[_currentUserId];
+    if (travelerBasic == null) {
+      print("Current user not found in participants.");
+      return;
+    }
 
-    _editMode = val;
-    notifyListeners();
+    final groupId = _shownTravelBasic!.groupId!;
+    final travelId = _shownTravelBasic!.travelId!;
+    final onEdit = OnItineraryEdit(
+      uid: travelerBasic.uid,
+      email: travelerBasic.email,
+      on_edit: val,
+    );
+
+    /* リモートで誰かがリモートロックしていないかチェックする */
+    /* とりあえずセットしてみる */
+    final ret = await FirebaseDatabaseService.setSingleTravelItineraryOnEdit(
+      groupId,
+      travelId,
+      onEdit,
+    );
+    if (!ret.isSuccess) {
+      print("Unable to set edit mode: ${ret.error?.errorMessage}");
+      return;
+    } else {
+      print("Edit mode set successfully.");
+      _editMode = val;
+      notifyListeners();
+    }
   }
 
   /* UnmodifiableListViewで読み取り専用にする */
@@ -192,6 +233,16 @@ class ItineraryStore extends ChangeNotifier {
       final groupId = travelBasic.groupId!;
       final travelId = travelBasic.travelId!;
 
+      /* 参加者をロード */
+      final retPart = await _loadAllParticipants(groupId, travelId);
+      if (!retPart.isSuccess) {
+        print("Failed in loadAllParticipants: ${retPart.error?.errorMessage}");
+        return retPart;
+      }
+      print(
+        "ItineraryStore: Participants loaded successfully. Count: ${_allParticipants.length}",
+      );
+
       /* Firebaseからデータを取ってくる。 */
       /**
        * データを取ってきてからitinerarySectionに変換する必要ある。
@@ -237,6 +288,34 @@ class ItineraryStore extends ChangeNotifier {
       );
     } finally {
       notifyListeners();
+    }
+  }
+
+  /*************************************************
+   * 現在ログイン中のユーザーが表示している旅行のグループのメンバー情報
+   *********************************************/
+  Future<ResultInfo> _loadAllParticipants(
+    String groupId,
+    String travelId,
+  ) async {
+    /**
+     * 中で割と無駄なことをやっているので、
+     * 将来的にFirestoreに移行するのもあり。この部分だけでも。
+     */
+    final fetchResult = await FirebaseDatabaseService.getTravelParticipants(
+      groupId,
+      travelId,
+    );
+
+    /**
+     * 失敗した場合値は更新しないことにする。
+     */
+    if (fetchResult.isSuccess && fetchResult.data != null) {
+      _allParticipants = fetchResult.data!;
+      return ResultInfo.success();
+    } else {
+      /* 何もしない */
+      return fetchResult;
     }
   }
 

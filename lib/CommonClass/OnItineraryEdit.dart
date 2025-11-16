@@ -20,6 +20,10 @@ class OnItineraryEdit extends TravelerBasic {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {'uid': uid, 'email': email, 'on_edit': on_edit};
+  }
+
   static OnItineraryEdit convFromMap(Map<dynamic, dynamic> map) {
     final Map<String, dynamic> rawMap = map.map(
       (key, value) => MapEntry(key.toString(), value),
