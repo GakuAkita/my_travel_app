@@ -12,6 +12,8 @@ class ConfirmableSwitch extends StatefulWidget {
   final bool isEnabled;
   final bool initialStatus;
   final void Function(bool status, bool? response) onConfirmedChanged;
+  final Future<bool> Function(bool newValue)?
+  onWillChange; /* スイッチをONする前にリモートを確認 */
 
   const ConfirmableSwitch({
     this.width,
@@ -19,6 +21,7 @@ class ConfirmableSwitch extends StatefulWidget {
     this.isEnabled = true,
     this.initialStatus = false,
     required this.onConfirmedChanged,
+    this.onWillChange,
     super.key,
   });
 
@@ -70,17 +73,33 @@ class _ConfirmableSwitchState extends State<ConfirmableSwitch> {
 
       print("selected confirm:$confirm");
       if (confirm == true) {
-        _controller.value = false;
         widget.onConfirmedChanged(false, true);
-      } else if (confirm == false) {
         _controller.value = false;
+      } else if (confirm == false) {
         widget.onConfirmedChanged(false, false);
+        _controller.value = false;
       } else {
         //nullのときは何もしない状態を変えない。
         // confirm が null ならば状態は変更しない（元の状態に戻す）
         _controller.value = true;
       }
     } else {
+      // trueにする前にチェック
+      if (widget.onWillChange != null) {
+        final canChange = await widget.onWillChange!(newValue);
+        if (!canChange) {
+          // 変更できない場合は元の状態に戻す
+          _controller.value = false;
+          // エラーメッセージを表示
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              /* ここでuidとか表示したい。 */
+              SnackBar(content: Text("他のユーザーが編集中です。編集モードに入れません。")),
+            );
+          }
+          return;
+        }
+      }
       widget.onConfirmedChanged(true, false);
       _controller.value = true;
     }

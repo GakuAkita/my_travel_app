@@ -56,8 +56,19 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           SizedBox(width: 10),
                           ConfirmableSwitch(
                             initialStatus: itineraryStore.editMode,
+                            onWillChange: (newValue) async {
+                              if (newValue) {
+                                // trueにする前にFirebaseの状態をチェック
+                                return await itineraryStore.canSetEditMode();
+                              }
+                              return true;
+                            },
                             onConfirmedChanged: (val, response) {
                               if (response == null) {
+                                /**
+                                 *  Dialogを出したけどユーザーが
+                                 *  他の部分をタップしたとき
+                                 *  */
                                 return;
                               }
                               print(

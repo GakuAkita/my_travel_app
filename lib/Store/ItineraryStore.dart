@@ -97,6 +97,47 @@ class ItineraryStore extends ChangeNotifier {
     _currentUserId = userId;
   }
 
+  Future<bool> canSetEditMode() async {
+    if (_shownTravelBasic == null ||
+        _shownTravelBasic!.groupId == null ||
+        _shownTravelBasic!.travelId == null) {
+      print("ShownTravelBasic is not set.");
+      return false;
+    }
+    if (_currentUserId == null) {
+      print("Current user ID is not set.");
+      return false;
+    }
+
+    final groupId = _shownTravelBasic!.groupId!;
+    final travelId = _shownTravelBasic!.travelId!;
+
+    final getRet = await FirebaseDatabaseService.getSingleTravelItineraryOnEdit(
+      groupId,
+      travelId,
+    );
+    if (!getRet.isSuccess) {
+      print("Unable to get edit mode: ${getRet.error?.errorMessage}");
+      return false;
+    }
+
+    final onEdit = getRet.data;
+    if (onEdit == null) {
+      // データがない場合は編集モードに入れる
+      return true;
+    }
+
+    // on_editがtrueで、かつuidが自分のものではない場合、編集モードに入れない
+    if (onEdit.on_edit && onEdit.uid != _currentUserId) {
+      print(
+        "Someone else (${onEdit.uid}) is already editing. Cannot enter edit mode.",
+      );
+      return false;
+    }
+
+    return true;
+  }
+
   Future<void> setEditMode(bool val) async {
     if (_shownTravelBasic == null ||
         _shownTravelBasic!.groupId == null ||
@@ -116,21 +157,6 @@ class ItineraryStore extends ChangeNotifier {
 
     final groupId = _shownTravelBasic!.groupId!;
     final travelId = _shownTravelBasic!.travelId!;
-
-    /**
-     *
-     * */
-    final getRet = await FirebaseDatabaseService.getSingleTravelItineraryOnEdit(
-      groupId,
-      travelId,
-    );
-    if (!getRet.isSuccess) {
-      /* 失敗する */
-      print("Unable to get edit mode: ${getRet.error?.errorMessage}");
-      return;
-    } else {
-      /* ここでもし、誰かが編集していたらブロックする */
-    }
 
     final onEdit = OnItineraryEdit(
       uid: travelerBasic.uid,
