@@ -11,8 +11,8 @@ import 'package:provider/provider.dart';
 
 import '../../../Store/UserStore.dart';
 import '../../../components/BasicText.dart';
-import '../../../components/ConfirmableSwitch.dart';
 import '../../../components/Itinerary/ItineraryMarkdownSectionEdit.dart';
+import '../../../components/ValidatedSwitch.dart';
 
 class ItineraryScreen extends StatefulWidget {
   const ItineraryScreen({super.key});
@@ -38,6 +38,85 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   Widget build(BuildContext context) {
     final userStore = context.read<UserStore>();
     final itineraryStore = context.watch<ItineraryStore>();
+    /**
+     * 戻り値がそのままスイッチの値になる
+     */
+    Future<bool> _onSwitchTappedSub(bool newValue) async {
+      if (newValue) {
+        /**
+         * TrueからFalseにするとき
+         * 編集を開始する
+         */
+      } else {
+        /**
+         * FalseからTrueにするとき
+         * スイッチをオフからオンにするとき
+         */
+        final bool? confirm = await showDialog<bool>(
+          context: context,
+          barrierDismissible: true,
+          builder:
+              (context) => AlertDialog(
+                title: Text("保存しますか？"),
+                content: Text(
+                  "データを保存してから切り替えますか？\n編集を続けたい場合はポップアップ外をタップしてください",
+                ),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text("保存せずに閉じる"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: Text("保存する"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+        );
+        if (confirm == null) {
+          /* 変化させない! */
+          return !newValue;
+        } else {
+          /* 現在のgroupIdとtravelId */
+          if (userStore.shownTravelBasic == null ||
+              userStore.shownTravelBasic!.groupId == null ||
+              userStore.shownTravelBasic!.travelId == null) {
+            print(
+              "ここに来ることはまずない。\ngroupId:${userStore.shownTravelBasic?.groupId} traveId:${userStore.shownTravelBasic?.travelId}",
+            );
+            return !newValue;
+          }
+          final groupId = userStore.shownTravelBasic!.groupId!;
+          final travelId = userStore.shownTravelBasic!.travelId!;
+
+          /* itineraryデータを保存してnewValueに設定 */
+          if (confirm) {
+            /* 編集したitineraryを保存する。ローカルの編集は終わっているのでバックグラウンドで走らせる(awaitしない) */
+            itineraryStore.saveData(groupId, travelId);
+          } else {
+            /* 編集したけど保存しないで閉じる */
+            /* リモートから読み直す */
+          }
+          return newValue;
+        }
+      }
+      return newValue;
+    }
+
+    /**
+     * itineraryStoreには必ずsetしてもらいたい。
+     */
+    Future<bool> _onSwitchTapped(bool newValue) async {
+      final subRet = await _onSwitchTappedSub(newValue);
+      itineraryStore.setEditMode(subRet);
+      return subRet;
+    }
+
     return LoadingOverlay(
       isLoading: itineraryStore.itineraryState.isLoading,
       child:
@@ -56,9 +135,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           SizedBox(width: 10),
                           ValidatedSwitch(
                             initialStatus: itineraryStore.editMode,
-                            onWillChange: (newValue) async {
-                              return false;
-                            },
+                            onWillChange: _onSwitchTapped,
                           ),
                           // ConfirmableSwitch(
                           //   initialStatus: itineraryStore.editMode,
