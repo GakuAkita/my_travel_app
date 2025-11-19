@@ -41,12 +41,13 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     /**
      * 戻り値がそのままスイッチの値になる
      */
-    Future<bool> _onSwitchTappedSub(bool newValue) async {
+    Future<bool> confirmChangeSwitch(bool newValue) async {
       if (newValue) {
         /**
          * TrueからFalseにするとき
          * 編集を開始する
          */
+        /* setEditMode内でリモートとのやりとりをする。onしてよいかの制御も。 */
       } else {
         /**
          * FalseからTrueにするとき
@@ -82,6 +83,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
           /* 変化させない! */
           return !newValue;
         } else {
+          /* @TODO userStoreのshownTravelでなくてitineraryのshownTravelで設定する */
           /* 現在のgroupIdとtravelId */
           if (userStore.shownTravelBasic == null ||
               userStore.shownTravelBasic!.groupId == null ||
@@ -91,16 +93,18 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
             );
             return !newValue;
           }
+          final travelBasic = userStore.shownTravelBasic!;
           final groupId = userStore.shownTravelBasic!.groupId!;
           final travelId = userStore.shownTravelBasic!.travelId!;
-
           /* itineraryデータを保存してnewValueに設定 */
           if (confirm) {
             /* 編集したitineraryを保存する。ローカルの編集は終わっているのでバックグラウンドで走らせる(awaitしない) */
+            /* これ失敗したときにどうしようもないな、、、 */
             itineraryStore.saveData(groupId, travelId);
           } else {
             /* 編集したけど保存しないで閉じる */
             /* リモートから読み直す */
+            itineraryStore.loadItineraryDataWithNotify(travelBasic);
           }
           return newValue;
         }
@@ -111,10 +115,24 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     /**
      * itineraryStoreには必ずsetしてもらいたい。
      */
-    Future<bool> _onSwitchTapped(bool newValue) async {
-      final subRet = await _onSwitchTappedSub(newValue);
-      itineraryStore.setEditMode(subRet);
-      return subRet;
+    Future<bool> onSwitchTapped(bool newValue) async {
+      final desiredSwitchState = await confirmChangeSwitch(newValue);
+      if (desiredSwitchState != newValue) {
+        /* スイッチを変えないということ。ユーザーが拒否をした */
+        return desiredSwitchState;
+      }
+
+      /* ユーザーはスイッチの状態を変えたいということなので、変えに行く */
+      final setModeRet = await itineraryStore.setEditMode(desiredSwitchState);
+      if (!setModeRet.isSuccess) {
+        /* なにかリモートに設定しているときにエラーがでた */
+        if (setModeRet.extraData != null) {
+          /* extraDataにOnItineraryEditがあり、その中にuidがある。誰が編集中か表示する */
+        }
+        return !desiredSwitchState; /* newValueでも良い */
+      }
+
+      return desiredSwitchState;
     }
 
     return LoadingOverlay(
@@ -135,7 +153,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           SizedBox(width: 10),
                           ValidatedSwitch(
                             initialStatus: itineraryStore.editMode,
-                            onWillChange: _onSwitchTapped,
+                            onWillChange: onSwitchTapped,
                           ),
                           // ConfirmableSwitch(
                           //   initialStatus: itineraryStore.editMode,

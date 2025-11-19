@@ -97,21 +97,46 @@ class ItineraryStore extends ChangeNotifier {
     _currentUserId = userId;
   }
 
-  Future<void> setEditMode(bool val) async {
+  void setEditModeInStore(bool val) {
+    _editMode = val;
+    notifyListeners();
+  }
+
+  /* 誰が現在編集中かUI側に渡したいのでOnItineraryEditごと渡してしまう */
+  Future<ResultInfo> setEditMode(bool newState) async {
     if (_shownTravelBasic == null ||
         _shownTravelBasic!.groupId == null ||
         _shownTravelBasic!.travelId == null) {
       print("ShownTravelBasic is not set.");
-      return;
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorCode: "invalid-travel-basic",
+          errorMessage:
+              "Invalid travel basic data. This is the bug. Let the developer know.",
+        ),
+      );
     }
     if (_currentUserId == null) {
       print("Current user ID is not set.");
-      return;
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorCode: "invalid-user-id",
+          errorMessage:
+              "Invalid user ID. This is the bug. Let the developer know.",
+        ),
+      );
     }
+
     final travelerBasic = _allParticipants[_currentUserId];
     if (travelerBasic == null) {
-      print("Current user not found in participants.");
-      return;
+      print("Current user${_currentUserId} not found in participants.");
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorCode: "invalid-user-id",
+          errorMessage:
+              "Invalid user ID. This is the bug. Let the developer know.",
+        ),
+      );
     }
 
     final groupId = _shownTravelBasic!.groupId!;
@@ -127,32 +152,47 @@ class ItineraryStore extends ChangeNotifier {
     if (!getRet.isSuccess) {
       /* 失敗する */
       print("Unable to get edit mode: ${getRet.error?.errorMessage}");
-      return;
-    } else {
-      /* ここでもし、誰かが編集していたらブロックする */
+      return getRet;
     }
 
-    final onEdit = OnItineraryEdit(
-      uid: travelerBasic.uid,
-      email: travelerBasic.email,
-      on_edit: val,
-    );
+    /* ここでもし、誰かが編集していたらブロックする */
+    final onEdit = getRet.data;
 
-    /* リモートで誰かがリモートロックしていないかチェックする */
-    /* とりあえずセットしてみる */
+    if (onEdit == null || onEdit.on_edit == false) {
+      print("Edit mode is already set to false.");
+    } else {
+      /* on_editがtrueになっている */
+      final String uidEditing = onEdit.uid;
+      if (uidEditing != _currentUserId) {
+        print("Current user is not editing.");
+        return ResultInfo.failed(
+          error: ErrorInfo(
+            errorCode: OtherUserEditing,
+            /* エラーコードもどこかにちゃんとまとめた方が良いが、、一旦ただconstを定義してそれを使うことにする */
+            errorMessage: "他のユーザーが編集中です",
+          ),
+          extraData: onEdit,
+        );
+      }
+    }
+
+    /* OnItineraryEditでgmailはどうやって渡そうか、、 */
+    final newOnEdit = OnItineraryEdit(on_edit: newState, uid: _currentUserId);
     final ret = await FirebaseDatabaseService.setSingleTravelItineraryOnEdit(
       groupId,
       travelId,
-      onEdit,
+      newOnEdit,
     );
     if (!ret.isSuccess) {
       print("Unable to set edit mode: ${ret.error?.errorMessage}");
-      return;
-    } else {
-      print("Edit mode set successfully.");
-      _editMode = val;
-      notifyListeners();
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "エラー:${ret.error?.errorMessage}"),
+      );
     }
+
+    /* ここまで来て初めてUI側の変化させる */
+    setEditModeInStore(newState);
+    return ResultInfo.success();
   }
 
   /* UnmodifiableListViewで読み取り専用にする */

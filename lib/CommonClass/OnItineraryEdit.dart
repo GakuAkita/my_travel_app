@@ -36,3 +36,5 @@ class OnItineraryEdit extends TravelerBasic {
     return OnItineraryEdit(uid: uid, email: email, on_edit: on_edit);
   }
 }
+
+const String OtherUserEditing = "other-user-edit";
