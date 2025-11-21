@@ -20,6 +20,7 @@
 - done::割り勘の明細作成(functions側か？)
 - done:::自動デプロイ with actions
 - itinerary同時編集ロック
+- 費用概要の自動計算
 - 外貨対応
 
 - UXバグ：
