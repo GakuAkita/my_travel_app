@@ -42,6 +42,10 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
      * 戻り値がそのままスイッチの値になる
      */
     Future<bool> confirmChangeSwitch(bool newValue) async {
+      // if (newValue == itineraryStore.editMode) {
+      //   print("すぐに戻す");
+      //   return newValue;
+      // }
       if (newValue) {
         /**
          * TrueからFalseにするとき

@@ -52,10 +52,9 @@ class _SimpleSwitchState extends State<SimpleSwitch> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return AbsorbPointer(
-      absorbing: !widget.isEnabled,
+  Widget _buildCoreSwitch(BuildContext context) {
+    return IgnorePointer(
+      ignoring: true,
       child: AdvancedSwitch(
         controller: _internalController,
         /**
@@ -69,8 +68,24 @@ class _SimpleSwitchState extends State<SimpleSwitch> {
         activeColor: Theme.of(context).colorScheme.primary,
         inactiveColor: Theme.of(context).colorScheme.onPrimary,
         borderRadius: BorderRadius.circular(15),
-        onChanged: (dynamic value) => widget.onChanged(value as bool),
       ),
+    );
+  }
+
+  void _handleTap() {
+    widget.onChanged(!_internalController.value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final coreSwitch = _buildCoreSwitch(context);
+    if (!widget.isEnabled) {
+      return coreSwitch;
+    }
+
+    return GestureDetector(
+      onTap: _handleTap,
+      child: coreSwitch,
     );
   }
 }
