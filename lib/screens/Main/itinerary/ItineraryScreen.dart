@@ -42,10 +42,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
      * 戻り値がそのままスイッチの値になる
      */
     Future<bool> confirmChangeSwitch(bool newValue) async {
-      // if (newValue == itineraryStore.editMode) {
-      //   print("すぐに戻す");
-      //   return newValue;
-      // }
+      print("confirmChangeSwitch called");
       if (newValue) {
         /**
          * TrueからFalseにするとき
@@ -120,11 +117,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
      * itineraryStoreには必ずsetしてもらいたい。
      */
     Future<bool> onSwitchTapped(bool newValue) async {
+      print("onSwitchTapped called");
       final desiredSwitchState = await confirmChangeSwitch(newValue);
-      if (desiredSwitchState != newValue) {
-        /* スイッチを変えないということ。ユーザーが拒否をした */
-        return desiredSwitchState;
-      }
 
       /* ユーザーはスイッチの状態を変えたいということなので、変えに行く */
       final setModeRet = await itineraryStore.setEditMode(desiredSwitchState);
@@ -135,6 +129,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
         }
         return !desiredSwitchState; /* newValueでも良い */
       }
+
+      print("onSwitchTapped called desiredSwitchState:$desiredSwitchState");
 
       return desiredSwitchState;
     }

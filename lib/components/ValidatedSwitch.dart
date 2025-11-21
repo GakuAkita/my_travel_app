@@ -42,6 +42,7 @@ class _ValidatedSwitchState extends State<ValidatedSwitch> {
   }
 
   void _handleTap() async {
+    print("handleTap started??");
     if (!widget.isEnabled) return;
 
     // 現在の状態を反転させた新しい値
@@ -60,7 +61,6 @@ class _ValidatedSwitchState extends State<ValidatedSwitch> {
       width: widget.width,
       height: widget.height,
       isEnabled: widget.isEnabled,
-      initialValue: widget.initialStatus,
       controller: _controller, // 👈 渡す
     );
 
