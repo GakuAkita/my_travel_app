@@ -6,6 +6,7 @@ import 'package:my_travel_app/screens/Main/Settings/GeneralManagerSelectScreen.d
 import 'package:provider/provider.dart';
 
 import '../../../Services/AuthService.dart';
+import '../../../Store/ItineraryStore.dart';
 import '../../../Store/UserStore.dart';
 import '../../Start/StartScreen.dart';
 import 'CreateGroupScreen.dart';
@@ -86,8 +87,14 @@ class _SettingScreenState extends State<SettingScreen> {
             TextButton(
               onPressed: () async {
                 //userStore.;/* 初期化 */
+                final itineraryStore = context.read<ItineraryStore>();
+                if (itineraryStore.editMode) {
+                  await itineraryStore.setEditMode(false);
+                }
+
                 await _authService.signOut();
                 userStore.clearAllData();
+                itineraryStore.clearAllData();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   StartScreen.id,

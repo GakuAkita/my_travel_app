@@ -77,6 +77,10 @@ class ItineraryStore extends ChangeNotifier {
 
       // どれか一つでも違ったら更新する
       print("!!! ItineraryStore: Travel or User changed. Update data. !!!");
+      if (_editMode) {
+        print("ItineraryStore: Auto-releasing edit mode before switching.");
+        setEditMode(false);
+      }
       updateWithUser(travelBasic, userId);
       if (travelBasic == null || userId == null) {
         // 旅行がnullならデータをクリアする
@@ -187,6 +191,22 @@ class ItineraryStore extends ChangeNotifier {
       print("Unable to set edit mode: ${ret.error?.errorMessage}");
       return ResultInfo.failed(
         error: ErrorInfo(errorMessage: "エラー:${ret.error?.errorMessage}"),
+      );
+    }
+
+    if (newState) {
+      /* 編集モードONの時、切断時にOFFになるように設定 */
+      final offEdit = OnItineraryEdit(on_edit: false, uid: _currentUserId);
+      await FirebaseDatabaseService.setOnDisconnectForItineraryOnEdit(
+        groupId,
+        travelId,
+        offEdit,
+      );
+    } else {
+      /* 編集モードOFFの時、切断時の設定を解除 */
+      await FirebaseDatabaseService.cancelOnDisconnectForItineraryOnEdit(
+        groupId,
+        travelId,
       );
     }
 

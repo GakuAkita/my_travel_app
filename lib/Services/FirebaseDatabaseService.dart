@@ -606,4 +606,33 @@ class FirebaseDatabaseService {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
+
+  static Future<ResultInfo> setOnDisconnectForItineraryOnEdit(
+    String groupId,
+    String travelId,
+    OnItineraryEdit onEdit,
+  ) async {
+    try {
+      final onEditRef = singleTravelItineraryOnEditRef(groupId, travelId);
+      await onEditRef.onDisconnect().set(onEdit.toMap());
+      return ResultInfo.success();
+    } catch (e) {
+      print("Error in setOnDisconnectForItineraryOnEdit:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo> cancelOnDisconnectForItineraryOnEdit(
+    String groupId,
+    String travelId,
+  ) async {
+    try {
+      final onEditRef = singleTravelItineraryOnEditRef(groupId, travelId);
+      await onEditRef.onDisconnect().cancel();
+      return ResultInfo.success();
+    } catch (e) {
+      print("Error in cancelOnDisconnectForItineraryOnEdit:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
 }
