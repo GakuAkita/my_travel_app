@@ -1,11 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-import 'ControlledSwitch.dart';
+import 'SimpleStaticSwitch.dart';
 
-/**
- * falseからtrueにいれるときはすんなりいくが、
- * trueからfalseにいくときは保存orキャンセルの選択により実行する内容が変化
- */
 class ValidatedSwitch extends StatefulWidget {
   final double? width;
   final double? height;
@@ -27,44 +23,37 @@ class ValidatedSwitch extends StatefulWidget {
 }
 
 class _ValidatedSwitchState extends State<ValidatedSwitch> {
-  late final ValueNotifier<bool> _controller;
+  late bool _value;
 
   @override
   void initState() {
     super.initState();
-    _controller = ValueNotifier(widget.initialStatus);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+    _value = widget.initialStatus;
   }
 
   void _handleTap() async {
-    print("handleTap started??");
     if (!widget.isEnabled) return;
 
-    // 現在の状態を反転させた新しい値
-    final newValue = !_controller.value;
+    final newValue = !_value;
 
-    // onWillChangeで確認
-    final status = await widget.onWillChange(newValue);
+    // onWillChange で確認
+    final shouldApply = await widget.onWillChange(newValue);
 
-    // OKが出たら状態を更新
-    _controller.value = status;
+    // OKなら反映、キャンセルなら現状維持
+    setState(() {
+      _value = shouldApply;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final switchWidget = ControlledSwitch(
-      width: widget.width,
-      height: widget.height,
-      isEnabled: widget.isEnabled,
-      controller: _controller, // 👈 渡す
+    return GestureDetector(
+      onTap: _handleTap,
+      child: SimpleStaticSwitch(
+        value: _value,
+        width: widget.width ?? 60,
+        height: widget.height ?? 30,
+      ),
     );
-
-    // GestureDetectorでタップを制御
-    return GestureDetector(onTap: _handleTap, child: switchWidget);
   }
 }

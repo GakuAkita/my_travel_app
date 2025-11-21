@@ -155,55 +155,6 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                             initialStatus: itineraryStore.editMode,
                             onWillChange: onSwitchTapped,
                           ),
-                          // ConfirmableSwitch(
-                          //   initialStatus: itineraryStore.editMode,
-                          //   onConfirmedChanged: (val, response) async {
-                          //     if (response == null) {
-                          //       /**
-                          //        *  Dialogを出したけどユーザーが
-                          //        *  他の部分をタップしたとき
-                          //        *  */
-                          //       return false;
-                          //     }
-                          //     print(
-                          //       "current previous editMode:${itineraryStore.editMode}",
-                          //     );
-                          //
-                          //     // ここで適切かチェックできる
-                          //     // 例: 何らかの条件で変更を拒否する場合は false を返す
-                          //     // if (someCondition) {
-                          //     //   return false; // スイッチの状態を変更しない
-                          //     // }
-                          //
-                          //     itineraryStore.setEditMode(val);
-                          //     /* trueからfalse&&保存のときはFirebaseに保存 */
-                          //     if (!val /* trueからfalse */ && response /*保存*/ ) {
-                          //       /*Firebaseに保存。非同期で走らせる*/
-                          //       if (userStore.shownTravelBasic!.groupId ==
-                          //               null ||
-                          //           userStore.shownTravelBasic!.travelId ==
-                          //               null) {
-                          //         print(
-                          //           "ここに来ることはまずない。\ngroupId:${userStore.shownTravelBasic!.groupId} traveId:${userStore.shownTravelBasic!.travelId}",
-                          //         );
-                          //         return false;
-                          //       }
-                          //       itineraryStore.saveData(
-                          //         userStore.shownTravelBasic!.groupId!,
-                          //         userStore.shownTravelBasic!.travelId!,
-                          //       );
-                          //     } else if (!val /* trueからfalse */ &&
-                          //         !response /* キャンセル */ ) {
-                          //       /* Firebaseから既存のを読み込みsectionsにセット */
-                          //     } else {
-                          //       print(
-                          //         "current editMode:${itineraryStore.editMode}",
-                          //       );
-                          //     }
-                          //
-                          //     return true; // 状態変更を許可
-                          //   },
-                          // ),
                         ],
                       ),
                     ),
