@@ -18,8 +18,9 @@
 - done:::下へドラッグで更新
 - done::何時にログインしたかを記録する
 - done::割り勘の明細作成(functions側か？)
-- done:::自動デプロイ with actions
-- itinerary同時編集ロック
+- done:::自動デプロイ with actionsj
+- done:::itinerary同時編集ロック
+- functionsで夜中に一度onEditをリセットする
 - 費用概要の自動計算
 - 外貨対応
 
@@ -30,7 +31,8 @@
 - done:::グループ名がかぶるときに弾く
 - done:::グループ削除のときの対応
 - done:::listener(特に割り勘の部分)変更を通知を受けたときに自動で更新
-- dependabotにワーニング解決。axiosやな
+- done:::dependabotにワーニング解決。axiosやな
+- Github警告js-yaml has prototype pollution in merge
 
 optional
 - ViewModel化
