@@ -3,7 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/components/CircleIconButton.dart';
-import 'package:my_travel_app/components/ComfirmableSwitch.dart';
 import 'package:my_travel_app/components/Itinerary/ItinerarySectionDsiplay.dart';
 import 'package:my_travel_app/components/SimpleTextButton.dart';
 import 'package:my_travel_app/constants.dart';
@@ -13,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../../../Store/UserStore.dart';
 import '../../../components/BasicText.dart';
 import '../../../components/Itinerary/ItineraryMarkdownSectionEdit.dart';
+import '../../../components/ValidatedSwitch.dart';
 
 class ItineraryScreen extends StatefulWidget {
   const ItineraryScreen({super.key});
@@ -38,6 +38,106 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   Widget build(BuildContext context) {
     final userStore = context.read<UserStore>();
     final itineraryStore = context.watch<ItineraryStore>();
+    /**
+     * 戻り値がそのままスイッチの値になる
+     */
+    Future<bool> confirmChangeSwitch(bool newValue) async {
+      print("confirmChangeSwitch called");
+      if (newValue) {
+        /**
+         * TrueからFalseにするとき
+         * 編集を開始する
+         */
+        /* setEditMode内でリモートとのやりとりをする。onしてよいかの制御も。 */
+      } else {
+        /**
+         * FalseからTrueにするとき
+         * スイッチをオフからオンにするとき
+         */
+        final bool? confirm = await showDialog<bool>(
+          context: context,
+          barrierDismissible: true,
+          builder:
+              (context) => AlertDialog(
+                title: Text("保存しますか？"),
+                content: Text(
+                  "データを保存してから切り替えますか？\n編集を続けたい場合はポップアップ外をタップしてください",
+                ),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text("保存せずに閉じる"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: Text("保存する"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+        );
+        if (confirm == null) {
+          /* 変化させない! */
+          return !newValue;
+        } else {
+          /* @TODO userStoreのshownTravelでなくてitineraryのshownTravelで設定する */
+          /* 現在のgroupIdとtravelId */
+          if (userStore.shownTravelBasic == null ||
+              userStore.shownTravelBasic!.groupId == null ||
+              userStore.shownTravelBasic!.travelId == null) {
+            print(
+              "ここに来ることはまずない。\ngroupId:${userStore.shownTravelBasic?.groupId} traveId:${userStore.shownTravelBasic?.travelId}",
+            );
+            return !newValue;
+          }
+          final travelBasic = userStore.shownTravelBasic!;
+          final groupId = userStore.shownTravelBasic!.groupId!;
+          final travelId = userStore.shownTravelBasic!.travelId!;
+          /* itineraryデータを保存してnewValueに設定 */
+          if (confirm) {
+            /* 編集したitineraryを保存する。ローカルの編集は終わっているのでバックグラウンドで走らせる(awaitしない) */
+            /* これ失敗したときにどうしようもないな、、、 */
+            itineraryStore.saveData(groupId, travelId);
+          } else {
+            /* 編集したけど保存しないで閉じる */
+            /* リモートから読み直す */
+            itineraryStore.loadItineraryDataWithNotify(travelBasic);
+          }
+          return newValue;
+        }
+      }
+      return newValue;
+    }
+
+    /**
+     * itineraryStoreには必ずsetしてもらいたい。
+     */
+    Future<bool> onSwitchTapped(bool newValue) async {
+      print("onSwitchTapped called");
+      final desiredSwitchState = await confirmChangeSwitch(newValue);
+
+      /* ユーザーはスイッチの状態を変えたいということなので、変えに行く */
+      final setModeRet = await itineraryStore.setEditMode(desiredSwitchState);
+      if (!setModeRet.isSuccess) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(setModeRet.error?.errorMessage ?? "Unknown error"),
+            ),
+          );
+        }
+        return !desiredSwitchState; /* newValueでも良い */
+      }
+
+      print("onSwitchTapped called desiredSwitchState:$desiredSwitchState");
+
+      return desiredSwitchState;
+    }
+
     return LoadingOverlay(
       isLoading: itineraryStore.itineraryState.isLoading,
       child:
@@ -54,41 +154,9 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                         children: [
                           BasicText(text: "総監督モード"),
                           SizedBox(width: 10),
-                          ConfirmableSwitch(
+                          ValidatedSwitch(
                             initialStatus: itineraryStore.editMode,
-                            onConfirmedChanged: (val, response) {
-                              if (response == null) {
-                                return;
-                              }
-                              print(
-                                "current previous editMode:${itineraryStore.editMode}",
-                              );
-                              itineraryStore.setEditMode(val);
-                              /* trueからfalse&&保存のときはFirebaseに保存 */
-                              if (!val /* trueからfalse */ && response /*保存*/ ) {
-                                /*Firebaseに保存。非同期で走らせる*/
-                                if (userStore.shownTravelBasic!.groupId ==
-                                        null ||
-                                    userStore.shownTravelBasic!.travelId ==
-                                        null) {
-                                  print(
-                                    "ここに来ることはまずない。\ngroupId:${userStore.shownTravelBasic!.groupId} traveId:${userStore.shownTravelBasic!.travelId}",
-                                  );
-                                  return;
-                                }
-                                itineraryStore.saveData(
-                                  userStore.shownTravelBasic!.groupId!,
-                                  userStore.shownTravelBasic!.travelId!,
-                                );
-                              } else if (!val /* trueからfalse */ &&
-                                  !response /* キャンセル */ ) {
-                                /* Firebaseから既存のを読み込みsectionsにセット */
-                              } else {
-                                print(
-                                  "current editMode:${itineraryStore.editMode}",
-                                );
-                              }
-                            },
+                            onWillChange: onSwitchTapped,
                           ),
                         ],
                       ),

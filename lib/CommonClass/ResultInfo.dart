@@ -7,14 +7,22 @@ class ResultInfo<T> {
   final T? data; // 成功でも null の可能性がある
   final String? message; // 成功でも null の可能性がある
   final ErrorInfo? error;
+  final dynamic extraData;
 
-  ResultInfo._({required this.status, this.data, this.message, this.error});
+  ResultInfo._({
+    required this.status,
+    this.data,
+    this.message,
+    this.error,
+    this.extraData,
+  });
 
-  factory ResultInfo.success({T? data, String? message}) {
+  factory ResultInfo.success({T? data, String? message, dynamic extraData}) {
     return ResultInfo._(
       status: ResultStatus.success,
       data: data,
       message: message,
+      extraData: extraData,
     );
   }
 
@@ -22,12 +30,20 @@ class ResultInfo<T> {
     return ResultInfo._(status: ResultStatus.loading);
   }
 
-  factory ResultInfo.timeout({ErrorInfo? error}) {
-    return ResultInfo._(status: ResultStatus.timeout, error: error);
+  factory ResultInfo.timeout({ErrorInfo? error, dynamic extraData}) {
+    return ResultInfo._(
+      status: ResultStatus.timeout,
+      error: error,
+      extraData: extraData,
+    );
   }
 
-  factory ResultInfo.failed({ErrorInfo? error}) {
-    return ResultInfo._(status: ResultStatus.failed, error: error);
+  factory ResultInfo.failed({ErrorInfo? error, dynamic extraData}) {
+    return ResultInfo._(
+      status: ResultStatus.failed,
+      error: error,
+      extraData: extraData,
+    );
   }
 
   bool get isSuccess => status == ResultStatus.success;
@@ -41,13 +57,13 @@ extension ResultInfoVoidExtension<T> on ResultInfo<T> {
   ResultInfo<void> toVoid() {
     switch (status) {
       case ResultStatus.success:
-        return ResultInfo<void>.success(message: message);
+        return ResultInfo<void>.success(message: message, extraData: extraData);
       case ResultStatus.loading:
         return ResultInfo<void>.loading();
       case ResultStatus.timeout:
-        return ResultInfo<void>.timeout(error: error);
+        return ResultInfo<void>.timeout(error: error, extraData: extraData);
       case ResultStatus.failed:
-        return ResultInfo<void>.failed(error: error);
+        return ResultInfo<void>.failed(error: error, extraData: extraData);
     }
   }
 }

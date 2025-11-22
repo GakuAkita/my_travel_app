@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:my_travel_app/CommonClass/OnItineraryEdit.dart';
 import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
+import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 
 import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ItineraryDefaultTable.dart';
@@ -19,6 +21,9 @@ class ItineraryStore extends ChangeNotifier {
   String? get currentUserId => _currentUserId;
 
   List<ItinerarySection> _itinerarySections = [];
+
+  Map<String, TravelerBasic> _allParticipants = {};
+  Map<String, TravelerBasic> get allParticipants => _allParticipants;
 
   bool _editMode = false;
   bool get editMode => _editMode;
@@ -48,6 +53,7 @@ class ItineraryStore extends ChangeNotifier {
     _shownTravelBasic = null;
     _currentUserId = null;
     _itinerarySections = [];
+    _allParticipants = {};
     _itineraryState = ResultInfo.success();
     _editMode = false;
     notifyListeners();
@@ -71,6 +77,10 @@ class ItineraryStore extends ChangeNotifier {
 
       // どれか一つでも違ったら更新する
       print("!!! ItineraryStore: Travel or User changed. Update data. !!!");
+      if (_editMode) {
+        print("ItineraryStore: Auto-releasing edit mode before switching.");
+        setEditMode(false);
+      }
       updateWithUser(travelBasic, userId);
       if (travelBasic == null || userId == null) {
         // 旅行がnullならデータをクリアする
@@ -91,9 +101,133 @@ class ItineraryStore extends ChangeNotifier {
     _currentUserId = userId;
   }
 
-  void setEditMode(bool val) {
+  void setEditModeInStore(bool val) {
     _editMode = val;
     notifyListeners();
+  }
+
+  /* 誰が現在編集中かUI側に渡したいのでOnItineraryEditごと渡してしまう */
+  Future<ResultInfo> setEditMode(bool newState) async {
+    if (_shownTravelBasic == null ||
+        _shownTravelBasic!.groupId == null ||
+        _shownTravelBasic!.travelId == null) {
+      print("ShownTravelBasic is not set.");
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorCode: "invalid-travel-basic",
+          errorMessage:
+              "Invalid travel basic data. This is the bug. Let the developer know.",
+        ),
+      );
+    }
+    if (_currentUserId == null) {
+      print("Current user ID is not set.");
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorCode: "invalid-user-id",
+          errorMessage:
+              "Invalid user ID. This is the bug. Let the developer know.",
+        ),
+      );
+    }
+
+    final travelerBasic = _allParticipants[_currentUserId];
+    if (travelerBasic == null) {
+      print("Current user${_currentUserId} not found in participants.");
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorCode: "invalid-user-id",
+          errorMessage:
+              "Invalid user ID. This is the bug. Let the developer know.",
+        ),
+      );
+    }
+
+    final groupId = _shownTravelBasic!.groupId!;
+    final travelId = _shownTravelBasic!.travelId!;
+
+    /**
+     *
+     * */
+    final getRet = await FirebaseDatabaseService.getSingleTravelItineraryOnEdit(
+      groupId,
+      travelId,
+    );
+    if (!getRet.isSuccess) {
+      /* 失敗する */
+      print("Unable to get edit mode: ${getRet.error?.errorMessage}");
+      return getRet;
+    }
+
+    /* ここでもし、誰かが編集していたらブロックする */
+    final onEdit = getRet.data;
+
+    if (onEdit == null || onEdit.on_edit == false) {
+      print("Edit mode is already set to false.");
+    } else {
+      /* on_editがtrueになっている */
+      final String uidEditing = onEdit.uid;
+      if (uidEditing != _currentUserId) {
+        print("Current user is not editing.");
+
+        String errorMessage = "他のユーザーが編集中です";
+        try {
+          final userBasic =
+              await FirebaseDatabaseService.getSingleUserTravelerBasic(
+                uidEditing,
+              );
+          if (userBasic != null && userBasic.profile_name != null) {
+            errorMessage = "${userBasic.profile_name}さんが編集中です";
+          }
+        } catch (e) {
+          print("Error fetching user basic info: $e");
+        }
+
+        /* extraDataいらないか。そんなに頻繁にon/off切り分けるわけではないからその都度取ればいいし */
+        return ResultInfo.failed(
+          error: ErrorInfo(
+            errorCode: OtherUserEditing,
+            /* エラーコードもどこかにちゃんとまとめた方が良いが、、一旦ただconstを定義してそれを使うことにする */
+            errorMessage: errorMessage,
+          ),
+          extraData: onEdit,
+        );
+      }
+    }
+
+    /* OnItineraryEditでgmailはどうやって渡そうか、、 */
+    final newOnEdit = OnItineraryEdit(on_edit: newState, uid: _currentUserId);
+    final ret = await FirebaseDatabaseService.setSingleTravelItineraryOnEdit(
+      groupId,
+      travelId,
+      newOnEdit,
+    );
+    if (!ret.isSuccess) {
+      print("Unable to set edit mode: ${ret.error?.errorMessage}");
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "エラー:${ret.error?.errorMessage}"),
+      );
+    }
+
+    if (newState) {
+      /* 編集モードONの時、切断時にOFFになるように設定 */
+      final offEdit = OnItineraryEdit(on_edit: false, uid: _currentUserId);
+      await FirebaseDatabaseService.setOnDisconnectForItineraryOnEdit(
+        groupId,
+        travelId,
+        offEdit,
+      );
+    } else {
+      /* 編集モードOFFの時、切断時の設定を解除 */
+      await FirebaseDatabaseService.cancelOnDisconnectForItineraryOnEdit(
+        groupId,
+        travelId,
+      );
+    }
+
+    /* ここまで来て初めてUI側の変化させる */
+    setEditModeInStore(newState);
+    return ResultInfo.success();
   }
 
   /* UnmodifiableListViewで読み取り専用にする */
@@ -190,6 +324,16 @@ class ItineraryStore extends ChangeNotifier {
       final groupId = travelBasic.groupId!;
       final travelId = travelBasic.travelId!;
 
+      /* 参加者をロード */
+      final retPart = await _loadAllParticipants(groupId, travelId);
+      if (!retPart.isSuccess) {
+        print("Failed in loadAllParticipants: ${retPart.error?.errorMessage}");
+        return retPart;
+      }
+      print(
+        "ItineraryStore: Participants loaded successfully. Count: ${_allParticipants.length}",
+      );
+
       /* Firebaseからデータを取ってくる。 */
       /**
        * データを取ってきてからitinerarySectionに変換する必要ある。
@@ -235,6 +379,34 @@ class ItineraryStore extends ChangeNotifier {
       );
     } finally {
       notifyListeners();
+    }
+  }
+
+  /*************************************************
+   * 現在ログイン中のユーザーが表示している旅行のグループのメンバー情報
+   *********************************************/
+  Future<ResultInfo> _loadAllParticipants(
+    String groupId,
+    String travelId,
+  ) async {
+    /**
+     * 中で割と無駄なことをやっているので、
+     * 将来的にFirestoreに移行するのもあり。この部分だけでも。
+     */
+    final fetchResult = await FirebaseDatabaseService.getTravelParticipants(
+      groupId,
+      travelId,
+    );
+
+    /**
+     * 失敗した場合値は更新しないことにする。
+     */
+    if (fetchResult.isSuccess && fetchResult.data != null) {
+      _allParticipants = fetchResult.data!;
+      return ResultInfo.success();
+    } else {
+      /* 何もしない */
+      return fetchResult;
     }
   }
 
