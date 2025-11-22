@@ -169,11 +169,26 @@ class ItineraryStore extends ChangeNotifier {
       final String uidEditing = onEdit.uid;
       if (uidEditing != _currentUserId) {
         print("Current user is not editing.");
+
+        String errorMessage = "他のユーザーが編集中です";
+        try {
+          final userBasic =
+              await FirebaseDatabaseService.getSingleUserTravelerBasic(
+                uidEditing,
+              );
+          if (userBasic != null && userBasic.profile_name != null) {
+            errorMessage = "${userBasic.profile_name}さんが編集中です";
+          }
+        } catch (e) {
+          print("Error fetching user basic info: $e");
+        }
+
+        /* extraDataいらないか。そんなに頻繁にon/off切り分けるわけではないからその都度取ればいいし */
         return ResultInfo.failed(
           error: ErrorInfo(
             errorCode: OtherUserEditing,
             /* エラーコードもどこかにちゃんとまとめた方が良いが、、一旦ただconstを定義してそれを使うことにする */
-            errorMessage: "他のユーザーが編集中です",
+            errorMessage: errorMessage,
           ),
           extraData: onEdit,
         );

@@ -123,9 +123,12 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
       /* ユーザーはスイッチの状態を変えたいということなので、変えに行く */
       final setModeRet = await itineraryStore.setEditMode(desiredSwitchState);
       if (!setModeRet.isSuccess) {
-        /* なにかリモートに設定しているときにエラーがでた */
-        if (setModeRet.extraData != null) {
-          /* extraDataにOnItineraryEditがあり、その中にuidがある。誰が編集中か表示する */
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(setModeRet.error?.errorMessage ?? "Unknown error"),
+            ),
+          );
         }
         return !desiredSwitchState; /* newValueでも良い */
       }
