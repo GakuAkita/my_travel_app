@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
+import 'package:my_travel_app/screens/Main/Expenses/EstimatedExpenseScreen.dart';
 import 'package:provider/provider.dart';
 
+import '../../../Store/UserStore.dart';
 import '../../../components/BasicText.dart';
 import '../../../components/Expenses/ExpenseTile.dart';
 import '../../../components/RoundedButton.dart';
+import '../../../constants.dart';
 import 'ExpensesResultScreen.dart';
 
 class ExpensesScreen extends StatefulWidget {
@@ -23,6 +26,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userStore = Provider.of<UserStore>(context);
     final expenseStore = Provider.of<ExpenseStore>(context);
     return LoadingOverlay(
       isLoading: expenseStore.expenseState.isLoading,
@@ -43,12 +47,33 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: RoundedButton(
-                        title: "割り勘確認",
-                        enabled: expenseStore.allExpenses.isNotEmpty,
-                        onPressed: () {
-                          Navigator.pushNamed(context, ExpensesResultScreen.id);
-                        },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RoundedButton(
+                            title: "割り勘確認",
+                            enabled: expenseStore.allExpenses.isNotEmpty,
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                ExpensesResultScreen.id,
+                              );
+                            },
+                          ),
+                          if (userStore.isGManager ||
+                              userStore.userRole == UserRole.admin) ...[
+                            SizedBox(width: 10),
+                            RoundedButton(
+                              title: "費用概算",
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  EstimatedExpenseScreen.id,
+                                );
+                              },
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     expenseStore.allExpenses.isNotEmpty
