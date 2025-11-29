@@ -116,3 +116,26 @@ class ExpensePaidDetail {
     return list.fold(0.0, (prev, element) => prev + element.paidAmount);
   }
 }
+
+class EstimatedExpenseInfo {
+  final String id;
+  final String expenseItem;
+  final double amount;
+  final int reimbursedByCnt;
+
+  EstimatedExpenseInfo({
+    required this.id,
+    required this.expenseItem,
+    required this.amount,
+    required this.reimbursedByCnt,
+  });
+
+  static EstimatedExpenseInfo fromExpenseInfo(ExpenseInfo info) {
+    return EstimatedExpenseInfo(
+      id: info.id,
+      expenseItem: info.expenseItem,
+      amount: info.expense.toDouble(),
+      reimbursedByCnt: info.reimbursedBy.length,
+    );
+  }
+}
