@@ -21,6 +21,7 @@
 - done:::自動デプロイ with actionsj
 - done:::itinerary同時編集ロック
 - firebase emulatorのセットアップ
+- はみ出しのエラーが出ている。動いてはいるが、、
 - 費用概要の自動計算 -> 既存の割り勘計算をうまく利用すればいいのではないか？
 
 - functionsで夜中に一度onEditをリセットする
@@ -37,6 +38,7 @@
 - Github警告js-yaml has prototype pollution in merge
 
 optional
+
 - ViewModel化
 - 今nullで返しているところをエラー情報も含めて返す
 - バックエンドを自作する

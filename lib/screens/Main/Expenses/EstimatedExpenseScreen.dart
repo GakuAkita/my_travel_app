@@ -16,6 +16,32 @@ class EstimatedExpenseScreen extends StatefulWidget {
 
 class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   /* 費用概算は工程表を元に計算してく */
+  @override
+  void initState() {
+    super.initState();
+
+    final itineraryStore = context.read<ItineraryStore>();
+    final tables =
+        itineraryStore
+            .getData()
+            .where((s) => s.type == ItinerarySectionType.defaultTable)
+            .toList();
+
+    /* 一番右の列で"****円/○人を正規表現で取得する */
+    final expenseReg = RegExp(r'(\d+)円/(\d+)?人');
+
+    for (final table in tables) {
+      final tableData = table.tableData;
+      if (tableData != null) {
+        for (final row in tableData.tableCells) {
+          final expenseMatches = expenseReg.allMatches(row[2]);
+          for (final match in expenseMatches) {
+            print("${match.group(0)} | ${match.group(1)} | ${match.group(2)}");
+          }
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +55,13 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
     return Scaffold(
       appBar: TopAppBar(title: "費用概算(作成中)", automaticallyImplyLeading: true),
-      body: Center(
-        child: Column(
-          children: [
-            ...tables.map(
-              (table) => Text("${table.tableData?.tableCells[2]}\n-----"),
-            ),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ...tables.map((table) => TableDataShown(table: table.tableData)),
+            ],
+          ),
         ),
       ),
     );
@@ -50,11 +76,19 @@ class TableDataShown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return table != null
-        ? Row(
-          children: table!.tableCells.map((row) {
-            return Text("${row}");
-          }),
+        ? Column(
+          children: [
+            ...table!.tableCells.map(
+              (row) => Row(
+                children: [
+                  Flexible(fit: FlexFit.tight, child: Text("${row[1]}")),
+                  Flexible(fit: FlexFit.tight, child: Text("${row[2]}")),
+                ],
+              ),
+            ),
+            Text("------------------------"),
+          ],
         )
-        : Row();
+        : Row(children: [Text("null")]);
   }
 }
