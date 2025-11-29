@@ -40,11 +40,22 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
             print("${match.group(0)} | ${match.group(1)} | ${match.group(2)}");
             final amount = double.parse(match.group(1)!);
             final peopleCnt = int.parse(match.group(2) ?? "1");
+            String firstLine = row[1].toString().split('\n').first;
+
+            // Markdownのリンク表示 `[text](url)` から text のみを抽出
+            // 例: "[Google](https://google.com)" -> "Google"
+            String expenseItemStr = firstLine.replaceAllMapped(
+                RegExp(r'\[(.*?)\]\(.*?\)'), (match) => match.group(1)!);
+
+            // Markdownの見出し `# heading` から `#` を削除
+            // 例: "## 新宿" -> "新宿"
+            expenseItemStr =
+                expenseItemStr.replaceAll(RegExp(r'^[#]+\s*'), '').trim();
 
             /* expenseStoreと中身検知して逆算するのはありかもな。 */
             final estimated = EstimatedExpenseInfo(
               id: "",
-              expenseItem: "",
+              expenseItem: expenseItemStr,
               amount: amount,
               reimbursedByCnt: peopleCnt,
             );
@@ -110,7 +121,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               //...tables.map((table) => TableDataShown(table: table.tableData)),
               ...estimatedExpenseList.map(
                 (estimated) => Text(
-                  "${estimated.amount.toInt()}円 / ${estimated.reimbursedByCnt}人",
+                  "${estimated.expenseItem}: ${estimated.amount.toInt()}円 / ${estimated.reimbursedByCnt}人",
                 ),
               ),
               Text("============================="),
