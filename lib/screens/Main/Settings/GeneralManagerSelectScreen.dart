@@ -9,6 +9,7 @@ import '../../../components/BasicText.dart';
 
 class GeneralManagerSelectScreen extends StatefulWidget {
   static const String id = "general_manager_select_screen";
+
   const GeneralManagerSelectScreen({super.key});
 
   @override
@@ -99,7 +100,7 @@ class _GeneralManagerSelectScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopAppBar(title: "総監督を選択", automaticallyImplyLeading: true),
+      appBar: TopAppBar(title: "プランナーを選択", automaticallyImplyLeading: true),
       body:
           _groupTravels.isNotEmpty
               ? Column(
@@ -154,7 +155,7 @@ class _GeneralManagerSelectScreenState
                       );
                     }),
                     RoundedButton(
-                      title: "総監督決定",
+                      title: "プランナー決定",
                       onPressed: () async {
                         if (_selectedGroupId == null ||
                             _selectedTravelId == null) {

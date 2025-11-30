@@ -45,7 +45,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
             // Markdownのリンク表示 `[text](url)` から text のみを抽出
             // 例: "[Google](https://google.com)" -> "Google"
             String expenseItemStr = firstLine.replaceAllMapped(
-                RegExp(r'\[(.*?)\]\(.*?\)'), (match) => match.group(1)!);
+              RegExp(r'\[(.*?)\]\(.*?\)'),
+              (match) => match.group(1)!,
+            );
 
             // Markdownの見出し `# heading` から `#` を削除
             // 例: "## 新宿" -> "新宿"
@@ -65,6 +67,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
         }
       }
     }
+
     setState(() {});
   }
 
