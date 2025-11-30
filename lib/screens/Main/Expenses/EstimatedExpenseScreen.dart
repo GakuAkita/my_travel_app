@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
+import 'package:my_travel_app/Store/ExpenseStore.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
@@ -38,8 +39,12 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
             .where((s) => s.type == ItinerarySectionType.defaultTable)
             .toList();
 
+    final expenseStore = context.read<ExpenseStore>();
+    final people = expenseStore.allParticipants.length;
+
     /* 一番右の列で"****円/○人を正規表現で取得する */
     final expenseReg = RegExp(r'(\d+)円/(\d+)?人');
+    final etcReg = RegExp(r'ETC([^\d]?)(\d+)円', caseSensitive: false);
 
     /* 一番右の列から***円/○人を抽出 */
     for (final table in tables) {
@@ -74,6 +79,17 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
             );
 
             estimatedListFromItinerary.add(estimated);
+          }
+
+          final etcMatches = etcReg.allMatches(row[1]);
+          for (final match in etcMatches) {
+            final amount = double.parse(match.group(2)!);
+            final etcEstimated = EstimatedExpenseInfo(
+              expenseItem: "ETC",
+              amount: amount,
+              reimbursedByCnt: people,
+            );
+            estimatedListFromItinerary.add(etcEstimated);
           }
         }
       }
@@ -139,6 +155,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
             .where((s) => s.type == ItinerarySectionType.defaultTable)
             .toList();
 
+    final expenseStore = context.read<ExpenseStore>();
+    final people = expenseStore.allParticipants.length;
+
     /* デーブルの数を日数として仮定して計算。かつ、昼食夕食がホテルについてないとする */
     final days = tables.length.toDouble();
 
@@ -156,8 +175,15 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
         reimbursedByCnt: 1,
       );
 
+      final gasoline = EstimatedExpenseInfo(
+        expenseItem: "ガソリン",
+        amount: 3000,
+        reimbursedByCnt: people,
+      );
+
       estimatedListFromManual.add(lunch);
       estimatedListFromManual.add(dinner);
+      estimatedListFromManual.add(gasoline);
     } else {
       /* すでに保存されている場合はMapをListにすればよいだけ */
       for (final entry in estimatedMapFromManual!.entries) {
@@ -168,13 +194,6 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   }
 
   void _sumEstimatedExpenseList() {
-    final itineraryStore = context.read<ItineraryStore>();
-    final tables =
-        itineraryStore
-            .getData()
-            .where((s) => s.type == ItinerarySectionType.defaultTable)
-            .toList();
-
     estimatedExpense = 0;
     estimatedExpenseFromManual = 0.0;
     estimatedExpenseFromItinerary = 0;
@@ -216,16 +235,18 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                 (estimated) => EstimatedExpenseRow(estimated: estimated),
               ),
 
+              Text("行程表合計:${estimatedExpenseFromItinerary.toInt()}"),
+
               Text("===========手動で入力============"),
               /* 概算に加えたくない場合は0円で入力 */
               ...estimatedListFromManual.map(
                 (estimated) => EstimatedExpenseRow(estimated: estimated),
               ),
 
-              /* ガソリン代 (デフォルトは既存データがなければ参加人数) */
-              /* ETC代 */
+              Text("手動合計:${estimatedExpenseFromManual.toInt()}"),
+
               Text("============================="),
-              Text("予想合計=${estimatedExpense}"),
+              Text("すべての合計=${estimatedExpense}"),
               RoundedButton(title: "このデータを記録", onPressed: () {}),
             ],
           ),
