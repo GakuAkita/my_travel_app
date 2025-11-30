@@ -3,11 +3,14 @@ import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 class ExpenseInfo {
   final String id;
   final TravelerBasic payer;
-  final Map<String, Map<String, String>>
-  reimbursedBy; /* Map<uid, Map<email,実際のemail>> */
+  final Map<String, Map<String, String>> reimbursedBy;
+
+  /* Map<uid, Map<email,実際のemail>> */
   final String expenseItem;
   final int expense;
-  final String createdAt; /* Stringで保存しておいて使うときだけDateTimeにする */
+  final String createdAt;
+
+  /* Stringで保存しておいて使うときだけDateTimeにする */
 
   ExpenseInfo({
     required this.id, //何も入っていなければnull
@@ -92,6 +95,7 @@ class ExpensePersonalDetail {
     required this.expenseItem,
     required this.amountPerPerson,
   });
+
   // 個人負担の合計を計算
   static double sumPersonalDetailList(List<ExpensePersonalDetail> list) {
     return list.fold(0.0, (prev, element) => prev + element.amountPerPerson);
@@ -136,6 +140,15 @@ class EstimatedExpenseInfo {
       expenseItem: info.expenseItem,
       amount: info.expense.toDouble(),
       reimbursedByCnt: info.reimbursedBy.length,
+    );
+  }
+
+  static convFromMap(Map<dynamic, dynamic> map) {
+    return EstimatedExpenseInfo(
+      id: map['id'] as String,
+      expenseItem: map['expenseItem'] as String,
+      amount: map['amount'] as double,
+      reimbursedByCnt: map['reimbursedByCnt'] as int,
     );
   }
 }

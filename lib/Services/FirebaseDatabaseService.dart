@@ -440,6 +440,26 @@ class FirebaseDatabaseService {
     }
   }
 
+  static Future<ResultInfo<Map<String, EstimatedExpenseInfo>?>>
+  getSingleTravelEstimatedExpenses(String groupId, String travelId) async {
+    try {
+      final snap = await singleTravelEstimatedRef(groupId, travelId).get();
+      if (!snap.exists) {
+        /* データがそもそもない */
+        return ResultInfo.success(data: null);
+      }
+      final map = snap.value as Map;
+      final Map<String, EstimatedExpenseInfo> estimatedMap = {};
+      map.forEach((key, value) {
+        estimatedMap[key] = EstimatedExpenseInfo.convFromMap(map);
+      });
+      return ResultInfo.success(data: estimatedMap);
+    } catch (e) {
+      print("Error in getSingleTravelEstimatedExpenses:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
   static Future<ResultInfo<List<Map<String, dynamic>>>>
   getSingleTravelItinerarySections(String groupId, String travelId) async {
     try {

@@ -81,7 +81,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
     return ResultInfo.success();
   }
 
-  Future<ResultInfo> _loadEstimatedExpenseFromManual() async {}
+  Future<ResultInfo> _loadEstimatedExpenseFromManual() async {
+    return ResultInfo.success();
+  }
 
   Future<ResultInfo> _createEstimatedListFromManual() async {
     return ResultInfo.success();
