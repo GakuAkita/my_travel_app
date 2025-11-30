@@ -16,6 +16,7 @@ import '../../../components/ValidatedSwitch.dart';
 
 class ItineraryScreen extends StatefulWidget {
   const ItineraryScreen({super.key});
+
   static const String id = "itinerary_screen";
 
   @override
@@ -152,7 +153,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          BasicText(text: "総監督モード"),
+                          BasicText(text: "プランナーモード"),
                           SizedBox(width: 10),
                           ValidatedSwitch(
                             initialStatus: itineraryStore.editMode,
@@ -207,11 +208,11 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                             : ListView(
                               /* こっちは編集モードのレイアウト */
                               children: [
-                                BasicText(text: "総監督モードをOFFにしたときに保存されます。"),
+                                BasicText(text: "プランナーモードをOFFにしたときに保存されます。"),
                                 ReorderableListView(
                                   shrinkWrap: true,
-                                  physics:
-                                      NeverScrollableScrollPhysics(), // スクロールを外に任せる
+                                  physics: NeverScrollableScrollPhysics(),
+                                  // スクロールを外に任せる
                                   onReorder: itineraryStore.reorderSection,
                                   buildDefaultDragHandles: false,
                                   children: [
@@ -377,10 +378,11 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                       backgroundColor: Colors.transparent,
                                       builder: (context) {
                                         return DraggableScrollableSheet(
-                                          initialChildSize:
-                                              0.5, // 最初の高さ（画面の50%）
+                                          initialChildSize: 0.5,
+                                          // 最初の高さ（画面の50%）
                                           minChildSize: 0.2,
-                                          maxChildSize: 0.9, // 最大で画面の90%まで引っ張れる
+                                          maxChildSize: 0.9,
+                                          // 最大で画面の90%まで引っ張れる
                                           expand: false,
                                           builder: (_, scrollController) {
                                             return Container(

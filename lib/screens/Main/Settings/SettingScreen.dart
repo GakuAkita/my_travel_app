@@ -16,6 +16,7 @@ import 'VersionInfoScreen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
+
   @override
   State<SettingScreen> createState() => _SettingScreenState();
 }
@@ -74,7 +75,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 onPressed: () {
                   Navigator.pushNamed(context, GeneralManagerSelectScreen.id);
                 },
-                menuName: "総監督選択",
+                menuName: "プランナー選択",
               ),
               SettingMenubar(onPressed: () {}, menuName: "旅行削除"),
             ], //adminだったらこちらを表示

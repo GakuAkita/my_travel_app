@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:my_travel_app/screens/Main/Expenses/AddEditExpenseScreen.dart';
+import 'package:my_travel_app/screens/Main/Expenses/EstimatedExpenseScreen.dart';
 import 'package:my_travel_app/screens/Main/Expenses/ExpensesResultScreen.dart';
 import 'package:my_travel_app/screens/Main/MainScreen.dart';
 import 'package:my_travel_app/screens/Main/Settings/CreateGroupScreen.dart';
@@ -122,7 +123,8 @@ class MyApp extends StatelessWidget {
             );
           case ExpensesResultScreen.id:
             return MaterialPageRoute(builder: (_) => ExpensesResultScreen());
-
+          case EstimatedExpenseScreen.id:
+            return MaterialPageRoute(builder: (_)=>EstimatedExpenseScreen());
           case ProfileScreen.id:
             return MaterialPageRoute(builder: (_) => ProfileScreen());
           case CreateGroupScreen.id:

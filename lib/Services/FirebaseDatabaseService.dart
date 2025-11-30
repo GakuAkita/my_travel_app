@@ -46,6 +46,7 @@ class FirebaseDatabaseService {
   }
 
   static DatabaseReference singleUserRef(String uid) => usersRef.child(uid);
+
   static String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
   static DatabaseReference? get currentUserRef {
@@ -164,6 +165,11 @@ class FirebaseDatabaseService {
     String travelId,
   ) => singleTravelExpensesRef(groupId, travelId).child("exchanges");
 
+  static DatabaseReference singleTravelEstimatedRef(
+    String groupId,
+    String travbelId,
+  ) => singleTravelExpensesRef(groupId, travbelId).child("estimated");
+
   static DatabaseReference singleTravelItineraryRef(
     String groupId,
     String travelId,
@@ -180,8 +186,8 @@ class FirebaseDatabaseService {
   ) => singleTravelItineraryRef(groupId, travelId).child("on_edit");
 
   /***
- * 他人のuid配下を使ってデータ操作
- */
+   * 他人のuid配下を使ってデータ操作
+   */
 
   static DatabaseReference singleUserEmailRef(String uid) =>
       singleUserRef(uid).child("email");
@@ -191,6 +197,7 @@ class FirebaseDatabaseService {
 
   static DatabaseReference singleUserJoinedGroupRef(String uid) =>
       singleUserSettingsRef(uid).child("joined_groups");
+
   static DatabaseReference singleUserProfileNameRef(String uid) =>
       singleUserSettingsRef(uid).child("profile_name");
 
@@ -348,8 +355,8 @@ class FirebaseDatabaseService {
   }
 
   /**
- * あるuidのid、email、userNameを取ってきてTravelerBasicとして返す。
-  */
+   * あるuidのid、email、userNameを取ってきてTravelerBasicとして返す。
+   */
   static Future<TravelerBasic?> getSingleUserTravelerBasic(String uid) async {
     final emailSnap = await singleUserEmailRef(uid).get();
     if (!emailSnap.exists) {
@@ -430,6 +437,26 @@ class FirebaseDatabaseService {
     } catch (e) {
       print("Error in getSingleTravelExpensesBalances:$e");
       return null;
+    }
+  }
+
+  static Future<ResultInfo<Map<String, EstimatedExpenseInfo>?>>
+  getSingleTravelEstimatedExpenses(String groupId, String travelId) async {
+    try {
+      final snap = await singleTravelEstimatedRef(groupId, travelId).get();
+      if (!snap.exists) {
+        /* データがそもそもない */
+        return ResultInfo.success(data: null);
+      }
+      final map = snap.value as Map;
+      final Map<String, EstimatedExpenseInfo> estimatedMap = {};
+      map.forEach((key, value) {
+        estimatedMap[key] = EstimatedExpenseInfo.convFromMap(value);
+      });
+      return ResultInfo.success(data: estimatedMap);
+    } catch (e) {
+      print("Error in getSingleTravelEstimatedExpenses:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
 
