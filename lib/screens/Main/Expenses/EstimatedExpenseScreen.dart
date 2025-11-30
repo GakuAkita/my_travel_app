@@ -6,6 +6,8 @@ import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
 import 'package:provider/provider.dart';
 
+import '../../../components/NumberField.dart';
+
 class EstimatedExpenseScreen extends StatefulWidget {
   static const String id = "estimated_expense_screen";
 
@@ -16,6 +18,8 @@ class EstimatedExpenseScreen extends StatefulWidget {
 }
 
 class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
+  final List<EstimatedExpenseInfo> estimatedListFromItinerary = [];
+  final List<EstimatedExpenseInfo> estimatedListFromManual = [];
   final List<EstimatedExpenseInfo> estimatedExpenseList = [];
 
   double estimatedExpense = 0.0;
@@ -62,7 +66,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               reimbursedByCnt: peopleCnt,
             );
 
-            estimatedExpenseList.add(estimated);
+            estimatedListFromItinerary.add(estimated);
           }
         }
       }
@@ -81,7 +85,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
     estimatedExpense = 0;
 
-    for (final est in estimatedExpenseList) {
+    for (final est in estimatedListFromItinerary) {
       //print(est.amount);
       estimatedExpense += (est.amount / est.reimbursedByCnt);
     }
@@ -122,11 +126,25 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
           child: Column(
             children: [
               //...tables.map((table) => TableDataShown(table: table.tableData)),
-              ...estimatedExpenseList.map(
+              ...estimatedListFromItinerary.map(
                 (estimated) => Text(
                   "${estimated.expenseItem}: ${estimated.amount.toInt()}円 / ${estimated.reimbursedByCnt}人",
                 ),
               ),
+              /* 概算に加えたくない場合は0円で入力 */
+
+              /* 昼食の値段(予想平均) * 回数(デフォルトは既存データがなければテーブル数) */
+              NumberField(
+                hintText: "昼食",
+                onChanged: (value) {
+                  print(value);
+                },
+              ),
+              NumberField(hintText: "夕食", onChanged: (value) {}),
+              /* 夕食の値段(予想平均) * 回数(デフォルトは基礎データがなければテーブル数) */
+
+              /* ガソリン代 (デフォルトは既存データがなければ参加人数) */
+              /* ETC代 */
               Text("============================="),
               Text("予想合計=${estimatedExpense}"),
             ],
