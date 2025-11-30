@@ -451,7 +451,7 @@ class FirebaseDatabaseService {
       final map = snap.value as Map;
       final Map<String, EstimatedExpenseInfo> estimatedMap = {};
       map.forEach((key, value) {
-        estimatedMap[key] = EstimatedExpenseInfo.convFromMap(map);
+        estimatedMap[key] = EstimatedExpenseInfo.convFromMap(value);
       });
       return ResultInfo.success(data: estimatedMap);
     } catch (e) {

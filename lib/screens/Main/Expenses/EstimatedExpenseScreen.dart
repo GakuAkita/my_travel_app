@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
+import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 import 'package:provider/provider.dart';
 
+import '../../../CommonClass/ErrorInfo.dart';
 import '../../../components/NumberField.dart';
 
 class EstimatedExpenseScreen extends StatefulWidget {
@@ -20,7 +23,8 @@ class EstimatedExpenseScreen extends StatefulWidget {
 
 class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   final List<EstimatedExpenseInfo> estimatedListFromItinerary = [];
-  final List<EstimatedExpenseInfo> estimatedListFromManual = [];
+  List<EstimatedExpenseInfo> estimatedListFromManual = [];
+  Map<String, EstimatedExpenseInfo>? estimatedMapFromManual = null;
   final List<EstimatedExpenseInfo> estimatedExpenseList = [];
 
   double estimatedExpense = 0.0;
@@ -82,6 +86,38 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   }
 
   Future<ResultInfo> _loadEstimatedExpenseFromManual() async {
+    final itineraryStore = context.read<ItineraryStore>();
+    final shownTravel = itineraryStore.shownTravelBasic;
+
+    if (!checkIsShownTravelInput(shownTravel).isSuccess) {
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorCode: "invalid-travel-basic",
+          errorMessage:
+              "Invalid travel basic data. This is the bug. Let the developer know.",
+        ),
+      );
+    }
+
+    final groupId = shownTravel!.groupId!;
+    final travelId = shownTravel.travelId!;
+
+    final estRet =
+        await FirebaseDatabaseService.getSingleTravelEstimatedExpenses(
+          groupId,
+          travelId,
+        );
+    if (!estRet.isSuccess) {
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "${estRet.error?.errorMessage}"),
+      );
+    }
+
+    if (estRet.data == null) {
+      estimatedMapFromManual = null;
+    } else {
+      estimatedMapFromManual = estRet.data;
+    }
     return ResultInfo.success();
   }
 
