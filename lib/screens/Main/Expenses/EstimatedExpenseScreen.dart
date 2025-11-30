@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
-import 'package:my_travel_app/CommonClass/ItineraryDefaultTable.dart';
+import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
+import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +25,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
   double estimatedExpense = 0.0;
 
-  void _createBasicEstimatedList() {
+  ResultInfo _createEstimatedListFromItinerary() {
     final itineraryStore = context.read<ItineraryStore>();
     final tables =
         itineraryStore
@@ -35,6 +36,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
     /* 一番右の列で"****円/○人を正規表現で取得する */
     final expenseReg = RegExp(r'(\d+)円/(\d+)?人');
 
+    /* 一番右の列から***円/○人を抽出 */
     for (final table in tables) {
       final tableData = table.tableData;
       if (tableData != null) {
@@ -72,7 +74,17 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
       }
     }
 
+    /* 真ん中の列からETC料金を抽出 */
+
     setState(() {});
+
+    return ResultInfo.success();
+  }
+
+  Future<ResultInfo> _loadEstimatedExpenseFromManual() async {}
+
+  Future<ResultInfo> _createEstimatedListFromManual() async {
+    return ResultInfo.success();
   }
 
   void _sumEstimatedExpenseList() {
@@ -105,48 +117,54 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   @override
   void initState() {
     super.initState();
-    _createBasicEstimatedList();
+    _createEstimatedListFromItinerary();
+
+    /* 非同期で待ってから最後にsumをする */
     _sumEstimatedExpenseList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final itineraryStore = Provider.of<ItineraryStore>(context);
-
-    final tables =
-        itineraryStore
-            .getData()
-            .where((s) => s.type == ItinerarySectionType.defaultTable)
-            .toList();
-
     return Scaffold(
       appBar: TopAppBar(title: "費用概算(作成中)", automaticallyImplyLeading: true),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Text("---------行程表から抽出-----------"),
               //...tables.map((table) => TableDataShown(table: table.tableData)),
               ...estimatedListFromItinerary.map(
-                (estimated) => Text(
-                  "${estimated.expenseItem}: ${estimated.amount.toInt()}円 / ${estimated.reimbursedByCnt}人",
-                ),
+                (estimated) => EstimatedExpenseRow(estimated: estimated),
               ),
+
+              Text("===========手動で入力============"),
               /* 概算に加えたくない場合は0円で入力 */
 
               /* 昼食の値段(予想平均) * 回数(デフォルトは既存データがなければテーブル数) */
               NumberField(
                 hintText: "昼食",
+                initialValue: 2000,
                 onChanged: (value) {
                   print(value);
                 },
               ),
-              NumberField(hintText: "夕食", onChanged: (value) {}),
+              NumberField(
+                hintText: "夕食",
+                initialValue: 3000,
+                onChanged: (value) {},
+              ),
+              NumberField(
+                hintText: "ガソリン代",
+                initialValue: 3000,
+                onChanged: (value) {},
+              ),
               /* 夕食の値段(予想平均) * 回数(デフォルトは基礎データがなければテーブル数) */
 
               /* ガソリン代 (デフォルトは既存データがなければ参加人数) */
               /* ETC代 */
               Text("============================="),
               Text("予想合計=${estimatedExpense}"),
+              RoundedButton(title: "このデータを記録", onPressed: () {}),
             ],
           ),
         ),
@@ -155,27 +173,39 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   }
 }
 
-class TableDataShown extends StatelessWidget {
-  final ItineraryDefaultTable? table;
+class EstimatedExpenseRow extends StatelessWidget {
+  final EstimatedExpenseInfo estimated;
 
-  const TableDataShown({required this.table, super.key});
+  const EstimatedExpenseRow({required this.estimated, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return table != null
-        ? Column(
+    return Column(
+      children: [
+        Row(
           children: [
-            ...table!.tableCells.map(
-              (row) => Row(
-                children: [
-                  Flexible(fit: FlexFit.tight, child: Text("${row[1]}")),
-                  Flexible(fit: FlexFit.tight, child: Text("${row[2]}")),
-                ],
-              ),
+            Flexible(
+              flex: 4,
+              fit: FlexFit.tight,
+              child: Text(estimated.expenseItem),
             ),
-            Text("------------------------"),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: Text("${estimated.amount}"),
+            ),
+            Flexible(
+              fit: FlexFit.tight,
+              child: Text("${estimated.reimbursedByCnt}"),
+            ),
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 2,
+              child: Text("${estimated.amount / estimated.reimbursedByCnt}"),
+            ),
           ],
-        )
-        : Row(children: [Text("null")]);
+        ),
+      ],
+    );
   }
 }

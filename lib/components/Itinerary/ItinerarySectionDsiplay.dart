@@ -8,6 +8,7 @@ import '../BasicText.dart';
 
 class ItinerarySectionDisplay extends StatelessWidget {
   final ItinerarySection itiSection;
+
   const ItinerarySectionDisplay({required this.itiSection, super.key});
 
   /// URLを正規化して起動可能な形式に修正する
@@ -137,8 +138,8 @@ class ItinerarySectionDisplay extends StatelessWidget {
         )
         : itiSection.type == ItinerarySectionType.space
         /** @TODO
-         * 空白smallとbigとかで変えたほうがいいかもな。まあとりあえずはこれで。
-         * */
+     * 空白smallとbigとかで変えたほうがいいかもな。まあとりあえずはこれで。
+     * */
         ? SizedBox(height: 30)
         : Text("Unknown Type..");
   }
