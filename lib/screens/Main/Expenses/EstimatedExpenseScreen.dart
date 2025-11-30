@@ -10,7 +10,6 @@ import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 import 'package:provider/provider.dart';
 
 import '../../../CommonClass/ErrorInfo.dart';
-import '../../../components/NumberField.dart';
 
 class EstimatedExpenseScreen extends StatefulWidget {
   static const String id = "estimated_expense_screen";
@@ -28,6 +27,8 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   final List<EstimatedExpenseInfo> estimatedExpenseList = [];
 
   double estimatedExpense = 0.0;
+  double estimatedExpenseFromManual = 0.0;
+  double estimatedExpenseFromItinerary = 0.0;
 
   ResultInfo _createEstimatedListFromItinerary() {
     final itineraryStore = context.read<ItineraryStore>();
@@ -82,6 +83,15 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
     setState(() {});
 
+    Future.microtask(() async {
+      final createListRet = await _loadEstimatedExpenseFromManual();
+      _createEstimatedListFromManual();
+      _sumEstimatedExpenseList();
+      setState(() {});
+    });
+
+    _sumEstimatedExpenseList();
+
     return ResultInfo.success();
   }
 
@@ -121,7 +131,39 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
     return ResultInfo.success();
   }
 
-  Future<ResultInfo> _createEstimatedListFromManual() async {
+  ResultInfo _createEstimatedListFromManual() {
+    final itineraryStore = context.read<ItineraryStore>();
+    final tables =
+        itineraryStore
+            .getData()
+            .where((s) => s.type == ItinerarySectionType.defaultTable)
+            .toList();
+
+    /* デーブルの数を日数として仮定して計算。かつ、昼食夕食がホテルについてないとする */
+    final days = tables.length.toDouble();
+
+    if (estimatedMapFromManual == null) {
+      /* まだ何もなかったら、夕食と昼食をリストに加えておく */
+      final lunch = EstimatedExpenseInfo(
+        amount: 2000 * days,
+        expenseItem: "昼食",
+        reimbursedByCnt: 1,
+      );
+
+      final dinner = EstimatedExpenseInfo(
+        expenseItem: "夕食",
+        amount: 3000 * days,
+        reimbursedByCnt: 1,
+      );
+
+      estimatedListFromManual.add(lunch);
+      estimatedListFromManual.add(dinner);
+    } else {
+      /* すでに保存されている場合はMapをListにすればよいだけ */
+      for (final entry in estimatedMapFromManual!.entries) {
+        estimatedListFromManual.add(entry.value);
+      }
+    }
     return ResultInfo.success();
   }
 
@@ -134,20 +176,19 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
             .toList();
 
     estimatedExpense = 0;
-
+    estimatedExpenseFromManual = 0.0;
+    estimatedExpenseFromItinerary = 0;
     for (final est in estimatedListFromItinerary) {
       //print(est.amount);
-      estimatedExpense += (est.amount / est.reimbursedByCnt);
+      estimatedExpenseFromItinerary += (est.amount / est.reimbursedByCnt);
     }
 
-    /* 昼ご飯と夕食をそれぞれ2000円,3000円で計算 */
-    //print("テーブルの数(=工程の数) = ${tables.length}");
-    final lunchTotal = 2000 * tables.length;
-    estimatedExpense += lunchTotal;
+    for (final est in estimatedListFromManual) {
+      estimatedExpenseFromManual += (est.amount / est.reimbursedByCnt);
+    }
 
-    final dinnerTotal = 3000 * tables.length;
-    estimatedExpense += dinnerTotal;
-
+    estimatedExpense =
+        estimatedExpenseFromItinerary + estimatedExpenseFromManual;
     setState(() {});
   }
 
@@ -177,26 +218,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
               Text("===========手動で入力============"),
               /* 概算に加えたくない場合は0円で入力 */
-
-              /* 昼食の値段(予想平均) * 回数(デフォルトは既存データがなければテーブル数) */
-              NumberField(
-                hintText: "昼食",
-                initialValue: 2000,
-                onChanged: (value) {
-                  print(value);
-                },
+              ...estimatedListFromManual.map(
+                (estimated) => EstimatedExpenseRow(estimated: estimated),
               ),
-              NumberField(
-                hintText: "夕食",
-                initialValue: 3000,
-                onChanged: (value) {},
-              ),
-              NumberField(
-                hintText: "ガソリン代",
-                initialValue: 3000,
-                onChanged: (value) {},
-              ),
-              /* 夕食の値段(予想平均) * 回数(デフォルトは基礎データがなければテーブル数) */
 
               /* ガソリン代 (デフォルトは既存データがなければ参加人数) */
               /* ETC代 */

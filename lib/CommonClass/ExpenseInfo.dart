@@ -122,13 +122,13 @@ class ExpensePaidDetail {
 }
 
 class EstimatedExpenseInfo {
-  final String id;
+  final String? id;
   final String expenseItem;
   final double amount;
   final int reimbursedByCnt;
 
   EstimatedExpenseInfo({
-    required this.id,
+    this.id,
     required this.expenseItem,
     required this.amount,
     required this.reimbursedByCnt,
