@@ -4,36 +4,40 @@ on:
   workflow_dispatch:
   # push:
   #   branches:
-  #     - main  
+  #     - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # タグを作成・プッシュするために必要
+      contents: write # タグを作成・プッシュするために必要
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 全履歴を取得してタグを確認するため
-          
+          fetch-depth: 0 # 全履歴を取得してタグを確認するため
+
       - name: Manage version tag
         id: version_tag
         uses: ./.github/actions/manage-version-tag
-          
+
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter
         with:
-          flutter-version: '3.29.2'
+          flutter-version: "3.29.2"
           google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           env-file-content: ${{ secrets.ENV_FILE }}
-      
+
       - name: Build the app
         run: flutter build apk --release
+
+      - name: Rename APK with version
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-${{ steps.version_tag.outputs.build_version }}.apk
 
       - name: Upload the app
         uses: actions/upload-artifact@v4
         with:
           name: app-release-${{ steps.version_tag.outputs.build_version }}.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release-${{ steps.version_tag.outputs.build_version }}.apk
           retention-days: 1
