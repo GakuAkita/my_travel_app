@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
+final String baseFontFamily = "NotoSerifJP";
 final ThemeData customDarkBlueTheme = ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: Colors.grey[900],
   primaryColor: Colors.lightBlueAccent,
-  fontFamily: "PlaywriteNO",
+  fontFamily: baseFontFamily,
   appBarTheme: AppBarTheme(
     backgroundColor: Colors.lightBlueAccent,
     iconTheme: IconThemeData(color: Colors.grey[900]),
     titleTextStyle: TextStyle(
-      fontFamily: "NotoSans",
+      fontFamily: "Caveat",
       color: Colors.grey[900],
-      fontSize: 20,
+      fontSize: 25,
       fontWeight: FontWeight.bold,
     ),
   ),
@@ -48,13 +49,16 @@ final ThemeData customDarkBlueTheme = ThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   ),
-  textTheme: TextTheme(
-    bodyLarge: TextStyle(color: Colors.white), // メインテキスト（白）
-    bodyMedium: TextStyle(
-      color: Colors.white,
-    ), // サブテキスト（白）(もともとwhite70だったが、ちょっと灰色っぽい感じをうけた)
-    titleLarge: TextStyle(color: Colors.lightBlueAccent), // タイトル（青）
-  ),
+  textTheme: ThemeData.dark().textTheme
+      .apply(
+        fontFamily: baseFontFamily,
+        bodyColor: Colors.white, // bodyMediumなどに適用
+        displayColor: Colors.white, // titleLargeなどに適用
+      )
+      .copyWith(
+        // 特定のスタイルのみ色を上書き
+        titleLarge: TextStyle(color: Colors.lightBlueAccent), // タイトル（青）
+      ),
   splashColor: Colors.transparent,
   // 波紋の非表示
   iconTheme: IconThemeData(color: Colors.lightBlueAccent),

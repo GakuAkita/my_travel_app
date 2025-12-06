@@ -100,6 +100,8 @@ flutter:
     - assets/fonts/Noto_Sans/static/
     - assets/fonts/Caveat/static/
     - assets/fonts/Playwrite_NO/static/
+    - assets/fonts/Dela_Gothic_One/
+    - assets/fonts/Noto_Serif_JP/static/
     - env
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -201,5 +203,28 @@ flutter:
           weight: 300
         - asset: assets/fonts/Playwrite_NO/static/PlaywriteNO-Regular.ttf
           weight: 400
+    - family: DelaGothicOne
+      fonts:
+        - asset: assets/fonts/Dela_Gothic_One/DelaGothicOne-Regular.ttf
+          weight: 400
+    - family: NotoSerifJP
+      fonts:
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Noto_Serif_JP/static/NotoSerifJP-Black.ttf
+          weight: 900
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
