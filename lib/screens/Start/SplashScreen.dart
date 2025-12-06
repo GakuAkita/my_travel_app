@@ -94,11 +94,19 @@ class _SplashScreenState extends State<SplashScreen>
                 children: [
                   Text(
                     "Necessity is",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Caveat",
+                    ),
                   ),
                   Text(
                     "the mother of invention",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Caveat",
+                    ),
                   ),
                 ],
               ),

@@ -1,26 +1,37 @@
 import 'package:flutter/material.dart';
 
+final String baseFontFamily = "NotoSerifJP";
 final ThemeData customDarkBlueTheme = ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: Colors.grey[900],
   primaryColor: Colors.lightBlueAccent,
+  fontFamily: baseFontFamily,
   appBarTheme: AppBarTheme(
     backgroundColor: Colors.lightBlueAccent,
     iconTheme: IconThemeData(color: Colors.grey[900]),
     titleTextStyle: TextStyle(
+      fontFamily: "Caveat",
+      fontFamilyFallback: [baseFontFamily],
       color: Colors.grey[900],
-      fontSize: 20,
+      fontSize: 25,
       fontWeight: FontWeight.bold,
     ),
   ),
   colorScheme: ColorScheme.dark(
-    primary: Colors.lightBlueAccent, // メインカラー（青）
-    secondary: Colors.cyanAccent, // セカンダリカラー（青系）
-    surface: Colors.grey[850]!, // 背景色（暗い灰色）
-    error: Colors.redAccent, // エラー色（赤）
-    onPrimary: Colors.black, // メインカラー上の文字色（黒）
-    onSecondary: Colors.black, // セカンダリカラー上の文字色（黒）
-    onSurface: Colors.white, // 背景色上の文字色（白）
+    primary: Colors.lightBlueAccent,
+    // メインカラー（青）
+    secondary: Colors.cyanAccent,
+    // セカンダリカラー（青系）
+    surface: Colors.grey[850]!,
+    // 背景色（暗い灰色）
+    error: Colors.redAccent,
+    // エラー色（赤）
+    onPrimary: Colors.black,
+    // メインカラー上の文字色（黒）
+    onSecondary: Colors.black,
+    // セカンダリカラー上の文字色（黒）
+    onSurface: Colors.white,
+    // 背景色上の文字色（白）
     onError: Colors.white, // エラー色上の文字色（白）
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -39,15 +50,21 @@ final ThemeData customDarkBlueTheme = ThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   ),
-  textTheme: TextTheme(
-    bodyLarge: TextStyle(color: Colors.white), // メインテキスト（白）
-    bodyMedium: TextStyle(
-      color: Colors.white,
-    ), // サブテキスト（白）(もともとwhite70だったが、ちょっと灰色っぽい感じをうけた)
-    titleLarge: TextStyle(color: Colors.lightBlueAccent), // タイトル（青）
-  ),
-  splashColor: Colors.transparent, // 波紋の非表示
-  iconTheme: IconThemeData(color: Colors.lightBlueAccent), // アイコンの色（青）
-  dividerColor: Colors.grey[700], // 区切り線の色（灰色）
+  textTheme: ThemeData.dark().textTheme
+      .apply(
+        fontFamily: baseFontFamily,
+        bodyColor: Colors.white, // bodyMediumなどに適用
+        displayColor: Colors.white, // titleLargeなどに適用
+      )
+      .copyWith(
+        // 特定のスタイルのみ色を上書き
+        titleLarge: TextStyle(color: Colors.lightBlueAccent), // タイトル（青）
+      ),
+  splashColor: Colors.transparent,
+  // 波紋の非表示
+  iconTheme: IconThemeData(color: Colors.lightBlueAccent),
+  // アイコンの色（青）
+  dividerColor: Colors.grey[700],
+  // 区切り線の色（灰色）
   useMaterial3: true,
 );
