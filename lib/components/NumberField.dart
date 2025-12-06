@@ -7,12 +7,14 @@ class NumberField extends StatefulWidget {
     this.hintText,
     this.initialValue,
     this.onChanged,
+    this.intOnly = false,
     super.key,
   });
 
   final String? hintText;
   final double? initialValue;
   final Function(double)? onChanged;
+  final bool intOnly;
 
   @override
   State<NumberField> createState() => _NumberFieldState();
@@ -20,6 +22,7 @@ class NumberField extends StatefulWidget {
 
 class _NumberFieldState extends State<NumberField> {
   late final TextEditingController _controller;
+  late final intOnly;
 
   @override
   void initState() {
@@ -27,6 +30,7 @@ class _NumberFieldState extends State<NumberField> {
     _controller = TextEditingController(
       text: widget.initialValue?.toString() ?? '',
     );
+    intOnly = widget.intOnly;
   }
 
   @override
@@ -43,7 +47,9 @@ class _NumberFieldState extends State<NumberField> {
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
         // Allow only digits and a single dot
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+        FilteringTextInputFormatter.allow(
+          RegExp(widget.intOnly ? r'[0-9]' : r'[0-9.]'),
+        ),
         // Prevent multiple dots
         TextInputFormatter.withFunction((oldValue, newValue) {
           if (newValue.text.split('.').length > 2) {

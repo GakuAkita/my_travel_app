@@ -4,6 +4,8 @@ import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
+import 'package:my_travel_app/components/BasicTextField.dart';
+import 'package:my_travel_app/components/NumberField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
@@ -232,7 +234,10 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               Text("---------行程表から抽出-----------"),
               //...tables.map((table) => TableDataShown(table: table.tableData)),
               ...estimatedListFromItinerary.map(
-                (estimated) => EstimatedExpenseRow(estimated: estimated),
+                (estimated) => EstimatedExpenseRow(
+                  initialEstimated: estimated,
+                  isAdjustable: false,
+                ),
               ),
 
               Text("行程表合計:${estimatedExpenseFromItinerary.toInt()}"),
@@ -240,7 +245,10 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               Text("===========手動で入力============"),
               /* 概算に加えたくない場合は0円で入力 */
               ...estimatedListFromManual.map(
-                (estimated) => EstimatedExpenseRow(estimated: estimated),
+                (estimated) => EstimatedExpenseRow(
+                  initialEstimated: estimated,
+                  isAdjustable: true,
+                ),
               ),
 
               Text("手動合計:${estimatedExpenseFromManual.toInt()}"),
@@ -256,10 +264,33 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   }
 }
 
-class EstimatedExpenseRow extends StatelessWidget {
-  final EstimatedExpenseInfo estimated;
+class EstimatedExpenseRow extends StatefulWidget {
+  final EstimatedExpenseInfo initialEstimated;
+  final bool isAdjustable;
 
-  const EstimatedExpenseRow({required this.estimated, super.key});
+  const EstimatedExpenseRow({
+    required this.initialEstimated,
+    required this.isAdjustable,
+    super.key,
+  });
+
+  @override
+  State<EstimatedExpenseRow> createState() => _EstimatedExpenseRowState();
+}
+
+class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
+  EstimatedExpenseInfo estimated = EstimatedExpenseInfo(
+    expenseItem: "not initialized!!!",
+    amount: 0,
+    reimbursedByCnt: 1,
+  );
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    estimated = widget.initialEstimated;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -270,16 +301,38 @@ class EstimatedExpenseRow extends StatelessWidget {
             Flexible(
               flex: 4,
               fit: FlexFit.tight,
-              child: Text(estimated.expenseItem),
+              child:
+                  widget.isAdjustable
+                      ? BasicTextField(
+                        hintText: "",
+                        initialValue: widget.initialEstimated.expenseItem,
+                        onChanged: (item) {},
+                      )
+                      : Text("${widget.initialEstimated.expenseItem}"),
             ),
             Flexible(
               flex: 2,
               fit: FlexFit.tight,
-              child: Text("${estimated.amount}"),
+              child:
+                  widget.isAdjustable
+                      ? NumberField(
+                        initialValue: widget.initialEstimated.amount,
+                        onChanged: (value) {},
+                      )
+                      : Text("${widget.initialEstimated.amount}"),
             ),
             Flexible(
               fit: FlexFit.tight,
-              child: Text("${estimated.reimbursedByCnt}"),
+              child:
+                  widget.isAdjustable
+                      ? NumberField(
+                        initialValue:
+                            widget.initialEstimated.reimbursedByCnt.toDouble(),
+                        onChanged: (value) {
+                          int intVal = value.toInt();
+                        },
+                      )
+                      : Text("${widget.initialEstimated.reimbursedByCnt}"),
             ),
             Flexible(
               fit: FlexFit.tight,
