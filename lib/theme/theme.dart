@@ -4,23 +4,32 @@ final ThemeData customDarkBlueTheme = ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: Colors.grey[900],
   primaryColor: Colors.lightBlueAccent,
+  fontFamily: "PlaywriteNO",
   appBarTheme: AppBarTheme(
     backgroundColor: Colors.lightBlueAccent,
     iconTheme: IconThemeData(color: Colors.grey[900]),
     titleTextStyle: TextStyle(
+      fontFamily: "NotoSans",
       color: Colors.grey[900],
       fontSize: 20,
       fontWeight: FontWeight.bold,
     ),
   ),
   colorScheme: ColorScheme.dark(
-    primary: Colors.lightBlueAccent, // メインカラー（青）
-    secondary: Colors.cyanAccent, // セカンダリカラー（青系）
-    surface: Colors.grey[850]!, // 背景色（暗い灰色）
-    error: Colors.redAccent, // エラー色（赤）
-    onPrimary: Colors.black, // メインカラー上の文字色（黒）
-    onSecondary: Colors.black, // セカンダリカラー上の文字色（黒）
-    onSurface: Colors.white, // 背景色上の文字色（白）
+    primary: Colors.lightBlueAccent,
+    // メインカラー（青）
+    secondary: Colors.cyanAccent,
+    // セカンダリカラー（青系）
+    surface: Colors.grey[850]!,
+    // 背景色（暗い灰色）
+    error: Colors.redAccent,
+    // エラー色（赤）
+    onPrimary: Colors.black,
+    // メインカラー上の文字色（黒）
+    onSecondary: Colors.black,
+    // セカンダリカラー上の文字色（黒）
+    onSurface: Colors.white,
+    // 背景色上の文字色（白）
     onError: Colors.white, // エラー色上の文字色（白）
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -46,8 +55,11 @@ final ThemeData customDarkBlueTheme = ThemeData(
     ), // サブテキスト（白）(もともとwhite70だったが、ちょっと灰色っぽい感じをうけた)
     titleLarge: TextStyle(color: Colors.lightBlueAccent), // タイトル（青）
   ),
-  splashColor: Colors.transparent, // 波紋の非表示
-  iconTheme: IconThemeData(color: Colors.lightBlueAccent), // アイコンの色（青）
-  dividerColor: Colors.grey[700], // 区切り線の色（灰色）
+  splashColor: Colors.transparent,
+  // 波紋の非表示
+  iconTheme: IconThemeData(color: Colors.lightBlueAccent),
+  // アイコンの色（青）
+  dividerColor: Colors.grey[700],
+  // 区切り線の色（灰色）
   useMaterial3: true,
 );
