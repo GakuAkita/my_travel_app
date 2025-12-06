@@ -11,6 +11,7 @@ final ThemeData customDarkBlueTheme = ThemeData(
     iconTheme: IconThemeData(color: Colors.grey[900]),
     titleTextStyle: TextStyle(
       fontFamily: "Caveat",
+      fontFamilyFallback: [baseFontFamily],
       color: Colors.grey[900],
       fontSize: 25,
       fontWeight: FontWeight.bold,
