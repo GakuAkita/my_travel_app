@@ -28,6 +28,10 @@ jobs:
           google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           env-file-content: ${{ secrets.ENV_FILE }}
 
+      - name: Override flutter.minSdkVersion
+        run: |
+          echo "flutter.minSdkVersion=23" >> ./android/local.properties
+
       - name: Build the app
         run: flutter build apk --release
 
