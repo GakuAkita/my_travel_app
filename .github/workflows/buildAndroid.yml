@@ -30,7 +30,7 @@ jobs:
 
       - name: Override flutter.minSdkVersion
         run: |
-          echo "flutter.minSdkVersion=23" >> ./android/local.properties
+          sed -i 's/flutter\.minSdkVersion/23/g' ./android/app/build.gradle.kts
 
       - name: Build the app
         run: flutter build apk --release
