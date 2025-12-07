@@ -134,6 +134,20 @@ class EstimatedExpenseInfo {
     required this.reimbursedByCnt,
   });
 
+  EstimatedExpenseInfo copyWith({
+    String? id,
+    String? expenseItem,
+    double? amount,
+    int? reimbursedByCnt,
+  }) {
+    return EstimatedExpenseInfo(
+      id: id ?? this.id,
+      expenseItem: expenseItem ?? this.expenseItem,
+      amount: amount ?? this.amount,
+      reimbursedByCnt: reimbursedByCnt ?? this.reimbursedByCnt,
+    );
+  }
+
   static EstimatedExpenseInfo fromExpenseInfo(ExpenseInfo info) {
     return EstimatedExpenseInfo(
       id: info.id,

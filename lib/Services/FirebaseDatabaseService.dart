@@ -167,8 +167,18 @@ class FirebaseDatabaseService {
 
   static DatabaseReference singleTravelEstimatedRef(
     String groupId,
-    String travbelId,
-  ) => singleTravelExpensesRef(groupId, travbelId).child("estimated");
+    String travelId,
+  ) => singleTravelExpensesRef(groupId, travelId).child("estimated");
+
+  static DatabaseReference singleTravelEstimatedUpdateDateRef(
+    String groupId,
+    String travelId,
+  ) => singleTravelEstimatedRef(groupId, travelId).child("last_updated");
+
+  static DatabaseReference singleTravelEstimatedDataRef(
+    String groupId,
+    String travelId,
+  ) => singleTravelEstimatedRef(groupId, travelId).child("data");
 
   static DatabaseReference singleTravelItineraryRef(
     String groupId,

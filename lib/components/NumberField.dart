@@ -22,15 +22,18 @@ class NumberField extends StatefulWidget {
 
 class _NumberFieldState extends State<NumberField> {
   late final TextEditingController _controller;
-  late final intOnly;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: widget.initialValue?.toString() ?? '',
-    );
-    intOnly = widget.intOnly;
+    String initialText;
+    if (widget.intOnly && widget.initialValue != null) {
+      initialText = widget.initialValue!.toInt().toString();
+    } else {
+      initialText = widget.initialValue?.toString() ?? '';
+    }
+
+    _controller = TextEditingController(text: initialText);
   }
 
   @override
@@ -52,10 +55,34 @@ class _NumberFieldState extends State<NumberField> {
         ),
         // Prevent multiple dots
         TextInputFormatter.withFunction((oldValue, newValue) {
-          if (newValue.text.split('.').length > 2) {
-            return oldValue;
+          if (widget.intOnly) {
+            final text = newValue.text;
+            if (text.isEmpty) {
+              return newValue;
+            }
+            // Normalize the input to prevent leading zeros like "05" or "00".
+            final number = int.tryParse(text);
+            if (number == null) {
+              return oldValue; // Should not happen.
+            }
+            final normalizedText = number.toString();
+            if (normalizedText != text) {
+              // The text was changed (e.g. "05" -> "5"), update the text field.
+              return newValue.copyWith(
+                text: normalizedText,
+                selection: TextSelection.collapsed(
+                  offset: normalizedText.length,
+                ),
+              );
+            }
+            return newValue;
+          } else {
+            // Prevent multiple dots for decimal input.
+            if (newValue.text.split('.').length > 2) {
+              return oldValue;
+            }
+            return newValue;
           }
-          return newValue;
         }),
       ],
       onChanged: (strValue) {

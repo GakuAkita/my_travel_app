@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
@@ -165,19 +166,26 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
     if (estimatedMapFromManual == null) {
       /* まだ何もなかったら、夕食と昼食をリストに加えておく */
+      DateTime now = DateTime.now();
+      final formatForId = DateFormat('yyyyMMdd-HHmmSS');
+      final nowStr = formatForId.format(now);
+
       final lunch = EstimatedExpenseInfo(
+        id: "default_lunch_${nowStr}",
         amount: 2000 * days,
         expenseItem: "昼食",
         reimbursedByCnt: 1,
       );
 
       final dinner = EstimatedExpenseInfo(
+        id: "default_dinner_${nowStr}",
         expenseItem: "夕食",
         amount: 3000 * days,
         reimbursedByCnt: 1,
       );
 
       final gasoline = EstimatedExpenseInfo(
+        id: "default_gasoline_${nowStr}",
         expenseItem: "ガソリン",
         amount: 3000,
         reimbursedByCnt: people,
@@ -237,22 +245,28 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                 (estimated) => EstimatedExpenseRow(
                   initialEstimated: estimated,
                   isAdjustable: false,
+                  onValueChanged: (estimated) {
+                    /* Do nothing */
+                  },
                 ),
               ),
 
               Text("行程表合計:${estimatedExpenseFromItinerary.toInt()}"),
 
               Text("===========手動で入力============"),
+              Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
               /* 概算に加えたくない場合は0円で入力 */
               ...estimatedListFromManual.map(
                 (estimated) => EstimatedExpenseRow(
                   initialEstimated: estimated,
                   isAdjustable: true,
+                  onValueChanged: (newEstimated) {
+                    print("${newEstimated.id} ${newEstimated.expenseItem}");
+                  },
                 ),
               ),
 
               Text("手動合計:${estimatedExpenseFromManual.toInt()}"),
-
               Text("============================="),
               Text("すべての合計=${estimatedExpense}"),
               RoundedButton(title: "このデータを記録", onPressed: () {}),
@@ -267,10 +281,12 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 class EstimatedExpenseRow extends StatefulWidget {
   final EstimatedExpenseInfo initialEstimated;
   final bool isAdjustable;
+  final Function(EstimatedExpenseInfo) onValueChanged;
 
   const EstimatedExpenseRow({
     required this.initialEstimated,
     required this.isAdjustable,
+    required this.onValueChanged,
     super.key,
   });
 
@@ -289,6 +305,7 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("ExpenseRowState initialized!!");
     estimated = widget.initialEstimated;
   }
 
@@ -306,7 +323,10 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                       ? BasicTextField(
                         hintText: "",
                         initialValue: widget.initialEstimated.expenseItem,
-                        onChanged: (item) {},
+                        onChanged: (item) {
+                          estimated = estimated.copyWith(expenseItem: item);
+                          widget.onValueChanged(estimated);
+                        },
                       )
                       : Text("${widget.initialEstimated.expenseItem}"),
             ),
@@ -317,7 +337,10 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                   widget.isAdjustable
                       ? NumberField(
                         initialValue: widget.initialEstimated.amount,
-                        onChanged: (value) {},
+                        onChanged: (value) {
+                          estimated = estimated.copyWith(amount: value);
+                          widget.onValueChanged(estimated);
+                        },
                       )
                       : Text("${widget.initialEstimated.amount}"),
             ),
@@ -330,7 +353,12 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                             widget.initialEstimated.reimbursedByCnt.toDouble(),
                         onChanged: (value) {
                           int intVal = value.toInt();
+                          estimated = estimated.copyWith(
+                            reimbursedByCnt: intVal,
+                          );
+                          widget.onValueChanged(estimated);
                         },
+                        intOnly: true,
                       )
                       : Text("${widget.initialEstimated.reimbursedByCnt}"),
             ),
