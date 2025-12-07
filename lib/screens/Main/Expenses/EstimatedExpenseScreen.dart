@@ -132,7 +132,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
     final travelId = shownTravel.travelId!;
 
     final estRet =
-        await FirebaseDatabaseService.getSingleTravelEstimatedExpenses(
+        await FirebaseDatabaseService.getSingleTravelEstimatedExpensesData(
           groupId,
           travelId,
         );
@@ -256,20 +256,31 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               Text("===========手動で入力============"),
               Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
               /* 概算に加えたくない場合は0円で入力 */
-              ...estimatedListFromManual.map(
-                (estimated) => EstimatedExpenseRow(
+              ...estimatedListFromManual.asMap().entries.map((entry) {
+                final index = entry.key;
+                final estimated = entry.value;
+
+                return EstimatedExpenseRow(
                   initialEstimated: estimated,
                   isAdjustable: true,
                   onValueChanged: (newEstimated) {
-                    print("${newEstimated.id} ${newEstimated.expenseItem}");
+                    // print(
+                    //   "$index -> ${newEstimated.id} ${newEstimated.expenseItem}",
+                    // );
+                    estimatedListFromManual[index] = newEstimated;
                   },
-                ),
-              ),
+                );
+              }),
 
               Text("手動合計:${estimatedExpenseFromManual.toInt()}"),
               Text("============================="),
               Text("すべての合計=${estimatedExpense}"),
-              RoundedButton(title: "このデータを記録", onPressed: () {}),
+              RoundedButton(
+                title: "このデータを記録",
+                onPressed: () async {
+                  /* ここで配列ごとFirebaseに入れてしまう */
+                },
+              ),
             ],
           ),
         ),
@@ -305,71 +316,75 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("ExpenseRowState initialized!!");
+    //print("ExpenseRowState initialized!!");
     estimated = widget.initialEstimated;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Flexible(
-              flex: 4,
-              fit: FlexFit.tight,
-              child:
-                  widget.isAdjustable
-                      ? BasicTextField(
-                        hintText: "",
-                        initialValue: widget.initialEstimated.expenseItem,
-                        onChanged: (item) {
-                          estimated = estimated.copyWith(expenseItem: item);
-                          widget.onValueChanged(estimated);
-                        },
-                      )
-                      : Text("${widget.initialEstimated.expenseItem}"),
-            ),
-            Flexible(
-              flex: 2,
-              fit: FlexFit.tight,
-              child:
-                  widget.isAdjustable
-                      ? NumberField(
-                        initialValue: widget.initialEstimated.amount,
-                        onChanged: (value) {
-                          estimated = estimated.copyWith(amount: value);
-                          widget.onValueChanged(estimated);
-                        },
-                      )
-                      : Text("${widget.initialEstimated.amount}"),
-            ),
-            Flexible(
-              fit: FlexFit.tight,
-              child:
-                  widget.isAdjustable
-                      ? NumberField(
-                        initialValue:
-                            widget.initialEstimated.reimbursedByCnt.toDouble(),
-                        onChanged: (value) {
-                          int intVal = value.toInt();
-                          estimated = estimated.copyWith(
-                            reimbursedByCnt: intVal,
-                          );
-                          widget.onValueChanged(estimated);
-                        },
-                        intOnly: true,
-                      )
-                      : Text("${widget.initialEstimated.reimbursedByCnt}"),
-            ),
-            Flexible(
-              fit: FlexFit.tight,
-              flex: 2,
-              child: Text("${estimated.amount / estimated.reimbursedByCnt}"),
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(2),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Flexible(
+                flex: 4,
+                fit: FlexFit.tight,
+                child:
+                    widget.isAdjustable
+                        ? BasicTextField(
+                          hintText: "",
+                          initialValue: widget.initialEstimated.expenseItem,
+                          onChanged: (item) {
+                            estimated = estimated.copyWith(expenseItem: item);
+                            widget.onValueChanged(estimated);
+                          },
+                        )
+                        : Text("${widget.initialEstimated.expenseItem}"),
+              ),
+              Flexible(
+                flex: 2,
+                fit: FlexFit.tight,
+                child:
+                    widget.isAdjustable
+                        ? NumberField(
+                          initialValue: widget.initialEstimated.amount,
+                          onChanged: (value) {
+                            estimated = estimated.copyWith(amount: value);
+                            widget.onValueChanged(estimated);
+                          },
+                        )
+                        : Text("${widget.initialEstimated.amount}"),
+              ),
+              Flexible(
+                fit: FlexFit.tight,
+                child:
+                    widget.isAdjustable
+                        ? NumberField(
+                          initialValue:
+                              widget.initialEstimated.reimbursedByCnt
+                                  .toDouble(),
+                          onChanged: (value) {
+                            int intVal = value.toInt();
+                            estimated = estimated.copyWith(
+                              reimbursedByCnt: intVal,
+                            );
+                            widget.onValueChanged(estimated);
+                          },
+                          intOnly: true,
+                        )
+                        : Text("${widget.initialEstimated.reimbursedByCnt}"),
+              ),
+              Flexible(
+                fit: FlexFit.tight,
+                flex: 2,
+                child: Text("${estimated.amount / estimated.reimbursedByCnt}"),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

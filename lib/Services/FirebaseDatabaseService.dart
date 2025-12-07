@@ -451,9 +451,9 @@ class FirebaseDatabaseService {
   }
 
   static Future<ResultInfo<Map<String, EstimatedExpenseInfo>?>>
-  getSingleTravelEstimatedExpenses(String groupId, String travelId) async {
+  getSingleTravelEstimatedExpensesData(String groupId, String travelId) async {
     try {
-      final snap = await singleTravelEstimatedRef(groupId, travelId).get();
+      final snap = await singleTravelEstimatedDataRef(groupId, travelId).get();
       if (!snap.exists) {
         /* データがそもそもない */
         return ResultInfo.success(data: null);
