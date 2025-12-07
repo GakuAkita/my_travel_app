@@ -264,9 +264,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                   initialEstimated: estimated,
                   isAdjustable: true,
                   onValueChanged: (newEstimated) {
-                    // print(
-                    //   "$index -> ${newEstimated.id} ${newEstimated.expenseItem}",
-                    // );
+                    print(
+                      "$index -> ${newEstimated.id} ${newEstimated.expenseItem} ${newEstimated.reimbursedByCnt}",
+                    );
                     estimatedListFromManual[index] = newEstimated;
                   },
                 );
@@ -312,12 +312,15 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
     reimbursedByCnt: 1,
   );
 
+  late final ValueNotifier<EstimatedExpenseInfo> _estimatedNotifier;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     //print("ExpenseRowState initialized!!");
     estimated = widget.initialEstimated;
+    _estimatedNotifier = ValueNotifier(estimated);
   }
 
   @override
@@ -339,6 +342,7 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                           onChanged: (item) {
                             estimated = estimated.copyWith(expenseItem: item);
                             widget.onValueChanged(estimated);
+                            _estimatedNotifier.value = estimated;
                           },
                         )
                         : Text("${widget.initialEstimated.expenseItem}"),
@@ -353,6 +357,7 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                           onChanged: (value) {
                             estimated = estimated.copyWith(amount: value);
                             widget.onValueChanged(estimated);
+                            _estimatedNotifier.value = estimated;
                           },
                         )
                         : Text("${widget.initialEstimated.amount}"),
@@ -370,8 +375,20 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                             estimated = estimated.copyWith(
                               reimbursedByCnt: intVal,
                             );
+                            _estimatedNotifier.value = estimated;
+                            if (intVal < 1 || intVal > 99) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("人数は1〜99人までです。")),
+                              );
+                              return;
+                            }
                             widget.onValueChanged(estimated);
+                            print(
+                              "_estimatedNotifier.value: ${_estimatedNotifier.value}",
+                            );
                           },
+                          minValue: 1,
+                          maxValue: 99,
                           intOnly: true,
                         )
                         : Text("${widget.initialEstimated.reimbursedByCnt}"),
@@ -379,7 +396,19 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
               Flexible(
                 fit: FlexFit.tight,
                 flex: 2,
-                child: Text("${estimated.amount / estimated.reimbursedByCnt}"),
+                child: ValueListenableBuilder(
+                  //総額や人数が変わったときだけ表示更新
+                  valueListenable: _estimatedNotifier,
+                  builder: (context, value, child) {
+                    return Text(
+                      _estimatedNotifier.value.reimbursedByCnt == 0
+                          ? "-"
+                          : (_estimatedNotifier.value.amount /
+                                  _estimatedNotifier.value.reimbursedByCnt)
+                              .toStringAsFixed(1),
+                    );
+                  },
+                ),
               ),
             ],
           ),

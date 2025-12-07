@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:my_travel_app/components/BasicTextField.dart';
@@ -8,6 +10,8 @@ class NumberField extends StatefulWidget {
     this.initialValue,
     this.onChanged,
     this.intOnly = false,
+    this.minValue,
+    this.maxValue,
     super.key,
   });
 
@@ -15,6 +19,8 @@ class NumberField extends StatefulWidget {
   final double? initialValue;
   final Function(double)? onChanged;
   final bool intOnly;
+  final double? minValue;
+  final double? maxValue;
 
   @override
   State<NumberField> createState() => _NumberFieldState();
@@ -22,6 +28,7 @@ class NumberField extends StatefulWidget {
 
 class _NumberFieldState extends State<NumberField> {
   late final TextEditingController _controller;
+  late final FocusNode _focusNode;
 
   @override
   void initState() {
@@ -34,17 +41,60 @@ class _NumberFieldState extends State<NumberField> {
     }
 
     _controller = TextEditingController(text: initialText);
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus) {
+      final text = _controller.text;
+      var value = double.tryParse(text);
+
+      if (value != null) {
+        var clampedValue = value;
+        if (widget.minValue != null) {
+          clampedValue = max(widget.minValue!, clampedValue);
+        }
+        if (widget.maxValue != null) {
+          clampedValue = min(widget.maxValue!, clampedValue);
+        }
+
+        if (clampedValue != value) {
+          final newText = widget.intOnly
+              ? clampedValue.toInt().toString()
+              : clampedValue.toString();
+          _controller.text = newText;
+        }
+
+        if (widget.onChanged != null) {
+          widget.onChanged!(clampedValue);
+        }
+      } else if (text.isNotEmpty) {
+        // Handle cases where the text is invalid on unfocus, e.g., just a "."
+        final double fallbackValue = widget.minValue ?? 0.0;
+        final newText = widget.intOnly
+            ? fallbackValue.toInt().toString()
+            : fallbackValue.toString();
+        _controller.text = newText;
+        if (widget.onChanged != null) {
+          widget.onChanged!(fallbackValue);
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BasicTextField(
+      focusNode: _focusNode,
       controller: _controller,
       hintText: widget.hintText ?? "",
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
