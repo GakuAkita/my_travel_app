@@ -68,21 +68,23 @@ class _NumberFieldState extends State<NumberField> {
         }
 
         if (clampedValue != value) {
-          final newText = widget.intOnly
-              ? clampedValue.toInt().toString()
-              : clampedValue.toString();
+          final newText =
+              widget.intOnly
+                  ? clampedValue.toInt().toString()
+                  : clampedValue.toString();
           _controller.text = newText;
         }
 
         if (widget.onChanged != null) {
           widget.onChanged!(clampedValue);
         }
-      } else if (text.isNotEmpty) {
-        // Handle cases where the text is invalid on unfocus, e.g., just a "."
+      } else {
+        // Handle cases where the text is empty or invalid on unfocus (e.g., ".")
         final double fallbackValue = widget.minValue ?? 0.0;
-        final newText = widget.intOnly
-            ? fallbackValue.toInt().toString()
-            : fallbackValue.toString();
+        final newText =
+            widget.intOnly
+                ? fallbackValue.toInt().toString()
+                : fallbackValue.toString();
         _controller.text = newText;
         if (widget.onChanged != null) {
           widget.onChanged!(fallbackValue);
@@ -141,7 +143,10 @@ class _NumberFieldState extends State<NumberField> {
         final value = double.tryParse(strValue);
         if (value != null) {
           widget.onChanged!(value);
-        }
+        } else if (strValue.isEmpty) {
+          // If the field is cleared, treat it as 0.
+          widget.onChanged!(0.0);
+        } else {}
       },
     );
   }

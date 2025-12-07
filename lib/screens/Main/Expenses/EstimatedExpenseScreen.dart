@@ -267,6 +267,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                     print(
                       "$index -> ${newEstimated.id} ${newEstimated.expenseItem} ${newEstimated.reimbursedByCnt}",
                     );
+                    print(
+                      "if the controller text is empty, onChanged might not be executed..",
+                    );
                     estimatedListFromManual[index] = newEstimated;
                   },
                 );
@@ -376,13 +379,23 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                               reimbursedByCnt: intVal,
                             );
                             _estimatedNotifier.value = estimated;
-                            if (intVal < 1 || intVal > 99) {
+                            if (intVal < 1) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("人数は1〜99人までです。")),
                               );
-                              return;
+                              widget.onValueChanged(
+                                estimated.copyWith(reimbursedByCnt: 1),
+                              );
+                            } else if (intVal > 99) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("人数は1〜99人までです。")),
+                              );
+                              widget.onValueChanged(
+                                estimated.copyWith(reimbursedByCnt: 99),
+                              );
+                            } else {
+                              widget.onValueChanged(estimated);
                             }
-                            widget.onValueChanged(estimated);
                             print(
                               "_estimatedNotifier.value: ${_estimatedNotifier.value}",
                             );
