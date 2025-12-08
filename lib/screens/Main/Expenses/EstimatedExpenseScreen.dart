@@ -6,6 +6,7 @@ import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/components/BasicTextField.dart';
+import 'package:my_travel_app/components/CircleIconButton.dart';
 import 'package:my_travel_app/components/NumberField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
@@ -262,6 +263,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                   onValueChanged: (estimated) {
                     /* Do nothing */
                   },
+                  /* onDeleteは必要ない */
                 ),
               ),
 
@@ -288,8 +290,39 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                       estimatedListFromManual![index] = newEstimated;
                       _sumEstimatedExpenseList();
                     },
+                    onDelete: (estimated) {
+                      print(
+                        "Deleted ${estimated.expenseItem} ${estimated.amount}",
+                      );
+                      estimatedListFromManual!.removeAt(index);
+                      _sumEstimatedExpenseList();
+                      setState(() {});
+                    },
                   );
                 }),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleIconButton(
+                  icon: Icons.add,
+                  onPressed: () {
+                    final emptyEstimated = EstimatedExpenseInfo(
+                      id: "",
+                      expenseItem: "",
+                      amount: 0,
+                      reimbursedByCnt: 1,
+                    );
+
+                    if (estimatedListFromManual == null) {
+                      estimatedListFromManual = [emptyEstimated];
+                    } else {
+                      estimatedListFromManual!.add(emptyEstimated);
+                    }
+                    _sumEstimatedExpenseList();
+                    setState(() {});
+                  },
+                  radius: 40,
+                ),
+              ),
 
               Text("手動合計:${estimatedExpenseFromManual.toInt()}"),
               Text("============================="),
@@ -386,11 +419,13 @@ class EstimatedExpenseRow extends StatefulWidget {
   final EstimatedExpenseInfo initialEstimated;
   final bool isAdjustable;
   final Function(EstimatedExpenseInfo) onValueChanged;
+  final Function(EstimatedExpenseInfo)? onDelete;
 
   const EstimatedExpenseRow({
     required this.initialEstimated,
     required this.isAdjustable,
     required this.onValueChanged,
+    this.onDelete,
     super.key,
   });
 
@@ -399,21 +434,13 @@ class EstimatedExpenseRow extends StatefulWidget {
 }
 
 class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
-  EstimatedExpenseInfo estimated = EstimatedExpenseInfo(
-    expenseItem: "not initialized!!!",
-    amount: 0,
-    reimbursedByCnt: 1,
-  );
-
   late final ValueNotifier<EstimatedExpenseInfo> _estimatedNotifier;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //print("ExpenseRowState initialized!!");
-    estimated = widget.initialEstimated;
-    _estimatedNotifier = ValueNotifier(estimated);
+    _estimatedNotifier = ValueNotifier(widget.initialEstimated);
   }
 
   @override
@@ -433,9 +460,9 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                           hintText: "",
                           initialValue: widget.initialEstimated.expenseItem,
                           onChanged: (item) {
-                            estimated = estimated.copyWith(expenseItem: item);
-                            widget.onValueChanged(estimated);
-                            _estimatedNotifier.value = estimated;
+                            _estimatedNotifier.value = _estimatedNotifier.value
+                                .copyWith(expenseItem: item);
+                            widget.onValueChanged(_estimatedNotifier.value);
                           },
                         )
                         : Text("${widget.initialEstimated.expenseItem}"),
@@ -448,9 +475,9 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                         ? NumberField(
                           initialValue: widget.initialEstimated.amount,
                           onChanged: (value) {
-                            estimated = estimated.copyWith(amount: value);
-                            widget.onValueChanged(estimated);
-                            _estimatedNotifier.value = estimated;
+                            _estimatedNotifier.value = _estimatedNotifier.value
+                                .copyWith(amount: value);
+                            widget.onValueChanged(_estimatedNotifier.value);
                           },
                         )
                         : Text("${widget.initialEstimated.amount}"),
@@ -465,26 +492,26 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                                   .toDouble(),
                           onChanged: (value) {
                             int intVal = value.toInt();
-                            estimated = estimated.copyWith(
-                              reimbursedByCnt: intVal,
-                            );
-                            _estimatedNotifier.value = estimated;
+
+                            final updatedEstimated = _estimatedNotifier.value
+                                .copyWith(reimbursedByCnt: intVal);
+                            _estimatedNotifier.value = updatedEstimated;
                             if (intVal < 1) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("人数は1〜99人までです。")),
                               );
                               widget.onValueChanged(
-                                estimated.copyWith(reimbursedByCnt: 1),
+                                updatedEstimated.copyWith(reimbursedByCnt: 1),
                               );
                             } else if (intVal > 99) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("人数は1〜99人までです。")),
                               );
                               widget.onValueChanged(
-                                estimated.copyWith(reimbursedByCnt: 99),
+                                updatedEstimated.copyWith(reimbursedByCnt: 99),
                               );
                             } else {
-                              widget.onValueChanged(estimated);
+                              widget.onValueChanged(updatedEstimated);
                             }
                             print(
                               "_estimatedNotifier.value: ${_estimatedNotifier.value}",
@@ -513,6 +540,19 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                   },
                 ),
               ),
+              if (widget.onDelete != null)
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: GestureDetector(
+                    onTap: () {
+                      widget.onDelete!(_estimatedNotifier.value);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Icon(Icons.delete),
+                    ),
+                  ),
+                ),
             ],
           ),
         ],

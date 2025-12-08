@@ -3,19 +3,22 @@ import 'package:flutter/material.dart';
 class CircleIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onPressed;
+  final double radius;
 
-  const CircleIconButton({
+  CircleIconButton({
     super.key,
     required this.icon,
     required this.onPressed,
+    this.radius = 50.0,
   });
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed, // ボタンがタップされたときの動作
       child: Container(
-        width: 56.0, // 円のサイズ
-        height: 56.0, // 円のサイズ
+        width: radius, // 円のサイズ
+        height: radius, // 円のサイズ
         decoration: BoxDecoration(
           shape: BoxShape.circle, // 円形にする
           color: Theme.of(context).colorScheme.primary, // ボタンの色
