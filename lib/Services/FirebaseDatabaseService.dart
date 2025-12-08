@@ -468,14 +468,14 @@ class FirebaseDatabaseService {
       }
 
       // List<dynamic>をList<EstimatedExpenseInfo>へ安全に変換する
-      final List<dynamic> convertedList =
-          value
-              .where((item) => item is Map) // リスト内のMapでない要素(nullなど)を除外
-              .map((item) => EstimatedExpenseInfo.convFromMap(item as Map))
-              .toList();
-      final castedList = convertedList as List<EstimatedExpenseInfo>;
-
-      return ResultInfo.success(data: castedList);
+      List<EstimatedExpenseInfo> retList = [];
+      for (final item in value) {
+        if (item is Map) {
+          retList.add(EstimatedExpenseInfo.convFromMap(item));
+        }
+      }
+      ;
+      return ResultInfo.success(data: retList);
     } catch (e) {
       print("Error in getSingleTravelEstimatedExpensesData: $e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
@@ -494,6 +494,31 @@ class FirebaseDatabaseService {
       return ResultInfo.success();
     } catch (e) {
       print("Error in setSingleTravelEstimatedExpensesData:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo<String?>> getSingleTravelEstimatedUpdateDate(
+    String groupId,
+    String travelId,
+  ) async {
+    try {
+      final estimatedRef = singleTravelEstimatedUpdatedDateRef(
+        groupId,
+        travelId,
+      );
+      final snap = await estimatedRef.get();
+      if (!snap.exists) {
+        print("Probably there is no estimated update date...");
+        return ResultInfo.success(
+          message: "Probably there is no estimated update date...",
+          data: null,
+        );
+      }
+      final isoStr = snap.value as String;
+      return ResultInfo.success(data: isoStr);
+    } catch (e) {
+      print("Error in getSingleTravelEstimatedUpdateDate:$e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }

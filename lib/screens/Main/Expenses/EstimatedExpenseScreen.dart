@@ -141,8 +141,22 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
       );
     }
 
-    if (estRet.data == null) {
+    final lastUpdateRet =
+        await FirebaseDatabaseService.getSingleTravelEstimatedUpdateDate(
+          groupId,
+          travelId,
+        );
+    if (!lastUpdateRet.isSuccess) {
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "${lastUpdateRet.error?.errorMessage}"),
+      );
+    }
+
+    if (lastUpdateRet.data == null) {
+      /* まだ一度も保存されていない */
       estimatedListFromManual = null;
+    } else if (estRet.data == null) {
+      estimatedListFromManual = [];
     } else {
       estimatedListFromManual = estRet.data;
     }
@@ -336,7 +350,8 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                       await FirebaseDatabaseService.setSingleTravelEstimatedExpensesData(
                         groupId,
                         travelId,
-                        estimatedListFromManual!,
+                        //estimatedListFromManual!,
+                        [],
                       );
                   if (!ret.isSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -354,6 +369,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                     isoStr,
                   );
                   print("保存に成功しました");
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text("保存に成功しました")));
                 },
               ),
             ],
