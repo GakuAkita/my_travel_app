@@ -26,8 +26,7 @@ class EstimatedExpenseScreen extends StatefulWidget {
 
 class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   final List<EstimatedExpenseInfo> estimatedListFromItinerary = [];
-  List<EstimatedExpenseInfo> estimatedListFromManual = [];
-  Map<String, EstimatedExpenseInfo>? estimatedMapFromManual = null;
+  List<EstimatedExpenseInfo>? estimatedListFromManual = [];
   final List<EstimatedExpenseInfo> estimatedExpenseList = [];
 
   double estimatedExpense = 0.0;
@@ -143,9 +142,9 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
     }
 
     if (estRet.data == null) {
-      estimatedMapFromManual = null;
+      estimatedListFromManual = null;
     } else {
-      estimatedMapFromManual = estRet.data;
+      estimatedListFromManual = estRet.data;
     }
     return ResultInfo.success();
   }
@@ -164,7 +163,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
     /* デーブルの数を日数として仮定して計算。かつ、昼食夕食がホテルについてないとする */
     final days = tables.length.toDouble();
 
-    if (estimatedMapFromManual == null) {
+    if (estimatedListFromManual == null) {
       /* まだ何もなかったら、夕食と昼食をリストに加えておく */
       DateTime now = DateTime.now();
       final formatForId = DateFormat('yyyyMMdd-HHmmSS');
@@ -191,14 +190,11 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
         reimbursedByCnt: people,
       );
 
-      estimatedListFromManual.add(lunch);
-      estimatedListFromManual.add(dinner);
-      estimatedListFromManual.add(gasoline);
-    } else {
-      /* すでに保存されている場合はMapをListにすればよいだけ */
-      for (final entry in estimatedMapFromManual!.entries) {
-        estimatedListFromManual.add(entry.value);
-      }
+      estimatedListFromManual = [];
+      estimatedListFromManual?.add(lunch);
+      estimatedListFromManual?.add(dinner);
+      estimatedListFromManual?.add(gasoline);
+      setState(() {});
     }
     return ResultInfo.success();
   }
@@ -212,8 +208,10 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
       estimatedExpenseFromItinerary += (est.amount / est.reimbursedByCnt);
     }
 
-    for (final est in estimatedListFromManual) {
-      estimatedExpenseFromManual += (est.amount / est.reimbursedByCnt);
+    if (estimatedListFromManual != null) {
+      for (final est in estimatedListFromManual!) {
+        estimatedExpenseFromManual += (est.amount / est.reimbursedByCnt);
+      }
     }
 
     estimatedExpense =
@@ -233,6 +231,8 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final itineraryStore = context.read<ItineraryStore>();
+    final shownTravel = itineraryStore.shownTravelBasic;
     return Scaffold(
       appBar: TopAppBar(title: "費用概算(作成中)", automaticallyImplyLeading: true),
       body: SafeArea(
@@ -256,24 +256,26 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               Text("===========手動で入力============"),
               Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
               /* 概算に加えたくない場合は0円で入力 */
-              ...estimatedListFromManual.asMap().entries.map((entry) {
-                final index = entry.key;
-                final estimated = entry.value;
+              if (estimatedListFromManual != null)
+                ...estimatedListFromManual!.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final estimated = entry.value;
 
-                return EstimatedExpenseRow(
-                  initialEstimated: estimated,
-                  isAdjustable: true,
-                  onValueChanged: (newEstimated) {
-                    print(
-                      "$index -> ${newEstimated.id} ${newEstimated.expenseItem} ${newEstimated.reimbursedByCnt}",
-                    );
-                    print(
-                      "if the controller text is empty, onChanged might not be executed..",
-                    );
-                    estimatedListFromManual[index] = newEstimated;
-                  },
-                );
-              }),
+                  return EstimatedExpenseRow(
+                    initialEstimated: estimated,
+                    isAdjustable: true,
+                    onValueChanged: (newEstimated) {
+                      print(
+                        "$index -> ${newEstimated.id} ${newEstimated.expenseItem} ${newEstimated.reimbursedByCnt}",
+                      );
+                      print(
+                        "if the controller text is empty, onChanged might not be executed..",
+                      );
+                      estimatedListFromManual![index] = newEstimated;
+                      _sumEstimatedExpenseList();
+                    },
+                  );
+                }),
 
               Text("手動合計:${estimatedExpenseFromManual.toInt()}"),
               Text("============================="),
@@ -281,7 +283,77 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               RoundedButton(
                 title: "このデータを記録",
                 onPressed: () async {
+                  if (estimatedListFromManual == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("estimatedListFromManualがnullです"),
+                      ),
+                    );
+                    return;
+                  }
                   /* ここで配列ごとFirebaseに入れてしまう */
+                  for (final est in estimatedListFromManual!) {
+                    if (est.expenseItem == "") {
+                      print("使うものが空になっています");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("使うものが空になっています")),
+                      );
+                      return;
+                    }
+
+                    if (est.amount < 0) {
+                      /* ここに来ることはない */
+                      print("amountの数値がおかしい");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("総額が負になっています。${est.amount}")),
+                      );
+                      return;
+                    }
+
+                    if (est.reimbursedByCnt < 1 || est.reimbursedByCnt > 99) {
+                      print("人数の数値がおかしいです");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("人数が正しくありません。${est.reimbursedByCnt}"),
+                        ),
+                      );
+                      return;
+                    }
+                  }
+
+                  /* ここまできたら問題ないのでFirebaseに配列ごと保存 */
+                  if (!checkIsShownTravelInput(shownTravel).isSuccess) {
+                    /* ここに来ることはない */
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("旅行が適切に選択されていません。開発者に連絡してください")),
+                    );
+                    return;
+                  }
+
+                  final groupId = shownTravel!.groupId!;
+                  final travelId = shownTravel.travelId!;
+                  final ret =
+                      await FirebaseDatabaseService.setSingleTravelEstimatedExpensesData(
+                        groupId,
+                        travelId,
+                        estimatedListFromManual!,
+                      );
+                  if (!ret.isSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("エラーが発生しました。${ret.error?.errorMessage}"),
+                      ),
+                    );
+                    return;
+                  }
+
+                  final isoStr = DateTime.now().toIso8601String();
+                  await FirebaseDatabaseService.setSingleTravelEstimatedUpdateDate(
+                    groupId,
+                    travelId,
+                    isoStr,
+                  );
+                  print("保存に成功しました");
                 },
               ),
             ],

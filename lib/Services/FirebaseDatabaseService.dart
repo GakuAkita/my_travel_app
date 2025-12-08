@@ -170,7 +170,7 @@ class FirebaseDatabaseService {
     String travelId,
   ) => singleTravelExpensesRef(groupId, travelId).child("estimated");
 
-  static DatabaseReference singleTravelEstimatedUpdateDateRef(
+  static DatabaseReference singleTravelEstimatedUpdatedDateRef(
     String groupId,
     String travelId,
   ) => singleTravelEstimatedRef(groupId, travelId).child("last_updated");
@@ -450,22 +450,68 @@ class FirebaseDatabaseService {
     }
   }
 
-  static Future<ResultInfo<Map<String, EstimatedExpenseInfo>?>>
+  static Future<ResultInfo<List<EstimatedExpenseInfo>?>>
   getSingleTravelEstimatedExpensesData(String groupId, String travelId) async {
     try {
       final snap = await singleTravelEstimatedDataRef(groupId, travelId).get();
-      if (!snap.exists) {
-        /* データがそもそもない */
+      if (!snap.exists || snap.value == null) {
+        // データがそもそもない、もしくはnullの場合
         return ResultInfo.success(data: null);
       }
-      final map = snap.value as Map;
-      final Map<String, EstimatedExpenseInfo> estimatedMap = {};
-      map.forEach((key, value) {
-        estimatedMap[key] = EstimatedExpenseInfo.convFromMap(value);
-      });
-      return ResultInfo.success(data: estimatedMap);
+
+      final value = snap.value;
+
+      // Firebaseから取得した値がListでない場合(空のリストを保存した場合など)
+      // 安全のため空のリストを返す
+      if (value is! List) {
+        return ResultInfo.success(data: []);
+      }
+
+      // List<dynamic>をList<EstimatedExpenseInfo>へ安全に変換する
+      final List<dynamic> convertedList =
+          value
+              .where((item) => item is Map) // リスト内のMapでない要素(nullなど)を除外
+              .map((item) => EstimatedExpenseInfo.convFromMap(item as Map))
+              .toList();
+      final castedList = convertedList as List<EstimatedExpenseInfo>;
+
+      return ResultInfo.success(data: castedList);
     } catch (e) {
-      print("Error in getSingleTravelEstimatedExpenses:$e");
+      print("Error in getSingleTravelEstimatedExpensesData: $e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo> setSingleTravelEstimatedExpensesData(
+    String groupId,
+    String travelId,
+    List<EstimatedExpenseInfo> estimatedList,
+  ) async {
+    try {
+      final estimatedRef = singleTravelEstimatedDataRef(groupId, travelId);
+      final mappedList = estimatedList.map((e) => e.toMap()).toList();
+      await estimatedRef.set(mappedList);
+      return ResultInfo.success();
+    } catch (e) {
+      print("Error in setSingleTravelEstimatedExpensesData:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo> setSingleTravelEstimatedUpdateDate(
+    String groupId,
+    String travelId,
+    String isoStr,
+  ) async {
+    try {
+      final estimatedRef = singleTravelEstimatedUpdatedDateRef(
+        groupId,
+        travelId,
+      );
+      await estimatedRef.set(isoStr);
+      return ResultInfo.success();
+    } catch (e) {
+      print("Error in setSingleTravelEstimatedUpdateDate:$e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
@@ -668,7 +714,6 @@ class FirebaseDatabaseService {
       await onEditRef.onDisconnect().cancel();
       return ResultInfo.success();
     } catch (e) {
-      print("Error in cancelOnDisconnectForItineraryOnEdit:$e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
