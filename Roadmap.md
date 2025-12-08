@@ -36,6 +36,8 @@
 - done:::グループ削除のときの対応
 - done:::listener(特に割り勘の部分)変更を通知を受けたときに自動で更新
 - done:::dependabotにワーニング解決。axiosやな
+- 削除をするのは一番最後しか消せない
+- ItineraryScreenのEdit画面が右にはみ出ている
 - Github警告js-yaml has prototype pollution in merge
 
 optional
