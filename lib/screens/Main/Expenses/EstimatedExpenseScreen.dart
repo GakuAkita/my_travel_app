@@ -229,9 +229,10 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
       }
     }
 
-    estimatedExpense =
-        estimatedExpenseFromItinerary + estimatedExpenseFromManual;
-    setState(() {});
+    setState(() {
+      estimatedExpense =
+          estimatedExpenseFromItinerary + estimatedExpenseFromManual;
+    });
   }
 
   /* 費用概算は工程表を元に計算してく */
@@ -273,33 +274,36 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
               Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
               /* 概算に加えたくない場合は0円で入力 */
               if (estimatedListFromManual != null)
-                ...estimatedListFromManual!.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final estimated = entry.value;
+                Column(
+                  children: List.generate(estimatedListFromManual!.length, (
+                    index,
+                  ) {
+                    return EstimatedExpenseRow(
+                      initialEstimated: estimatedListFromManual![index],
+                      isAdjustable: true,
+                      onValueChanged: (newEstimated) {
+                        print(
+                          "$index -> ${newEstimated.id} ${newEstimated.expenseItem} ${newEstimated.reimbursedByCnt}",
+                        );
+                        // print(
+                        //   "if the controller text is empty, onChanged might not be executed..",
+                        // );
+                        estimatedListFromManual![index] = newEstimated;
+                        _sumEstimatedExpenseList();
+                      },
+                      onDelete: (estimated) {
+                        print(
+                          "Deleted ${estimated.expenseItem} ${estimated.amount}",
+                        );
+                        setState(() {
+                          estimatedListFromManual!.removeAt(index);
+                          _sumEstimatedExpenseList();
+                        });
+                      },
+                    );
+                  }),
+                ),
 
-                  return EstimatedExpenseRow(
-                    initialEstimated: estimated,
-                    isAdjustable: true,
-                    onValueChanged: (newEstimated) {
-                      print(
-                        "$index -> ${newEstimated.id} ${newEstimated.expenseItem} ${newEstimated.reimbursedByCnt}",
-                      );
-                      print(
-                        "if the controller text is empty, onChanged might not be executed..",
-                      );
-                      estimatedListFromManual![index] = newEstimated;
-                      _sumEstimatedExpenseList();
-                    },
-                    onDelete: (estimated) {
-                      print(
-                        "Deleted ${estimated.expenseItem} ${estimated.amount}",
-                      );
-                      estimatedListFromManual!.removeAt(index);
-                      _sumEstimatedExpenseList();
-                      setState(() {});
-                    },
-                  );
-                }),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CircleIconButton(
@@ -383,8 +387,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                       await FirebaseDatabaseService.setSingleTravelEstimatedExpensesData(
                         groupId,
                         travelId,
-                        //estimatedListFromManual!,
-                        [],
+                        estimatedListFromManual!,
                       );
                   if (!ret.isSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -420,12 +423,14 @@ class EstimatedExpenseRow extends StatefulWidget {
   final bool isAdjustable;
   final Function(EstimatedExpenseInfo) onValueChanged;
   final Function(EstimatedExpenseInfo)? onDelete;
+  final List<TextEditingController> controllers;
 
   const EstimatedExpenseRow({
     required this.initialEstimated,
     required this.isAdjustable,
     required this.onValueChanged,
     this.onDelete,
+    required this.controllers,
     super.key,
   });
 
