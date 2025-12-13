@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/OnItineraryEdit.dart';
 import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
+import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
 import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ItineraryDefaultTable.dart';
@@ -16,19 +17,24 @@ import '../constants.dart';
  */
 class ItineraryStore extends ChangeNotifier {
   ShownTravelBasic? _shownTravelBasic;
+
   ShownTravelBasic? get shownTravelBasic => _shownTravelBasic;
   String? _currentUserId;
+
   String? get currentUserId => _currentUserId;
 
   List<ItinerarySection> _itinerarySections = [];
 
   Map<String, TravelerBasic> _allParticipants = {};
+
   Map<String, TravelerBasic> get allParticipants => _allParticipants;
 
   bool _editMode = false;
+
   bool get editMode => _editMode;
 
   ResultInfo _itineraryState = ResultInfo.success();
+
   ResultInfo get itineraryState => _itineraryState;
 
   bool _initialized = false;
@@ -380,6 +386,18 @@ class ItineraryStore extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  Future<ResultInfo> loadAllParticipants() async {
+    final ret = checkIsShownTravelInput(_shownTravelBasic);
+    if (!ret.isSuccess) {
+      /* ここに来ることは基本ない */
+      return ret;
+    }
+
+    final groupId = _shownTravelBasic!.groupId!;
+    final travelId = _shownTravelBasic!.travelId!;
+    return _loadAllParticipants(groupId, travelId);
   }
 
   /*************************************************

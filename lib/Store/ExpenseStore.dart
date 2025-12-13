@@ -9,20 +9,26 @@ import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ResultInfo.dart';
 import '../CommonClass/TravelerBasic.dart';
 import '../Services/FirebaseDatabaseService.dart';
+import '../utils/CheckShownTravelBasic.dart';
 
 class ExpenseStore extends ChangeNotifier {
   ShownTravelBasic? _shownTravelBasic;
+
   ShownTravelBasic? get shownTravelBasic => _shownTravelBasic;
   String? _currentUserId;
+
   String? get currentUserId => _currentUserId;
 
   ResultInfo _expenseState = ResultInfo.success();
+
   ResultInfo get expenseState => _expenseState;
 
   Map<String, TravelerBasic> _allParticipants = {};
+
   Map<String, TravelerBasic> get allParticipants => _allParticipants;
 
   List<ExpenseInfo> _allExpenses = [];
+
   List<ExpenseInfo> get allExpenses => _allExpenses;
 
   DatabaseReference? _expensesRef;
@@ -156,6 +162,16 @@ class ExpenseStore extends ChangeNotifier {
   /*************************************************
    * 現在ログイン中のユーザーが表示している旅行のグループのメンバー情報
    *********************************************/
+  Future<ResultInfo> loadAllParitcipants() async {
+    final ret = checkIsShownTravelInput(_shownTravelBasic);
+    if (!ret.isSuccess) {
+      return ret;
+    }
+    final groupId = _shownTravelBasic!.groupId!;
+    final travelId = _shownTravelBasic!.travelId!;
+    return _loadAllParticipants(groupId, travelId);
+  }
+
   Future<ResultInfo> _loadAllParticipants(
     String groupId,
     String travelId,
@@ -232,6 +248,7 @@ class ExpenseStore extends ChangeNotifier {
   }
 
   bool _isFirstAddListener = true;
+
   ResultInfo _addListeners(ShownTravelBasic? travelBasic) {
     if (travelBasic == null) {
       return ResultInfo.failed(
@@ -306,11 +323,11 @@ class ExpenseStore extends ChangeNotifier {
   }
 
   /**
- * 大和田さんがほしいと行っていた
- * 各個人の明細を計算する。
- * 基本的にはただExpenseDataを個々人単位に読み替えれば良いだけ。
- * だから難しくはない。
- */
+   * 大和田さんがほしいと行っていた
+   * 各個人の明細を計算する。
+   * 基本的にはただExpenseDataを個々人単位に読み替えれば良いだけ。
+   * だから難しくはない。
+   */
   ResultInfo<Map<String, List<ExpensePersonalDetail>>>
   calcEachPersonalDetails() {
     final checkRet = checkStoredDataEmpty();
