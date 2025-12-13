@@ -20,10 +20,11 @@
 - done::割り勘の明細作成(functions側か？)
 - done:::自動デプロイ with actionsj
 - done:::itinerary同時編集ロック
+- done:::はみ出しのエラーが出ている。動いてはいるが、、
+- done:::費用概要の自動計算 -> itineraryから読み取る
+
 - 参加者更新でitineraryやexpenseのallParticipantsが更新されていない？？
 - firebase emulatorのセットアップ
-- はみ出しのエラーが出ている。動いてはいるが、、
-- 費用概要の自動計算 -> itineraryから読み取る
 
 - functionsで夜中に一度onEditをリセットする
 - 外貨対応
