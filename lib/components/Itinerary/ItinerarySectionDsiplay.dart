@@ -78,9 +78,12 @@ class ItinerarySectionDisplay extends StatelessWidget {
             if (itiSection.title != "")
               Row(
                 children: [
-                  Text(
-                    itiSection.title,
-                    style: TextStyle(fontSize: 25),
+                  Expanded(
+                    child: Text(
+                      itiSection.title,
+                      style: TextStyle(fontSize: 25),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ) /* まあこれ使うやついないかもな。 */,
                 ],
               ),
