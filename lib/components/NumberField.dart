@@ -12,15 +12,19 @@ class NumberField extends StatefulWidget {
     this.intOnly = false,
     this.minValue,
     this.maxValue,
+    this.controller,
     super.key,
   });
 
   final String? hintText;
   final double? initialValue;
+
+  /* ２つ目の引数はmin,maxがあったときに範囲外になっているかどうかを返す */
   final Function(double)? onChanged;
   final bool intOnly;
   final double? minValue;
   final double? maxValue;
+  final TextEditingController? controller;
 
   @override
   State<NumberField> createState() => _NumberFieldState();
@@ -29,6 +33,7 @@ class NumberField extends StatefulWidget {
 class _NumberFieldState extends State<NumberField> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
+  late final bool _isExternalController;
 
   @override
   void initState() {
@@ -40,7 +45,9 @@ class _NumberFieldState extends State<NumberField> {
       initialText = widget.initialValue?.toString() ?? '';
     }
 
-    _controller = TextEditingController(text: initialText);
+    _isExternalController = widget.controller != null;
+    _controller = widget.controller ?? TextEditingController();
+    _controller.text = initialText;
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChange);
   }
@@ -49,7 +56,10 @@ class _NumberFieldState extends State<NumberField> {
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
-    _controller.dispose();
+
+    if (!_isExternalController) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 

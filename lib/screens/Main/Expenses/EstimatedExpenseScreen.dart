@@ -423,14 +423,12 @@ class EstimatedExpenseRow extends StatefulWidget {
   final bool isAdjustable;
   final Function(EstimatedExpenseInfo) onValueChanged;
   final Function(EstimatedExpenseInfo)? onDelete;
-  final List<TextEditingController> controllers;
 
   const EstimatedExpenseRow({
     required this.initialEstimated,
     required this.isAdjustable,
     required this.onValueChanged,
     this.onDelete,
-    required this.controllers,
     super.key,
   });
 
@@ -440,12 +438,29 @@ class EstimatedExpenseRow extends StatefulWidget {
 
 class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
   late final ValueNotifier<EstimatedExpenseInfo> _estimatedNotifier;
+  final TextEditingController _expenseItemController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _reimbursedByCntController =
+      TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _estimatedNotifier = ValueNotifier(widget.initialEstimated);
+
+    /* expenseItemだけはControllerを渡すだけではだめで、初期値を入れておかないといけない */
+    /* NumberFieldを使っていないから */
+    _expenseItemController.text = widget.initialEstimated.expenseItem;
+  }
+
+  @override
+  void dispose() {
+    _estimatedNotifier.dispose();
+    _expenseItemController.dispose();
+    _amountController.dispose();
+    _reimbursedByCntController.dispose();
+    super.dispose();
   }
 
   @override
@@ -464,6 +479,7 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                         ? BasicTextField(
                           hintText: "",
                           initialValue: widget.initialEstimated.expenseItem,
+                          controller: _expenseItemController,
                           onChanged: (item) {
                             _estimatedNotifier.value = _estimatedNotifier.value
                                 .copyWith(expenseItem: item);
@@ -479,6 +495,7 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                     widget.isAdjustable
                         ? NumberField(
                           initialValue: widget.initialEstimated.amount,
+                          controller: _amountController,
                           onChanged: (value) {
                             _estimatedNotifier.value = _estimatedNotifier.value
                                 .copyWith(amount: value);
@@ -489,12 +506,14 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
               ),
               Flexible(
                 fit: FlexFit.tight,
+                flex: 2,
                 child:
                     widget.isAdjustable
                         ? NumberField(
                           initialValue:
                               widget.initialEstimated.reimbursedByCnt
                                   .toDouble(),
+                          controller: _reimbursedByCntController,
                           onChanged: (value) {
                             int intVal = value.toInt();
 
@@ -502,6 +521,7 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                                 .copyWith(reimbursedByCnt: intVal);
                             _estimatedNotifier.value = updatedEstimated;
                             if (intVal < 1) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("人数は1〜99人までです。")),
                               );
@@ -509,6 +529,7 @@ class _EstimatedExpenseRowState extends State<EstimatedExpenseRow> {
                                 updatedEstimated.copyWith(reimbursedByCnt: 1),
                               );
                             } else if (intVal > 99) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("人数は1〜99人までです。")),
                               );
