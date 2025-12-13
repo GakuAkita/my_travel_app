@@ -167,8 +167,18 @@ class FirebaseDatabaseService {
 
   static DatabaseReference singleTravelEstimatedRef(
     String groupId,
-    String travbelId,
-  ) => singleTravelExpensesRef(groupId, travbelId).child("estimated");
+    String travelId,
+  ) => singleTravelExpensesRef(groupId, travelId).child("estimated");
+
+  static DatabaseReference singleTravelEstimatedUpdatedDateRef(
+    String groupId,
+    String travelId,
+  ) => singleTravelEstimatedRef(groupId, travelId).child("last_updated");
+
+  static DatabaseReference singleTravelEstimatedDataRef(
+    String groupId,
+    String travelId,
+  ) => singleTravelEstimatedRef(groupId, travelId).child("data");
 
   static DatabaseReference singleTravelItineraryRef(
     String groupId,
@@ -440,22 +450,93 @@ class FirebaseDatabaseService {
     }
   }
 
-  static Future<ResultInfo<Map<String, EstimatedExpenseInfo>?>>
-  getSingleTravelEstimatedExpenses(String groupId, String travelId) async {
+  static Future<ResultInfo<List<EstimatedExpenseInfo>?>>
+  getSingleTravelEstimatedExpensesData(String groupId, String travelId) async {
     try {
-      final snap = await singleTravelEstimatedRef(groupId, travelId).get();
-      if (!snap.exists) {
-        /* データがそもそもない */
+      final snap = await singleTravelEstimatedDataRef(groupId, travelId).get();
+      if (!snap.exists || snap.value == null) {
+        // データがそもそもない、もしくはnullの場合
         return ResultInfo.success(data: null);
       }
-      final map = snap.value as Map;
-      final Map<String, EstimatedExpenseInfo> estimatedMap = {};
-      map.forEach((key, value) {
-        estimatedMap[key] = EstimatedExpenseInfo.convFromMap(value);
-      });
-      return ResultInfo.success(data: estimatedMap);
+
+      final value = snap.value;
+
+      // Firebaseから取得した値がListでない場合(空のリストを保存した場合など)
+      // 安全のため空のリストを返す
+      if (value is! List) {
+        return ResultInfo.success(data: []);
+      }
+
+      // List<dynamic>をList<EstimatedExpenseInfo>へ安全に変換する
+      List<EstimatedExpenseInfo> retList = [];
+      for (final item in value) {
+        if (item is Map) {
+          retList.add(EstimatedExpenseInfo.convFromMap(item));
+        }
+      }
+      ;
+      return ResultInfo.success(data: retList);
     } catch (e) {
-      print("Error in getSingleTravelEstimatedExpenses:$e");
+      print("Error in getSingleTravelEstimatedExpensesData: $e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo> setSingleTravelEstimatedExpensesData(
+    String groupId,
+    String travelId,
+    List<EstimatedExpenseInfo> estimatedList,
+  ) async {
+    try {
+      final estimatedRef = singleTravelEstimatedDataRef(groupId, travelId);
+      final mappedList = estimatedList.map((e) => e.toMap()).toList();
+      await estimatedRef.set(mappedList);
+      return ResultInfo.success();
+    } catch (e) {
+      print("Error in setSingleTravelEstimatedExpensesData:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo<String?>> getSingleTravelEstimatedUpdateDate(
+    String groupId,
+    String travelId,
+  ) async {
+    try {
+      final estimatedRef = singleTravelEstimatedUpdatedDateRef(
+        groupId,
+        travelId,
+      );
+      final snap = await estimatedRef.get();
+      if (!snap.exists) {
+        print("Probably there is no estimated update date...");
+        return ResultInfo.success(
+          message: "Probably there is no estimated update date...",
+          data: null,
+        );
+      }
+      final isoStr = snap.value as String;
+      return ResultInfo.success(data: isoStr);
+    } catch (e) {
+      print("Error in getSingleTravelEstimatedUpdateDate:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  static Future<ResultInfo> setSingleTravelEstimatedUpdateDate(
+    String groupId,
+    String travelId,
+    String isoStr,
+  ) async {
+    try {
+      final estimatedRef = singleTravelEstimatedUpdatedDateRef(
+        groupId,
+        travelId,
+      );
+      await estimatedRef.set(isoStr);
+      return ResultInfo.success();
+    } catch (e) {
+      print("Error in setSingleTravelEstimatedUpdateDate:$e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
@@ -658,7 +739,6 @@ class FirebaseDatabaseService {
       await onEditRef.onDisconnect().cancel();
       return ResultInfo.success();
     } catch (e) {
-      print("Error in cancelOnDisconnectForItineraryOnEdit:$e");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }

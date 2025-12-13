@@ -9,6 +9,7 @@ class BasicTextField extends StatelessWidget {
     this.inputFormatters,
     this.keyboardType,
     this.initialValue,
+    this.focusNode,
     required this.hintText,
     required this.onChanged,
     super.key,
@@ -22,6 +23,7 @@ class BasicTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final String? initialValue;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,7 @@ class BasicTextField extends StatelessWidget {
       autofocus: autofocus,
       obscureText: obscureText,
       onChanged: onChanged,
+      focusNode: focusNode,
     );
   }
 }

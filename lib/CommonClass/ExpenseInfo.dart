@@ -134,6 +134,20 @@ class EstimatedExpenseInfo {
     required this.reimbursedByCnt,
   });
 
+  EstimatedExpenseInfo copyWith({
+    String? id,
+    String? expenseItem,
+    double? amount,
+    int? reimbursedByCnt,
+  }) {
+    return EstimatedExpenseInfo(
+      id: id ?? this.id,
+      expenseItem: expenseItem ?? this.expenseItem,
+      amount: amount ?? this.amount,
+      reimbursedByCnt: reimbursedByCnt ?? this.reimbursedByCnt,
+    );
+  }
+
   static EstimatedExpenseInfo fromExpenseInfo(ExpenseInfo info) {
     return EstimatedExpenseInfo(
       id: info.id,
@@ -144,11 +158,24 @@ class EstimatedExpenseInfo {
   }
 
   static convFromMap(Map<dynamic, dynamic> map) {
+    /* amountがintだった場合Doubleにする */
+    if (map['amount'] is int) {
+      map['amount'] = map['amount'].toDouble();
+    }
     return EstimatedExpenseInfo(
       id: map['id'] as String,
       expenseItem: map['expenseItem'] as String,
       amount: map['amount'] as double,
       reimbursedByCnt: map['reimbursedByCnt'] as int,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'expenseItem': expenseItem,
+      'amount': amount,
+      'reimbursedByCnt': reimbursedByCnt,
+    };
   }
 }

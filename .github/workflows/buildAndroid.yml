@@ -28,6 +28,12 @@ jobs:
           google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           env-file-content: ${{ secrets.ENV_FILE }}
 
+      # minSdkVersionが低いとビルドエラーになる。強制的に置き換える。
+      # 本当はflutter.minSdkVersionの本来の値を変更できるのが一番いいが、、
+      - name: Override flutter.minSdkVersion
+        run: |
+          sed -i 's/flutter\.minSdkVersion/23/g' ./android/app/build.gradle.kts
+
       - name: Build the app
         run: flutter build apk --release
 
