@@ -9,6 +9,7 @@ import '../SimpleSwitch.dart';
 class ItineraryMarkdownSectionEdit extends StatefulWidget {
   final int index;
   final void Function(String sectionName, String content) onChanged;
+
   const ItineraryMarkdownSectionEdit({
     required this.index,
     required this.onChanged,
@@ -81,9 +82,11 @@ class _ItineraryMarkdownSectionEditState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Preview"),
+                    Flexible(
+                      child: Text("Preview", overflow: TextOverflow.ellipsis),
+                    ),
                     SimpleSwitch(
-                      width: 60,
+                      width: 50,
                       height: 30,
                       isEnabled: _contentController.text.isNotEmpty,
                       onChanged: (status) {

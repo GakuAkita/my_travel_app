@@ -17,6 +17,7 @@ import '../../../components/BasicTextField.dart';
 class TravelManageScreen extends StatefulWidget {
   static const String id = "travel_manage_screen";
   final String userRole;
+
   TravelManageScreen({required this.userRole, super.key});
 
   @override
@@ -275,8 +276,8 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
                 ),
 
               /**
-                 * ここから下はAdmin専用
-                 */
+               * ここから下はAdmin専用
+               */
               if (widget.userRole == UserRole.admin)
                 Column(
                   children: [
@@ -291,6 +292,7 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
                     SizedBox(height: 10),
                     if (_groupKeys != null)
                       DropdownButton<String>(
+                        isExpanded: true,
                         value: _selectedGroupForCreation,
                         onChanged: (String? newValue) {
                           setState(() {
@@ -304,7 +306,10 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
                               print(key);
                               return DropdownMenuItem<String>(
                                 value: key,
-                                child: Text(key.toString()),
+                                child: Text(
+                                  key.toString(),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               );
                             }).toList(),
                       )
