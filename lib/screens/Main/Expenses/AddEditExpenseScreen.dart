@@ -33,8 +33,13 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   /* 参加者 */
   List<TravelerBasic> _allParticipants = [];
 
+  /* グループメンバー(参加者をすべて含む) */
+  List<TravelerBasic> _allGroupMembers = [];
+
   /* isCheckedも含んでいる */
-  List<TravelerInfo> _travelersOptions = []; /* チェックされた人(支払われた人) */
+  List<TravelerInfo> _travelersOptions = [];
+
+  /* チェックされた人(支払われた人) */
 
   /**
    * 支払い用の選択肢と誰の支払いか(チェック付き)の配列を
@@ -53,6 +58,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
 
   final TextEditingController _expenseController = TextEditingController();
   final TextEditingController _expenseItemController = TextEditingController();
+
   @override
   void dispose() {
     _expenseController.dispose();
@@ -69,26 +75,41 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
     _shownGroupId = expenseStore.shownTravelBasic?.groupId;
     _shownTravelId = expenseStore.shownTravelBasic?.travelId;
 
+    /* プロファイル名は入ってないはず、、 */
     _allParticipants =
         expenseStore.allParticipants.entries.map((entry) {
           final value = entry.value;
           return value;
         }).toList();
+
+    _allGroupMembers =
+        expenseStore.allGroupMembers.entries.map((entry) {
+          final value = entry.value;
+          return value;
+        }).toList();
+
+    /**
+     * 全員参加ではない
+     */
     if (widget.expenseId == null) {
-      /* 新規追加はデフォルトで全部チェック入れておく */
+      /* 新規作成時は全メンバーの中で参加している人だけチェック入れる */
       _travelersOptions =
-          expenseStore.allParticipants.entries.map((entry) {
-            final value = entry.value;
+          expenseStore.allGroupMembers.entries.map((entry) {
+            final member = entry.value;
+            final bool isParticipate = _allParticipants.any(
+              (participant) => participant.uid == member.uid,
+            );
+
             return TravelerInfo(
-              uid: value.uid,
-              email: value.email,
-              profile_name: value.profile_name,
-              isChecked: true,
+              uid: member.uid,
+              email: member.email,
+              profile_name: member.profile_name,
+              isChecked: isParticipate,
             );
           }).toList();
 
-      if (_allParticipants.isNotEmpty) {
-        for (final traveler in _allParticipants) {
+      if (_allGroupMembers.isNotEmpty) {
+        for (final traveler in _allGroupMembers) {
           if (traveler.uid == expenseStore.currentUserId) {
             _payer = traveler;
             break;
@@ -117,7 +138,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
       _initialExpense = initialExpense;
 
       final TravelerBasic payerBasic = initialExpense.payer;
-      for (final traveler in _allParticipants) {
+      for (final traveler in _allGroupMembers) {
         if (traveler.uid == payerBasic.uid) {
           _payer = traveler;
           break;
@@ -125,7 +146,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
       }
 
       _travelersOptions =
-          expenseStore.allParticipants.entries.map((entry) {
+          expenseStore.allGroupMembers.entries.map((entry) {
             final value = entry.value;
             /* isCheckedを */
             return TravelerInfo(
@@ -170,7 +191,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                           value: _payer,
                           hint: Text("支払った人"),
                           items:
-                              _allParticipants.map((traveler) {
+                              _allGroupMembers.map((traveler) {
                                 final displayName =
                                     traveler.profile_name ?? traveler.email;
                                 return DropdownMenuItem<TravelerBasic>(
@@ -410,7 +431,8 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       } else {
                         /* なんかもっと良い方法あるきがする */
                         final expenseInfo = ExpenseInfo(
-                          id: widget.expenseId!, //ここに来るときにはnullでなくなっている
+                          id: widget.expenseId!,
+                          //ここに来るときにはnullでなくなっている
                           payer: TravelerBasic(
                             uid: _payer?.uid as String,
                             email: _payer?.email as String,

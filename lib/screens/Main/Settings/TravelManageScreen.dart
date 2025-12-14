@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
+import 'package:my_travel_app/Store/ExpenseStore.dart';
+import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
@@ -194,6 +196,8 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
   @override
   Widget build(BuildContext context) {
     final userStore = context.watch<UserStore>();
+    final expenseStore = context.watch<ExpenseStore>();
+    final itineraryStore = context.watch<ItineraryStore>();
     return Scaffold(
       appBar: TopAppBar(automaticallyImplyLeading: true),
       body: LoadingOverlay(
@@ -400,6 +404,10 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
                           _selectedTravelId!,
                         ).set(travelers);
                         print("updated $travelers");
+
+                        /* 手動で更新しないといけない */
+                        expenseStore.loadAllParticipants();
+                        itineraryStore.loadAllParticipants();
                       },
                     ),
                   ], //adminのみのwidget

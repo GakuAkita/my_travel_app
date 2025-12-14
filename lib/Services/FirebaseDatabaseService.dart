@@ -100,21 +100,51 @@ class FirebaseDatabaseService {
   static DatabaseReference groupMembersRef(String groupId) =>
       singleGroupRef(groupId).child("members");
 
-  static Future<Map<String, TravelerBasic>?> getGroupMembers(
-    String groupId,
-  ) async {
-    final ref = groupMembersRef(groupId);
-    final snap = await ref.get();
-    if (!snap.exists) {
-      print("Group member doesn't exist..");
-      return null;
+  static Future<ResultInfo<Map<String, TravelerBasic>?>> getGroupMembers(
+    String groupId, {
+    bool isGetProfileName = true,
+  }) async {
+    try {
+      final ref = groupMembersRef(groupId);
+      final snap = await ref.get();
+      if (!snap.exists) {
+        print("Group member doesn't exist..");
+        return ResultInfo.success(data: null);
+      }
+      Map<String, TravelerBasic> members = {};
+      final map = snap.value as Map<dynamic, dynamic>;
+      for (final node in map.entries) {
+        members[node.key] = TravelerBasic.convFromMap(node.value);
+      }
+
+      /* profile名を取る場合はここを通らせる */
+      int errorCnt = 0;
+      if (isGetProfileName) {
+        for (final entry in members.entries) {
+          final travelerBasic = await getSingleUserTravelerBasic(entry.key);
+          if (travelerBasic != null) {
+            members[entry.key] = travelerBasic;
+          } else {
+            print("Failed to get TravelerBasic for uid: ${entry.key}");
+            errorCnt++;
+          }
+        }
+      }
+      if (errorCnt > 0) {
+        print("Some error happened.");
+        return ResultInfo.failed(
+          error: ErrorInfo(
+            errorMessage:
+                "There was a failure in getting profile names.: errorCnt=$errorCnt",
+          ),
+        );
+      }
+
+      return ResultInfo.success(data: members);
+    } catch (e) {
+      print("Error in getGroupMembers:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
-    Map<String, TravelerBasic> members = {};
-    final map = snap.value as Map<dynamic, dynamic>;
-    for (final node in map.entries) {
-      members[node.key] = TravelerBasic.convFromMap(node.value);
-    }
-    return members;
   }
 
   static DatabaseReference travelsRef(String groupId) =>
@@ -579,8 +609,9 @@ class FirebaseDatabaseService {
    */
   static Future<ResultInfo<Map<String, TravelerBasic>>> getTravelParticipants(
     String groupId,
-    String travelId,
-  ) async {
+    String travelId, {
+    bool isGetProfileName = true,
+  }) async {
     try {
       final snap = await singleTravelParticipantsRef(groupId, travelId).get();
       if (!snap.exists) {
@@ -600,13 +631,21 @@ class FirebaseDatabaseService {
 
       int errorCount = 0;
       Map<String, TravelerBasic> participants = {};
-      for (final String userId in travelerUids) {
-        final travelerBasic = await getSingleUserTravelerBasic(userId);
-        if (travelerBasic != null) {
-          participants[userId] = travelerBasic;
-        } else {
-          print("Failed to get TravelerBasic for uid: $userId");
-          errorCount++;
+      if (isGetProfileName) {
+        for (final String userId in travelerUids) {
+          final travelerBasic = await getSingleUserTravelerBasic(userId);
+          if (travelerBasic != null) {
+            participants[userId] = travelerBasic;
+          } else {
+            print("Failed to get TravelerBasic for uid: $userId");
+            errorCount++;
+          }
+        }
+      } else {
+        /* プロファイル名は取得しない */
+        for (final entry in participantsMap.entries) {
+          final travelerBasic = TravelerBasic.convFromMap(entry.value);
+          participants[entry.key] = travelerBasic;
         }
       }
 
@@ -627,7 +666,7 @@ class FirebaseDatabaseService {
   static Future<ResultInfo<List<ExpenseInfo>>> getTravelExpenses(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> participants /* 参加者も渡したい */,
+    Map<String, TravelerBasic> members /* 参加者も渡したい */,
   ) async {
     try {
       final expensesRef = singleTravelExpensesDataRef(groupId, travelId);
@@ -648,8 +687,8 @@ class FirebaseDatabaseService {
         final ExpenseInfo bufExpense = ExpenseInfo.convFromMapToExpenseInfo(
           val,
         );
-        // participants から payerBasic を取得
-        final TravelerBasic? payerBasic = participants[bufExpense.payer.uid];
+        // グループメンバー から payerBasic を取得
+        final TravelerBasic? payerBasic = members[bufExpense.payer.uid];
 
         if (payerBasic == null) {
           print(

@@ -20,10 +20,14 @@
 - done::割り勘の明細作成(functions側か？)
 - done:::自動デプロイ with actionsj
 - done:::itinerary同時編集ロック
-- 参加者更新でitineraryやexpenseのallParticipantsが更新されていない？？
+- done:::はみ出しのエラーが出ている。動いてはいるが、、
+- done:::費用概要の自動計算 -> itineraryから読み取る
+- done:::参加者更新でitineraryやexpenseのallParticipantsが更新されていない？？
+- done::グループメンバーは全員選択肢に出るようにしておく。でも、デフォルトでは参加者のみチェック
+- vを上げたいときに正しく挙げられるようにする。
+- バージョンを指定してapk生成。Actions
+- Storeのリファクタリング。
 - firebase emulatorのセットアップ
-- はみ出しのエラーが出ている。動いてはいるが、、
-- 費用概要の自動計算 -> itineraryから読み取る
 
 - functionsで夜中に一度onEditをリセットする
 - 外貨対応

@@ -9,20 +9,30 @@ import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ResultInfo.dart';
 import '../CommonClass/TravelerBasic.dart';
 import '../Services/FirebaseDatabaseService.dart';
+import '../utils/CheckShownTravelBasic.dart';
 
 class ExpenseStore extends ChangeNotifier {
   ShownTravelBasic? _shownTravelBasic;
+
   ShownTravelBasic? get shownTravelBasic => _shownTravelBasic;
   String? _currentUserId;
+
   String? get currentUserId => _currentUserId;
 
   ResultInfo _expenseState = ResultInfo.success();
+
   ResultInfo get expenseState => _expenseState;
 
   Map<String, TravelerBasic> _allParticipants = {};
+
   Map<String, TravelerBasic> get allParticipants => _allParticipants;
 
+  Map<String, TravelerBasic> _allGroupMembers = {};
+
+  Map<String, TravelerBasic> get allGroupMembers => _allGroupMembers;
+
   List<ExpenseInfo> _allExpenses = [];
+
   List<ExpenseInfo> get allExpenses => _allExpenses;
 
   DatabaseReference? _expensesRef;
@@ -45,6 +55,7 @@ class ExpenseStore extends ChangeNotifier {
   void clearAllData() {
     print("ExpenseStore: clearAllData called.");
     _allParticipants = {};
+    _allGroupMembers = {};
     _allExpenses = [];
     _expenseState = ResultInfo.success();
     notifyListeners();
@@ -129,7 +140,7 @@ class ExpenseStore extends ChangeNotifier {
       );
     }
 
-    final retPart = await _loadAllParticipants(
+    final retPart = await _loadAllGroupMember(
       travelBasic.groupId!,
       travelBasic.travelId!,
     );
@@ -141,21 +152,41 @@ class ExpenseStore extends ChangeNotifier {
       "ExpenseStore: Participants loaded successfully. Count: ${_allParticipants.length}",
     );
 
+    final retMembers = await _loadAllGroupMember(
+      travelBasic.groupId!,
+      travelBasic.travelId!,
+    );
+    if (!retMembers.isSuccess) {
+      print("Failed in loadGroupMembers: ${retMembers.error?.errorMessage}");
+      return retMembers;
+    }
+
     final retEx = await _loadExpenses(
       travelBasic.groupId!,
       travelBasic.travelId!,
-      _allParticipants,
+      _allGroupMembers,
     );
     if (!retEx.isSuccess) {
       print("Failed in loadExpenses: ${retEx.error?.errorMessage}");
       return retEx;
     }
+
     return ResultInfo.success(message: "All expense data loaded successfully.");
   }
 
   /*************************************************
    * 現在ログイン中のユーザーが表示している旅行のグループのメンバー情報
    *********************************************/
+  Future<ResultInfo> loadAllParticipants() async {
+    final ret = checkIsShownTravelInput(_shownTravelBasic);
+    if (!ret.isSuccess) {
+      return ret;
+    }
+    final groupId = _shownTravelBasic!.groupId!;
+    final travelId = _shownTravelBasic!.travelId!;
+    return _loadAllParticipants(groupId, travelId);
+  }
+
   Future<ResultInfo> _loadAllParticipants(
     String groupId,
     String travelId,
@@ -167,6 +198,7 @@ class ExpenseStore extends ChangeNotifier {
     final fetchResult = await FirebaseDatabaseService.getTravelParticipants(
       groupId,
       travelId,
+      isGetProfileName: false,
     );
 
     /**
@@ -181,18 +213,31 @@ class ExpenseStore extends ChangeNotifier {
     }
   }
 
+  Future<ResultInfo> _loadAllGroupMember(
+    String groupId,
+    String travelId,
+  ) async {
+    final fetchResult = await FirebaseDatabaseService.getGroupMembers(groupId);
+    if (fetchResult.isSuccess) {
+      _allGroupMembers = fetchResult.data == null ? {} : fetchResult.data!;
+    } else {
+      print("Failed to load group members: ${fetchResult.error?.errorMessage}");
+    }
+    return fetchResult;
+  }
+
   /**
    * Expenseのデータだけロードする。
    */
   Future<ResultInfo> _loadExpenseDataWithNotify(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> participants,
+    Map<String, TravelerBasic> members,
   ) async {
     print("_____ExpenseStore: _loadExpenseDataWithNotify called._____");
     _expenseState = ResultInfo.loading();
     notifyListeners();
-    final ret = await _loadExpenses(groupId, travelId, participants);
+    final ret = await _loadExpenses(groupId, travelId, members);
     _expenseState = ret;
     notifyListeners();
     return ret;
@@ -201,12 +246,12 @@ class ExpenseStore extends ChangeNotifier {
   Future<ResultInfo> _loadExpenses(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> participants,
+    Map<String, TravelerBasic> members,
   ) async {
     final fetchResult = await FirebaseDatabaseService.getTravelExpenses(
       groupId,
       travelId,
-      participants,
+      members,
     );
 
     /**
@@ -232,6 +277,7 @@ class ExpenseStore extends ChangeNotifier {
   }
 
   bool _isFirstAddListener = true;
+
   ResultInfo _addListeners(ShownTravelBasic? travelBasic) {
     if (travelBasic == null) {
       return ResultInfo.failed(
@@ -306,11 +352,11 @@ class ExpenseStore extends ChangeNotifier {
   }
 
   /**
- * 大和田さんがほしいと行っていた
- * 各個人の明細を計算する。
- * 基本的にはただExpenseDataを個々人単位に読み替えれば良いだけ。
- * だから難しくはない。
- */
+   * 大和田さんがほしいと行っていた
+   * 各個人の明細を計算する。
+   * 基本的にはただExpenseDataを個々人単位に読み替えれば良いだけ。
+   * だから難しくはない。
+   */
   ResultInfo<Map<String, List<ExpensePersonalDetail>>>
   calcEachPersonalDetails() {
     final checkRet = checkStoredDataEmpty();

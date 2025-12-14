@@ -7,6 +7,7 @@ import 'package:my_travel_app/components/TopAppBar.dart';
 
 class DeleteGroupScreen extends StatefulWidget {
   static const String id = "delete_group_screen";
+
   const DeleteGroupScreen({super.key});
 
   @override
@@ -75,21 +76,30 @@ class _DeleteGroupScreenState extends State<DeleteGroupScreen> {
                         title: "グループ削除",
                         onPressed: () async {
                           /**
-                 * groupsKeyから消す、
-                 * membersを取って、
-                 * shown_travelでgroupIdがあるところは消す
-                 * joinedGroupsから消す。
-               */
-                          final members =
+                   * groupsKeyから消す、
+                   * membersを取って、
+                   * shown_travelでgroupIdがあるところは消す
+                   * joinedGroupsから消す。
+                   */
+                          final retMembers =
                               await FirebaseDatabaseService.getGroupMembers(
                                 _selectedGroupKey!,
                               );
-                          if (members == null) {
-                            print("メンバーが空です。");
-                            print("グループを削除できません");
+                          if (!retMembers.isSuccess) {
+                            print("Failed to get group members");
+                            return;
+                          } else if (retMembers.data == null) {
+                            print("Group members are null");
+                            /* shownTravelを調べて消す必要ない */
+                            return;
+                          } else {
+                            /* Do Nothing */
                           }
 
+                          final members = retMembers.data;
+
                           /* グループのmembersが取れた。 */
+                          /* 各travelのshownTravelを消していいく。 */
                           for (String uid in members!.keys.toList()) {
                             print("group member:${members[uid]?.email}");
                             //joinedGroupから消す
