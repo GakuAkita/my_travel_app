@@ -100,21 +100,26 @@ class FirebaseDatabaseService {
   static DatabaseReference groupMembersRef(String groupId) =>
       singleGroupRef(groupId).child("members");
 
-  static Future<Map<String, TravelerBasic>?> getGroupMembers(
+  static Future<ResultInfo<Map<String, TravelerBasic>?>> getGroupMembers(
     String groupId,
   ) async {
-    final ref = groupMembersRef(groupId);
-    final snap = await ref.get();
-    if (!snap.exists) {
-      print("Group member doesn't exist..");
-      return null;
+    try {
+      final ref = groupMembersRef(groupId);
+      final snap = await ref.get();
+      if (!snap.exists) {
+        print("Group member doesn't exist..");
+        return ResultInfo.success(data: null);
+      }
+      Map<String, TravelerBasic> members = {};
+      final map = snap.value as Map<dynamic, dynamic>;
+      for (final node in map.entries) {
+        members[node.key] = TravelerBasic.convFromMap(node.value);
+      }
+      return ResultInfo.success(data: members);
+    } catch (e) {
+      print("Error in getGroupMembers:$e");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
-    Map<String, TravelerBasic> members = {};
-    final map = snap.value as Map<dynamic, dynamic>;
-    for (final node in map.entries) {
-      members[node.key] = TravelerBasic.convFromMap(node.value);
-    }
-    return members;
   }
 
   static DatabaseReference travelsRef(String groupId) =>

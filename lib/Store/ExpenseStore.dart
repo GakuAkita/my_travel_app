@@ -27,6 +27,10 @@ class ExpenseStore extends ChangeNotifier {
 
   Map<String, TravelerBasic> get allParticipants => _allParticipants;
 
+  Map<String, TravelerBasic> _allGroupMembers = {};
+
+  Map<String, TravelerBasic> get allGroupMembers => _allGroupMembers;
+
   List<ExpenseInfo> _allExpenses = [];
 
   List<ExpenseInfo> get allExpenses => _allExpenses;
@@ -156,13 +160,23 @@ class ExpenseStore extends ChangeNotifier {
       print("Failed in loadExpenses: ${retEx.error?.errorMessage}");
       return retEx;
     }
+
+    final retMembers = await _loadAllGroupMember(
+      travelBasic.groupId!,
+      travelBasic.travelId!,
+    );
+    if (!retMembers.isSuccess) {
+      print("Failed in loadGroupMembers: ${retMembers.error?.errorMessage}");
+      return retMembers;
+    }
+
     return ResultInfo.success(message: "All expense data loaded successfully.");
   }
 
   /*************************************************
    * 現在ログイン中のユーザーが表示している旅行のグループのメンバー情報
    *********************************************/
-  Future<ResultInfo> loadAllParitcipants() async {
+  Future<ResultInfo> loadAllParticipants() async {
     final ret = checkIsShownTravelInput(_shownTravelBasic);
     if (!ret.isSuccess) {
       return ret;
@@ -195,6 +209,19 @@ class ExpenseStore extends ChangeNotifier {
       /* 何もしない */
       return fetchResult;
     }
+  }
+
+  Future<ResultInfo> _loadAllGroupMember(
+    String groupId,
+    String travelId,
+  ) async {
+    final fetchResult = await FirebaseDatabaseService.getGroupMembers(groupId);
+    if (fetchResult.isSuccess) {
+      _allGroupMembers = fetchResult.data == null ? {} : fetchResult.data!;
+    } else {
+      print("Failed to load group members: ${fetchResult.error?.errorMessage}");
+    }
+    return fetchResult;
   }
 
   /**

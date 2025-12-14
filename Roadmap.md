@@ -22,8 +22,9 @@
 - done:::itinerary同時編集ロック
 - done:::はみ出しのエラーが出ている。動いてはいるが、、
 - done:::費用概要の自動計算 -> itineraryから読み取る
-
-- 参加者更新でitineraryやexpenseのallParticipantsが更新されていない？？
+- done:::参加者更新でitineraryやexpenseのallParticipantsが更新されていない？？
+- グループメンバーは全員選択肢に出るようにしておく。でも、デフォルトでは参加者のみチェック
+- Storeのリファクタリング。
 - firebase emulatorのセットアップ
 
 - functionsで夜中に一度onEditをリセットする
