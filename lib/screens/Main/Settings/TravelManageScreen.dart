@@ -406,7 +406,7 @@ class _TravelManageScreenState extends State<TravelManageScreen> {
                         print("updated $travelers");
 
                         /* 手動で更新しないといけない */
-                        expenseStore.loadAllParitcipants();
+                        expenseStore.loadAllParticipants();
                         itineraryStore.loadAllParticipants();
                       },
                     ),
