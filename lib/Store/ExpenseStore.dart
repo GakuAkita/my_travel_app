@@ -140,7 +140,7 @@ class ExpenseStore extends ChangeNotifier {
       );
     }
 
-    final retPart = await _loadAllGroupMember(
+    final retPart = await _loadAllParticipants(
       travelBasic.groupId!,
       travelBasic.travelId!,
     );
@@ -160,6 +160,9 @@ class ExpenseStore extends ChangeNotifier {
       print("Failed in loadGroupMembers: ${retMembers.error?.errorMessage}");
       return retMembers;
     }
+    print(
+      "ExpenseStore: GroupMembers loaded successfully. Count:${_allGroupMembers.length}",
+    );
 
     final retEx = await _loadExpenses(
       travelBasic.groupId!,
