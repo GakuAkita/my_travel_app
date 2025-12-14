@@ -25,7 +25,6 @@
 - done:::参加者更新でitineraryやexpenseのallParticipantsが更新されていない？？
 - done::グループメンバーは全員選択肢に出るようにしておく。でも、デフォルトでは参加者のみチェック
 - vを上げたいときに正しく挙げられるようにする。
-- バージョンを指定してapk生成。Actions
 - Storeのリファクタリング。
 - firebase emulatorのセットアップ
 
