@@ -84,7 +84,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                             itemBuilder: (context, index) {
                               return ExpenseTile(
                                 expense: expenseStore.allExpenses[index],
-                                members: expenseStore.allParticipants,
+                                members: expenseStore.allGroupMembers,
                               );
                             },
                           ),

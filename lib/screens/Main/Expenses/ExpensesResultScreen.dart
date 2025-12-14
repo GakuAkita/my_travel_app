@@ -124,7 +124,7 @@ class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
                       ),
                       ExchangeTileList(
                         exgData: _exchangeData!.result,
-                        participants: expenseStore.allParticipants,
+                        participants: expenseStore.allGroupMembers,
                       ),
                       SizedBox(height: 20),
                       Divider(),
@@ -132,7 +132,7 @@ class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
                       /* 精算もここに表示する。 */
                       BalancesTable(
                         balances: _balances!,
-                        participants: expenseStore.allParticipants,
+                        participants: expenseStore.allGroupMembers,
                       ),
                     ],
                   )

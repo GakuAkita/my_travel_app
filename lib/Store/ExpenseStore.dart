@@ -197,6 +197,7 @@ class ExpenseStore extends ChangeNotifier {
     final fetchResult = await FirebaseDatabaseService.getTravelParticipants(
       groupId,
       travelId,
+      isGetProfileName: false,
     );
 
     /**

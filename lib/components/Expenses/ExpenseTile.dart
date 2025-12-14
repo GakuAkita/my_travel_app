@@ -108,7 +108,7 @@ class ExpenseTile extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            expense.payer.profile_name ?? expense.payer.email,
+                            getProfileNameFromUid(expense.payer.uid),
                             style: TextStyle(
                               fontSize: 14,
                               color: theme.colorScheme.onSurfaceVariant,
