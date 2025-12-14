@@ -55,6 +55,7 @@ class ExpenseStore extends ChangeNotifier {
   void clearAllData() {
     print("ExpenseStore: clearAllData called.");
     _allParticipants = {};
+    _allGroupMembers = {};
     _allExpenses = [];
     _expenseState = ResultInfo.success();
     notifyListeners();
@@ -139,7 +140,7 @@ class ExpenseStore extends ChangeNotifier {
       );
     }
 
-    final retPart = await _loadAllParticipants(
+    final retPart = await _loadAllGroupMember(
       travelBasic.groupId!,
       travelBasic.travelId!,
     );
@@ -151,16 +152,6 @@ class ExpenseStore extends ChangeNotifier {
       "ExpenseStore: Participants loaded successfully. Count: ${_allParticipants.length}",
     );
 
-    final retEx = await _loadExpenses(
-      travelBasic.groupId!,
-      travelBasic.travelId!,
-      _allParticipants,
-    );
-    if (!retEx.isSuccess) {
-      print("Failed in loadExpenses: ${retEx.error?.errorMessage}");
-      return retEx;
-    }
-
     final retMembers = await _loadAllGroupMember(
       travelBasic.groupId!,
       travelBasic.travelId!,
@@ -168,6 +159,16 @@ class ExpenseStore extends ChangeNotifier {
     if (!retMembers.isSuccess) {
       print("Failed in loadGroupMembers: ${retMembers.error?.errorMessage}");
       return retMembers;
+    }
+
+    final retEx = await _loadExpenses(
+      travelBasic.groupId!,
+      travelBasic.travelId!,
+      _allGroupMembers,
+    );
+    if (!retEx.isSuccess) {
+      print("Failed in loadExpenses: ${retEx.error?.errorMessage}");
+      return retEx;
     }
 
     return ResultInfo.success(message: "All expense data loaded successfully.");
@@ -231,12 +232,12 @@ class ExpenseStore extends ChangeNotifier {
   Future<ResultInfo> _loadExpenseDataWithNotify(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> participants,
+    Map<String, TravelerBasic> members,
   ) async {
     print("_____ExpenseStore: _loadExpenseDataWithNotify called._____");
     _expenseState = ResultInfo.loading();
     notifyListeners();
-    final ret = await _loadExpenses(groupId, travelId, participants);
+    final ret = await _loadExpenses(groupId, travelId, members);
     _expenseState = ret;
     notifyListeners();
     return ret;
@@ -245,12 +246,12 @@ class ExpenseStore extends ChangeNotifier {
   Future<ResultInfo> _loadExpenses(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> participants,
+    Map<String, TravelerBasic> members,
   ) async {
     final fetchResult = await FirebaseDatabaseService.getTravelExpenses(
       groupId,
       travelId,
-      participants,
+      members,
     );
 
     /**

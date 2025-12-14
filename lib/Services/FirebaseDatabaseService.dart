@@ -666,7 +666,7 @@ class FirebaseDatabaseService {
   static Future<ResultInfo<List<ExpenseInfo>>> getTravelExpenses(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> participants /* 参加者も渡したい */,
+    Map<String, TravelerBasic> members /* 参加者も渡したい */,
   ) async {
     try {
       final expensesRef = singleTravelExpensesDataRef(groupId, travelId);
@@ -687,8 +687,8 @@ class FirebaseDatabaseService {
         final ExpenseInfo bufExpense = ExpenseInfo.convFromMapToExpenseInfo(
           val,
         );
-        // participants から payerBasic を取得
-        final TravelerBasic? payerBasic = participants[bufExpense.payer.uid];
+        // グループメンバー から payerBasic を取得
+        final TravelerBasic? payerBasic = members[bufExpense.payer.uid];
 
         if (payerBasic == null) {
           print(
