@@ -24,6 +24,7 @@
 - done:::費用概要の自動計算 -> itineraryから読み取る
 - done:::参加者更新でitineraryやexpenseのallParticipantsが更新されていない？？
 - グループメンバーは全員選択肢に出るようにしておく。でも、デフォルトでは参加者のみチェック
+- バージョンを指定してapk生成。Actions
 - Storeのリファクタリング。
 - firebase emulatorのセットアップ
 
