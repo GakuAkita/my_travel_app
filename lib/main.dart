@@ -117,14 +117,15 @@ class MyApp extends StatelessWidget {
           case AddEditExpenseScreen.id:
             /* 引数としてexpenseIdを受け取る */
             final args = settings.arguments as Map<String, String>?;
-            final String? expenseId = args?["expenseId"]; /* 何もなしだったらnullが入る */
+            final String? expenseId = args?["expenseId"];
+            /* 何もなしだったらnullが入る */
             return MaterialPageRoute(
               builder: (_) => AddEditExpenseScreen(expenseId: expenseId),
             );
           case ExpensesResultScreen.id:
             return MaterialPageRoute(builder: (_) => ExpensesResultScreen());
           case EstimatedExpenseScreen.id:
-            return MaterialPageRoute(builder: (_)=>EstimatedExpenseScreen());
+            return MaterialPageRoute(builder: (_) => EstimatedExpenseScreen());
           case ProfileScreen.id:
             return MaterialPageRoute(builder: (_) => ProfileScreen());
           case CreateGroupScreen.id:
