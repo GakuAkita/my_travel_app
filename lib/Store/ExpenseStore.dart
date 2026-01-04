@@ -318,7 +318,7 @@ class ExpenseStore extends ChangeNotifier {
         return;
       }
       print("ExpenseStore: Expense data changed in Firebase.");
-      _loadExpenseDataWithNotify(groupId, travelId, _allParticipants);
+      _loadExpenseDataWithNotify(groupId, travelId, _allGroupMembers);
     });
     return ResultInfo.success();
   }
