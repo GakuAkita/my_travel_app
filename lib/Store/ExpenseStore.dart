@@ -371,8 +371,10 @@ class ExpenseStore extends ChangeNotifier {
 
     Map<String, List<ExpensePersonalDetail>> result = {};
     // 参加者全員分の空のリストを作成
-    for (var participant in _allParticipants.values) {
-      result[participant.uid] = [];
+    // 旅行途中に参加者を変更すると次のreimbursedByでunable to foundになるので、
+    // グループメンバーを渡す
+    for (var member in _allGroupMembers.values) {
+      result[member.uid] = [];
     }
 
     for (final expense in _allExpenses) {
