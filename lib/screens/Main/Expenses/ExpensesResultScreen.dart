@@ -42,7 +42,9 @@ class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
      * スナックバーを出せるようにしておく
      */
     expenseStore.addListener(() {
-      ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
         SnackBar(
           content: Text("費用が更新されました。一度ページを閉じて再度開いてください。"),
           duration: Duration(seconds: 5),
