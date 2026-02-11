@@ -19,3 +19,11 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+// Source - https://stackoverflow.com/a/69390685
+// Posted by JustinW
+// Retrieved 2026-02-11, License - CC BY-SA 4.0
+
+//tasks.register<Wrapper>(type: Wrapper) {
+//    gradleVersion = "8.10"
+//}
