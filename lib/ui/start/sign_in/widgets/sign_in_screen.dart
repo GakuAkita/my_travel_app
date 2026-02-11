@@ -4,20 +4,20 @@ import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:my_travel_app/components/AuthForm.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
-import 'package:my_travel_app/screens/main/MainScreen.dart';
-import 'package:my_travel_app/screens/start/ForgotPasswordScreen.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+import '../view_models/sign_in_viewmodel.dart';
+
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
 
   static const String id = "login_screen";
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   bool _isLoading = false;
 
   void handleLogin(String email, String password) async {
@@ -58,13 +58,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<SignInViewModel>();
     return Scaffold(
       appBar: TopAppBar(automaticallyImplyLeading: true),
       body: LoadingOverlay(
         isLoading: _isLoading,
         child: AuthForm(
           screenType: SCREEN_TYPE.LOGIN,
-          onSubmit: handleLogin,
+          onSubmit: (email, password) async {
+            final result = await viewModel.signInWithEmail(email, password);
+            if (result.isSuccess) {
+              print("success");
+            } else {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("${result.error?.errorMessage}"),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          },
           onForgotPassword: (email) {
             Navigator.push(
               context,

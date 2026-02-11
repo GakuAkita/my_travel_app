@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../../../Services/AuthService.dart';
 import '../../../Store/ItineraryStore.dart';
 import '../../../Store/UserStore.dart';
-import '../../Start/StartScreen.dart';
+import '../../Start/start_screen.dart';
 import 'CreateGroupScreen.dart';
 import 'ProfileScreen.dart';
 import 'TravelManageScreen.dart';

@@ -3,13 +3,14 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/AuthForm.dart';
-import '../../components/TopAppBar.dart';
-import '../../constants.dart';
-import '../Main/MainScreen.dart';
+import '../../../../components/AuthForm.dart';
+import '../../../../components/TopAppBar.dart';
+import '../../../../constants.dart';
+import '../../../Main/MainScreen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
   static const String id = "signup_screen";
 
   @override

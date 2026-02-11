@@ -17,10 +17,10 @@ import 'package:my_travel_app/screens/main/Settings/ProfileScreen.dart';
 import 'package:my_travel_app/screens/main/Settings/TravelManageScreen.dart';
 import 'package:my_travel_app/screens/main/Settings/VersionInfoScreen.dart';
 import 'package:my_travel_app/screens/main/itinerary/ItineraryTableEditScreen.dart';
-import 'package:my_travel_app/screens/start/LoginScreen.dart';
-import 'package:my_travel_app/screens/start/SignUpScreen.dart';
 import 'package:my_travel_app/screens/start/SplashScreen.dart';
-import 'package:my_travel_app/screens/start/StartScreen.dart';
+import 'package:my_travel_app/screens/start/sign_in_screen.dart';
+import 'package:my_travel_app/screens/start/sign_up_screen.dart';
+import 'package:my_travel_app/screens/start/start_screen.dart';
 import 'package:my_travel_app/theme/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -126,8 +126,8 @@ class MyAppOld extends StatelessWidget {
         switch (settings.name) {
           case StartScreen.id:
             return MaterialPageRoute(builder: (_) => StartScreen());
-          case LoginScreen.id:
-            return MaterialPageRoute(builder: (_) => LoginScreen());
+          case SignInScreen.id:
+            return MaterialPageRoute(builder: (_) => SignInScreen());
           /* ログイン画面から直接飛ぶことにする */
           // case ForgotPasswordScreen.id:
           //   /* メールアドレスを渡すか */

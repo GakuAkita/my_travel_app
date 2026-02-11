@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/screens/start/LoginScreen.dart';
+import 'package:my_travel_app/routing/routes.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
@@ -28,14 +29,14 @@ class StartScreen extends StatelessWidget {
                   // RoundedButton(
                   //   title: "SignUp",
                   //   onPressed: () {
-                  //     Navigator.pushNamed(context, SignUpScreen.id);
+                  //     context.push(Routes.signUp);
                   //   },
                   //   enabled: true, //基本は押しても何も起こらないようにしておく
                   // ),
                   RoundedButton(
                     title: "Login",
                     onPressed: () {
-                      Navigator.pushNamed(context, LoginScreen.id);
+                      context.push(Routes.signIn);
                     },
                   ),
                 ],
