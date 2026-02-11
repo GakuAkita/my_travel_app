@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/UserStore.dart';
+import 'package:my_travel_app/app_session.dart';
 import 'package:my_travel_app/screens/Main/Expenses/AddEditExpenseScreen.dart';
 import 'package:my_travel_app/screens/Main/Expenses/EstimatedExpenseScreen.dart';
 import 'package:my_travel_app/screens/Main/Expenses/ExpensesResultScreen.dart';
@@ -74,6 +76,35 @@ void main() async {
       child: MyApp(),
     ),
   );
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    final session = context.read<AppSession>();
+    _router= createRou 
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title:"Travel to the World",
+      theme: customDarkBlueTheme,
+      routerConfig: _router,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
