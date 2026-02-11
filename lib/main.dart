@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:my_travel_app/app_session.dart';
+import 'package:my_travel_app/routing/router.dart';
 import 'package:my_travel_app/screens/Main/Expenses/AddEditExpenseScreen.dart';
 import 'package:my_travel_app/screens/Main/Expenses/EstimatedExpenseScreen.dart';
 import 'package:my_travel_app/screens/Main/Expenses/ExpensesResultScreen.dart';
@@ -94,20 +95,20 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     final session = context.read<AppSession>();
-    _router= createRou 
+    _router = createRouter(session);
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title:"Travel to the World",
+      title: "Travel to the World",
       theme: customDarkBlueTheme,
       routerConfig: _router,
     );
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyAppOld extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
