@@ -6,7 +6,7 @@ import 'package:my_travel_app/components/CircleIconButton.dart';
 import 'package:my_travel_app/components/Itinerary/ItinerarySectionDsiplay.dart';
 import 'package:my_travel_app/components/SimpleTextButton.dart';
 import 'package:my_travel_app/constants.dart';
-import 'package:my_travel_app/screens/Main/itinerary/ItineraryTableEditScreen.dart';
+import 'package:my_travel_app/screens/main/itinerary/ItineraryTableEditScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Store/UserStore.dart';

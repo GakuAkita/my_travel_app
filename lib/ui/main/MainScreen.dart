@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
-import 'package:my_travel_app/screens/Main/Expenses/AddEditExpenseScreen.dart';
-import 'package:my_travel_app/screens/Main/Expenses/ExpensesScreen.dart';
-import 'package:my_travel_app/screens/Main/itinerary/ItineraryScreen.dart';
+import 'package:my_travel_app/screens/main/Expenses/AddEditExpenseScreen.dart';
+import 'package:my_travel_app/screens/main/Expenses/ExpensesScreen.dart';
+import 'package:my_travel_app/screens/main/itinerary/ItineraryScreen.dart';
 
 import 'Settings/SettingScreen.dart';
 
 class MainScreen extends StatefulWidget {
   static const String id = "main_screen";
   final int index;
+
   MainScreen({this.index = 0, super.key});
 
   @override

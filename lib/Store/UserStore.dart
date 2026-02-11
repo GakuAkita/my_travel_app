@@ -18,23 +18,30 @@ class UserStore extends ChangeNotifier {
   final AuthService _authService = AuthService();
 
   String? _currentUserId;
+
   String? get currentUserId => _currentUserId;
   String _userRole = UserRole.normal;
+
   String get userRole => _userRole;
 
   ShownTravelBasic? _shownTravelBasic;
+
   ShownTravelBasic? get shownTravelBasic => _shownTravelBasic;
 
   TravelerBasic? _gManager;
+
   TravelerBasic? get gManager => _gManager;
 
   bool _isGManager = false;
+
   bool get isGManager => _isGManager;
 
   ResultInfo _userStoreState = ResultInfo.success();
+
   ResultInfo get userStoreState => _userStoreState;
 
   bool _initialized = false;
+
   UserStore() {
     // 初期化時にデータをロード(したのと被っているので2回呼ばれるのでコメントアウト)
 
@@ -154,7 +161,7 @@ class UserStore extends ChangeNotifier {
    * データを取ってきて、最後にnotifyListenersを呼ぶ
    * */
   Future<ResultInfo> loadUserStoreDataWithNotify() async {
-    print("**** Start loadUserStoreDataWithNotify ****");
+    print("**** start loadUserStoreDataWithNotify ****");
     _userStoreState = ResultInfo.loading();
     /**
      * あーここで2回呼ばれるのか？？

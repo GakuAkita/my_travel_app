@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/screens/Start/LoginScreen.dart';
+import 'package:my_travel_app/screens/start/LoginScreen.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});

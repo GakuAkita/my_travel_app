@@ -4,12 +4,13 @@ import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:my_travel_app/components/AuthForm.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
-import 'package:my_travel_app/screens/Main/MainScreen.dart';
-import 'package:my_travel_app/screens/Start/ForgotPasswordScreen.dart';
+import 'package:my_travel_app/screens/main/MainScreen.dart';
+import 'package:my_travel_app/screens/start/ForgotPasswordScreen.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
   static const String id = "login_screen";
 
   @override

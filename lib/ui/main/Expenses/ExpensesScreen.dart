@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
-import 'package:my_travel_app/screens/Main/Expenses/EstimatedExpenseScreen.dart';
+import 'package:my_travel_app/screens/main/Expenses/EstimatedExpenseScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Store/UserStore.dart';

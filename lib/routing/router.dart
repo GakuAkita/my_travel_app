@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/app_session.dart';
 import 'package:my_travel_app/routing/routes.dart';
-import 'package:my_travel_app/screens/Start/StartScreen.dart';
+import 'package:my_travel_app/screens/start/StartScreen.dart';
 import 'package:provider/provider.dart';
 
 GoRouter createRouter(AppSession session) {

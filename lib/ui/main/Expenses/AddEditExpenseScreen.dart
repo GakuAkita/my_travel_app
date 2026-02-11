@@ -5,7 +5,7 @@ import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/components/BasicText.dart';
 import 'package:my_travel_app/components/TopAppBar.dart';
-import 'package:my_travel_app/screens/Main/MainScreen.dart';
+import 'package:my_travel_app/screens/main/MainScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../CommonClass/TravelerInfo.dart';

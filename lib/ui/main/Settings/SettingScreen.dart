@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/SettingMenuBar.dart';
 import 'package:my_travel_app/constants.dart';
-import 'package:my_travel_app/screens/Main/Settings/DeleteGroupScreen.dart';
-import 'package:my_travel_app/screens/Main/Settings/GeneralManagerSelectScreen.dart';
+import 'package:my_travel_app/screens/main/Settings/DeleteGroupScreen.dart';
+import 'package:my_travel_app/screens/main/Settings/GeneralManagerSelectScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Services/AuthService.dart';
