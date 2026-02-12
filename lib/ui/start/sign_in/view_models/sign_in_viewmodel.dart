@@ -24,7 +24,7 @@ class SignInViewModel extends ChangeNotifier {
   /**
    * メールアドレスでログインする
    */
-  Future<ResultInfo<void>> signInWithEmaiil(
+  Future<ResultInfo<void>> signInWithEmail(
     String email,
     String password,
   ) async {
@@ -48,7 +48,7 @@ class SignInViewModel extends ChangeNotifier {
     return result;
   }
 
-  Future<ResultInfo<void>> signUpWithEmail(
+  Future<ResultInfo<void>> _signUpWithEmail(
     String email,
     String password,
   ) async {
@@ -64,7 +64,7 @@ class SignInViewModel extends ChangeNotifier {
   ) async {
     _isLoading = true;
     notifyListeners();
-    final result = await signUpWithEmail(email, password);
+    final result = await _signUpWithEmail(email, password);
     if (!result.isSuccess) {
       _isLoading = false;
       notifyListeners();

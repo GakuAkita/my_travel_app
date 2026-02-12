@@ -41,6 +41,12 @@ class _SignInScreenState extends State<SignInScreen> {
             }
           },
           onForgotPassword: (email) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("実装忘れ。秋田さんに連絡"),
+                duration: Duration(seconds: 2),
+              ),
+            );
             /* 引数を渡す */
             //context.push();
 
