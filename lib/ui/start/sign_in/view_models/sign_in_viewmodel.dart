@@ -16,17 +16,26 @@ class SignInViewModel extends ChangeNotifier {
   SignInViewModel({required AuthRepository authRepository})
     : _authRepository = authRepository;
 
+  /* isLoadingの部分を分離してもいいかもな */
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
 
+  /**
+   * メールアドレスでログインする
+   */
   Future<ResultInfo<void>> signInWithEmail(
     String email,
     String password,
   ) async {
+    _isLoading = true;
+    notifyListeners();
+
     final credential = EmailAppCredential(email: email, password: password);
     final result = await _authRepository.signIn(credential);
     print("${result.error?.errorMessage}");
+    _isLoading = false;
+    notifyListeners();
     return result;
   }
 
@@ -34,9 +43,14 @@ class SignInViewModel extends ChangeNotifier {
     String email,
     String password,
   ) async {
+    _isLoading = true;
+    notifyListeners();
+
     final credential = EmailAppCredential(email: email, password: password);
     final result = await _authRepository.signUp(credential);
     print("${result.error?.errorMessage}");
+    _isLoading = false;
+    notifyListeners();
     return result;
   }
 }
