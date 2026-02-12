@@ -24,18 +24,27 @@ class SignInViewModel extends ChangeNotifier {
   /**
    * メールアドレスでログインする
    */
-  Future<ResultInfo<void>> signInWithEmail(
+  Future<ResultInfo<void>> signInWithEmaiil(
     String email,
     String password,
   ) async {
     _isLoading = true;
     notifyListeners();
 
+    final result = await _signInWithEmail(email, password);
+    _isLoading = false;
+    notifyListeners();
+
+    return result;
+  }
+
+  Future<ResultInfo<void>> _signInWithEmail(
+    String email,
+    String password,
+  ) async {
     final credential = EmailAppCredential(email: email, password: password);
     final result = await _authRepository.signIn(credential);
     print("${result.error?.errorMessage}");
-    _isLoading = false;
-    notifyListeners();
     return result;
   }
 
@@ -43,14 +52,28 @@ class SignInViewModel extends ChangeNotifier {
     String email,
     String password,
   ) async {
-    _isLoading = true;
-    notifyListeners();
-
     final credential = EmailAppCredential(email: email, password: password);
     final result = await _authRepository.signUp(credential);
     print("${result.error?.errorMessage}");
+    return result;
+  }
+
+  Future<ResultInfo<void>> signUpAndSignInWithEmail(
+    String email,
+    String password,
+  ) async {
+    _isLoading = true;
+    notifyListeners();
+    final result = await signUpWithEmail(email, password);
+    if (!result.isSuccess) {
+      _isLoading = false;
+      notifyListeners();
+      return result;
+    }
+
+    final signInResult = await _signInWithEmail(email, password);
     _isLoading = false;
     notifyListeners();
-    return result;
+    return signInResult;
   }
 }
