@@ -6,8 +6,8 @@ import 'package:my_travel_app/Store/ExpenseStore.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:provider/provider.dart';
 
 import '../../../CommonClass/TravelInfo.dart';

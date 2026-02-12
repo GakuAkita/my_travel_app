@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/components/AuthForm.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:provider/provider.dart';
 
 import '../view_models/sign_in_viewmodel.dart';

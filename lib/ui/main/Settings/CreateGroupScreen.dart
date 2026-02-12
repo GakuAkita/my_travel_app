@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/components/BasicText.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 
 import '../../../components/BasicTextField.dart';
 import '../../../components/RoundedButton.dart';
@@ -15,6 +15,7 @@ import '../../../components/RoundedButton.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   static const String id = "create_group_screen";
+
   const CreateGroupScreen({super.key});
 
   @override

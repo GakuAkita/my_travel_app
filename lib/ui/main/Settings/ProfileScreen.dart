@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 
 import '../../../Services/FirebaseDatabaseService.dart';
 import '../../../components/BasicTextField.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
   static const id = "profile_screen";
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }

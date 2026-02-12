@@ -4,12 +4,13 @@ import 'package:my_travel_app/Store/ItineraryStore.dart';
 import 'package:my_travel_app/components/BasicText.dart';
 import 'package:my_travel_app/components/MultilineTextField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:provider/provider.dart';
 
 class ItineraryTableEditScreen extends StatefulWidget {
   static const String id = "itinerary_table_edit_screen";
   final int index;
+
   const ItineraryTableEditScreen({required this.index, super.key});
 
   @override
@@ -150,8 +151,8 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
                         onPressed: () {
                           /* tableCellsに追加 */
                           /**
-                         *  @TODO 今のところ、3列固定で作っているが、将来的には列も追加できるようにする。
-                         *  */
+                           *  @TODO 今のところ、3列固定で作っているが、将来的には列も追加できるようにする。
+                           *  */
                           itinerarySections.addTableRow(widget.index);
                         },
                       ),

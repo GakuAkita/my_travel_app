@@ -3,8 +3,8 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../components/AuthForm.dart';
-import '../../../../components/TopAppBar.dart';
 import '../../../../constants.dart';
+import '../../../core/ui/TopAppBar.dart';
 import '../../sign_in/view_models/sign_in_viewmodel.dart';
 
 class SignUpScreen extends StatefulWidget {

@@ -7,10 +7,11 @@ import 'package:my_travel_app/ui/start/sign_in/widgets/sign_in_screen.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../ui/main/app_navigation_bar.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 
 GoRouter createRouter(AppSession session) {
-  print("--------- createRouter was called");
+  print("--------- createRouter was called-----------");
   return GoRouter(
     redirect: (context, state) {
       final loggedIn = session.isLoggedIn;
@@ -56,9 +57,21 @@ GoRouter createRouter(AppSession session) {
       /* ログイン後 */
       ShellRoute(
         builder: (context, state, child) {
-          return MultiProvider(providers: []);
+          return MultiProvider(providers: [], child: child);
         },
-        routes: [],
+        routes: [
+          //AppNavigationBarあり
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) {
+              return AppNavigationBar(navigationShell: navigationShell);
+            },
+            branches: [
+              StatefulShellBranch(routes: [GoRoute(path: Routes.itinerary)]),
+              StatefulShellBranch(routes: [GoRoute(path: Routes.expenses)]),
+              StatefulShellBranch(routes: [GoRoute(path: Routes.settings)]),
+            ],
+          ),
+        ],
       ),
     ],
   );

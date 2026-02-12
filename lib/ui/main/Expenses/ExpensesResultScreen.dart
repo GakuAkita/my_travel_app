@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../../components/BasicText.dart';
 import '../../../components/Expenses/ExchangeTileList.dart';
-import '../../../components/TopAppBar.dart';
+import '../../core/ui/TopAppBar.dart';
 
 /***
  * 計算自体はクラウドfunctionでやってもらう。

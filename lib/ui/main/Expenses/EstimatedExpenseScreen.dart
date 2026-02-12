@@ -9,8 +9,8 @@ import 'package:my_travel_app/components/BasicTextField.dart';
 import 'package:my_travel_app/components/CircleIconButton.dart';
 import 'package:my_travel_app/components/NumberField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
 import 'package:my_travel_app/constants.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 import 'package:provider/provider.dart';
 

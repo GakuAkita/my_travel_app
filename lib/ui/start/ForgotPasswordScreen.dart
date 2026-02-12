@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/Services/AuthService.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 
 import '../../components/BasicTextField.dart';
 import '../../components/RoundedButton.dart';
@@ -9,6 +9,7 @@ class ForgotPasswordScreen extends StatefulWidget {
   final String initialEmail;
 
   const ForgotPasswordScreen({required this.initialEmail, super.key});
+
   static const String id = "forgot_password";
 
   @override

@@ -3,7 +3,7 @@ import 'package:my_travel_app/CommonClass/TravelInfo.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 
 import '../../../components/BasicText.dart';
 

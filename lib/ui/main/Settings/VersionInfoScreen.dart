@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:my_travel_app/components/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class VersionInfoScreen extends StatefulWidget {
   const VersionInfoScreen({super.key});
+
   static const id = "version_info_screen";
+
   @override
   State<VersionInfoScreen> createState() => _VersionInfoScreenState();
 }
