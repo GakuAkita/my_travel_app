@@ -3,7 +3,7 @@ import 'package:my_travel_app/app_session.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:provider/provider.dart';
 
-import '../ui/Start/StartScreen.dart';
+import '../ui/start/start/widgets/start_screen.dart';
 
 GoRouter createRouter(AppSession session) {
   print("--------- createRouter was called");
