@@ -2,29 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_travel_app/Store/UserStore.dart';
 import 'package:my_travel_app/app_session.dart';
 import 'package:my_travel_app/routing/router.dart';
-import 'package:my_travel_app/screens/main/Expenses/AddEditExpenseScreen.dart';
-import 'package:my_travel_app/screens/main/Expenses/EstimatedExpenseScreen.dart';
-import 'package:my_travel_app/screens/main/Expenses/ExpensesResultScreen.dart';
-import 'package:my_travel_app/screens/main/Settings/CreateGroupScreen.dart';
-import 'package:my_travel_app/screens/main/Settings/DeleteGroupScreen.dart';
-import 'package:my_travel_app/screens/main/Settings/GeneralManagerSelectScreen.dart';
-import 'package:my_travel_app/screens/main/Settings/ProfileScreen.dart';
-import 'package:my_travel_app/screens/main/Settings/TravelManageScreen.dart';
-import 'package:my_travel_app/screens/main/Settings/VersionInfoScreen.dart';
-import 'package:my_travel_app/screens/main/app_navigation_bar.dart';
-import 'package:my_travel_app/screens/main/itinerary/ItineraryTableEditScreen.dart';
-import 'package:my_travel_app/screens/start/SplashScreen.dart';
-import 'package:my_travel_app/screens/start/sign_in_screen.dart';
-import 'package:my_travel_app/screens/start/sign_up_screen.dart';
-import 'package:my_travel_app/screens/start/start_screen.dart';
 import 'package:my_travel_app/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'Store/ExpenseStore.dart';
-import 'Store/ItineraryStore.dart';
+import 'config/dependencies.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -33,47 +16,7 @@ void main() async {
   await dotenv.load(fileName: "env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserStore()),
-
-        /// UserStore に依存する ExpenseStore
-        ChangeNotifierProxyProvider<UserStore, ExpenseStore>(
-          create: (_) {
-            return ExpenseStore();
-          },
-          update: (_, userStore, expenseStore) {
-            expenseStore ??= ExpenseStore();
-            expenseStore.compareAndUpdateWithUser(
-              userStore.shownTravelBasic,
-              userStore.currentUserId,
-            );
-            //expenseStore.updateWithUser();
-            return expenseStore;
-          },
-        ),
-
-        /// UserStore に依存する ItineraryStore
-        ChangeNotifierProxyProvider<UserStore, ItineraryStore>(
-          create: (_) {
-            return ItineraryStore();
-          },
-          update: (_, userStore, itineraryStore) {
-            //print("UserStore changed. Update ItineraryStore.");
-            itineraryStore ??= ItineraryStore();
-            //itineraryStore;
-            itineraryStore.compareAndUpdateWithUser(
-              userStore.shownTravelBasic,
-              userStore.currentUserId,
-            );
-            return itineraryStore;
-          },
-        ),
-      ],
-      child: MyApp(),
-    ),
-  );
+  runApp(MultiProvider(providers: providers, child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
