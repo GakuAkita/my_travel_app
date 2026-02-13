@@ -2,6 +2,11 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/app_session.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/routing/routes.dart';
+import 'package:my_travel_app/ui/main/Expenses/main/view_models/expense_viewmodel.dart';
+import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
+import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
+import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
+import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/widgets/sign_in_screen.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
@@ -17,15 +22,17 @@ GoRouter createRouter(AppSession session) {
       final loggedIn = session.isLoggedIn;
       final isPublicRoute = Routes.publicRoutes.contains(state.matchedLocation);
 
-      if (!loggedIn && isPublicRoute) {
+      if (!loggedIn && !isPublicRoute) {
+        print("Redirecting to start screen.");
         return Routes.start;
       }
 
       if (loggedIn && isPublicRoute) {
+        print("Redirecting to itinerary screen.");
         return Routes.itinerary;
       }
 
-      //print("Nothing to redirect.");
+      print("Nothing to redirect.");
       return null;
     },
     routes: [
@@ -57,7 +64,14 @@ GoRouter createRouter(AppSession session) {
       /* ログイン後 */
       ShellRoute(
         builder: (context, state, child) {
-          return MultiProvider(providers: [], child: child);
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (innerContext) => ItineraryViewModel(),
+              ),
+            ],
+            child: child,
+          );
         },
         routes: [
           //AppNavigationBarあり
@@ -66,9 +80,38 @@ GoRouter createRouter(AppSession session) {
               return AppNavigationBar(navigationShell: navigationShell);
             },
             branches: [
-              StatefulShellBranch(routes: [GoRoute(path: Routes.itinerary)]),
-              StatefulShellBranch(routes: [GoRoute(path: Routes.expenses)]),
-              StatefulShellBranch(routes: [GoRoute(path: Routes.settings)]),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: Routes.itinerary,
+                    builder: (context, state) => ItineraryScreen(),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: Routes.expenses,
+                    builder:
+                        (context, state) => ChangeNotifierProvider(
+                          create: (innerContext) => ExpenseViewModel(),
+                          child: SignInScreen(),
+                        ),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: Routes.settings,
+                    builder:
+                        (context, state) => ChangeNotifierProvider(
+                          create: (innerContext) => SettingsViewModel(),
+                          child: SettingScreen(),
+                        ),
+                  ),
+                ],
+              ),
             ],
           ),
         ],
