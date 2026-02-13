@@ -4,8 +4,8 @@ import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/components/BasicText.dart';
-import 'package:my_travel_app/screens/main/app_navigation_bar.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
+import 'package:my_travel_app/ui/start/start/widgets/start_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../CommonClass/TravelerInfo.dart';
@@ -459,7 +459,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       //popだとExpensesScreenに戻ったときに更新されない。
                       Navigator.pushNamed(
                         context,
-                        MainScreen.id,
+                        StartScreen.id,
                         arguments: {"index": 1},
                       );
                     },
@@ -500,7 +500,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                         await ref.remove();
                         Navigator.pushNamed(
                           context,
-                          MainScreen.id,
+                          StartScreen.id,
                           arguments: {"index": 1},
                         );
                       },

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/SettingMenuBar.dart';
 import 'package:my_travel_app/constants.dart';
-import 'package:my_travel_app/screens/main/Settings/DeleteGroupScreen.dart';
-import 'package:my_travel_app/screens/main/Settings/GeneralManagerSelectScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Services/AuthService.dart';
 import '../../../Store/ItineraryStore.dart';
 import '../../../Store/UserStore.dart';
-import '../../Start/start_screen.dart';
+import '../../start/start/widgets/start_screen.dart';
 import 'CreateGroupScreen.dart';
+import 'DeleteGroupScreen.dart';
+import 'GeneralManagerSelectScreen.dart';
 import 'ProfileScreen.dart';
 import 'TravelManageScreen.dart';
 import 'VersionInfoScreen.dart';

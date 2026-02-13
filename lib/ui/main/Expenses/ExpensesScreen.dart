@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
-import 'package:my_travel_app/screens/main/Expenses/EstimatedExpenseScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Store/UserStore.dart';
@@ -9,6 +8,7 @@ import '../../../components/BasicText.dart';
 import '../../../components/Expenses/ExpenseTile.dart';
 import '../../../components/RoundedButton.dart';
 import '../../../constants.dart';
+import 'EstimatedExpenseScreen.dart';
 import 'ExpensesResultScreen.dart';
 
 class ExpensesScreen extends StatefulWidget {

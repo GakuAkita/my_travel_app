@@ -6,13 +6,13 @@ import 'package:my_travel_app/components/CircleIconButton.dart';
 import 'package:my_travel_app/components/Itinerary/ItinerarySectionDsiplay.dart';
 import 'package:my_travel_app/components/SimpleTextButton.dart';
 import 'package:my_travel_app/constants.dart';
-import 'package:my_travel_app/screens/main/itinerary/ItineraryTableEditScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Store/UserStore.dart';
 import '../../../components/BasicText.dart';
 import '../../../components/Itinerary/ItineraryMarkdownSectionEdit.dart';
 import '../../../components/ValidatedSwitch.dart';
+import 'ItineraryTableEditScreen.dart';
 
 class ItineraryScreen extends StatefulWidget {
   const ItineraryScreen({super.key});
