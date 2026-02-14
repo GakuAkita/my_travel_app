@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
-import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 
 import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ResultInfo.dart';
 import '../CommonClass/TravelerBasic.dart';
 import '../Services/FirebaseDatabaseService.dart';
+import '../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import '../utils/CheckShownTravelBasic.dart';
 
 class ExpenseStore extends ChangeNotifier {

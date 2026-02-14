@@ -118,7 +118,10 @@ GoRouter createRouter(AppSession session) {
                     path: Routes.settings,
                     builder:
                         (context, state) => ChangeNotifierProvider(
-                          create: (innerContext) => SettingsViewModel(),
+                          create:
+                              (innerContext) => SettingsViewModel(
+                                authRepository: context.read(),
+                              ),
                           child: SettingScreen(),
                         ),
                   ),

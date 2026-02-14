@@ -5,10 +5,10 @@ import 'package:my_travel_app/CommonClass/ExchangeData.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/OnItineraryEdit.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
-import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 
 import '../CommonClass/ErrorInfo.dart';
+import '../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
 class FirebaseDatabaseService {
   static final FirebaseDatabase database = FirebaseDatabase.instance;

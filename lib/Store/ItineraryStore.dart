@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/OnItineraryEdit.dart';
-import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
@@ -10,6 +9,7 @@ import '../CommonClass/ItinerarySection.dart';
 import '../CommonClass/ResultInfo.dart';
 import '../Services/FirebaseDatabaseService.dart';
 import '../constants.dart';
+import '../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
 /**
  * UserStoreでnotifyListenersされたら

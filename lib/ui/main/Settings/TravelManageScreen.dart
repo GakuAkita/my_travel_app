@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
 import 'package:my_travel_app/Store/ItineraryStore.dart';
@@ -13,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../../../CommonClass/TravelInfo.dart';
 import '../../../CommonClass/TravelerInfo.dart';
 import '../../../components/BasicTextField.dart';
+import '../../../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
 //@FIXME　ゴリクソ汚いからまあ必要になったら修正してくれ。めっちゃ無駄なことをしている気がする。
 

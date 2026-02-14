@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
 import 'package:my_travel_app/CommonClass/ExchangeData.dart';
-import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
 import 'package:my_travel_app/components/Expenses/BalancesTable.dart';
@@ -10,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../../components/BasicText.dart';
 import '../../../components/Expenses/ExchangeTileList.dart';
+import '../../../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import '../../core/ui/TopAppBar.dart';
 
 /***

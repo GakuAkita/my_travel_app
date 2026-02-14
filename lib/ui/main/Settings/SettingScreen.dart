@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/SettingMenuBar.dart';
 import 'package:my_travel_app/constants.dart';
+import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Services/AuthService.dart';
@@ -27,6 +28,7 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     /* ログインをしたときに切り替える */
+    final viewModel = context.watch<SettingsViewModel>();
     final userStore = Provider.of<UserStore>(context);
     return Center(
       child: Padding(

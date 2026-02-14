@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
-import 'package:my_travel_app/CommonClass/ShownTravelBasic.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/Services/UserService.dart';
@@ -9,6 +8,7 @@ import 'package:my_travel_app/Services/UserService.dart';
 import '../CommonClass/ErrorInfo.dart';
 import '../Services/AuthService.dart';
 import '../constants.dart';
+import '../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
 /**
  * Store!!!!
