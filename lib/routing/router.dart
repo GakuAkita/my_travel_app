@@ -79,7 +79,7 @@ GoRouter createRouter(AppSession session) {
               ChangeNotifierProvider(create: (_) => ShownTravelSession()),
 
               ChangeNotifierProvider(create: (context) => ItineraryViewModel()),
-              ChangeNotifierProvider(create: (context) => ExpenseViewModel()),
+              ChangeNotifierProvider(create: (context) => ExpensesViewModel()),
             ],
             child: child,
           );

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
+enum TravelSessionStatus { loading, ready, error }
+
 /**
  * General Manager、グループメンバー、
  * 参加者、など旅行に紐づく情報をすべて持っておく
