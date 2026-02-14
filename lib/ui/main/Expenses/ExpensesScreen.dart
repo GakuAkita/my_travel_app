@@ -27,16 +27,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userStore = Provider.of<UserStore>(context);
-    final expenseStore = Provider.of<ExpenseStore>(context);
     final viewModel = context.watch<ExpensesViewModel>();
     return LoadingOverlay(
-      isLoading: expenseStore.expenseState.isLoading,
+      isLoading: viewModel.isLoading,
       child:
-          expenseStore.expenseState.isLoading
+          viewModel.isLoading
               ? Center(child: Text("loading..."))
-              : expenseStore.shownTravelBasic != null &&
-                  expenseStore.shownTravelBasic?.travelId != null
+              : viewModel.travel != null
               ? RefreshIndicator(
                 onRefresh: () async {
                   print("^^^^^ExpensesScreen: onRefresh called^^^^^^^");
@@ -95,7 +92,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   ],
                 ),
               )
-              : Center(child: BasicText(text: "Settings画面より表示旅行を選択してください。")),
+              : Center(
+                child: BasicText(text: "Settings画面より表示旅行を選択してください。"),
+              ) /* travelが選択されていない */,
     );
   }
 }

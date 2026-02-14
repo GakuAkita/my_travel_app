@@ -19,6 +19,10 @@ class ExpensesViewModel extends ChangeNotifier {
 
   List<ExpenseInfo> get allExpenses => _allExpenses;
 
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
   ExpensesViewModel({
     required ExpenseRepository expenseRepository,
     required ShownTravelSession travelSession,
@@ -28,19 +32,36 @@ class ExpensesViewModel extends ChangeNotifier {
     _travelSession.addListener(_onTravelChanged);
   }
 
-  void _onTravelChanged() {
+  /**
+   * あまりないが、_onTravelChangedが何回も呼ばれたときに
+   * 新しいリクエストを弾いてしまうと、選択した旅行と実際のExpensesが合っていないみたいな状況になりかねない。
+   * したがって、requestIdを用いて最後のリクエストを正とする。
+   */
+  void _onTravelChanged() async {
     _travel = _travelSession.currentTravel;
     /*_travelがnullの場合は空を返す*/
     /* ロードする */
+    getAllExpensesWithNotify();
   }
 
+  int _requestId = 0;
+
   Future<ResultInfo<void>> getAllExpensesWithNotify() async {
+    final currentId = ++_requestId;
+    _isLoading = true;
+    notifyListeners();
+
     final result = await getAllExpenses();
+    /* 途中で別リクエストが走っていたら無視 */
+    if (currentId != _requestId) return ResultInfo.success();
+
     if (result.isSuccess) {
       /* createdAtを基準に並べる */
-      _allExpenses = [];
-      notifyListeners();
+      _allExpenses = result.data!.values.toList();
     }
+
+    _isLoading = false;
+    notifyListeners();
     return result;
   }
 
@@ -72,6 +93,8 @@ class ExpensesViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _travelSession.removeListener(_onTravelChanged);
+
     print("ExpenseViewModel was disposed");
     // TODO: implement dispose
     super.dispose();
