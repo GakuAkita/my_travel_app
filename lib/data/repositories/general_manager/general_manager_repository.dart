@@ -8,4 +8,9 @@ abstract class GeneralManagerRepository {
     String travelId,
     String uid,
   );
+
+  Future<ResultInfo<void>> deleteGeneralManager(
+    String groupId,
+    String travelId,
+  );
 }
