@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_travel_app/app_session.dart';
 import 'package:my_travel_app/routing/router.dart';
+import 'package:my_travel_app/state/app_session.dart';
 import 'package:my_travel_app/ui/core/theme/theme.dart';
 import 'package:provider/provider.dart';
 

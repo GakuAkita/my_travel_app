@@ -29,7 +29,6 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     /* ログインをしたときに切り替える */
     final viewModel = context.watch<SettingsViewModel>();
-    final userStore = Provider.of<UserStore>(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -89,20 +88,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             TextButton(
               onPressed: () async {
-                //userStore.;/* 初期化 */
-                final itineraryStore = context.read<ItineraryStore>();
-                if (itineraryStore.editMode) {
-                  await itineraryStore.setEditMode(false);
-                }
-
-                await _authService.signOut();
-                userStore.clearAllData();
-                itineraryStore.clearAllData();
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  StartScreen.id,
-                  (Route<dynamic> route) => false,
-                );
+                viewModel
               },
               child: Text("Sign Out"),
             ),
