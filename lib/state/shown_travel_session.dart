@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/members/members_repository.dart';
 import 'package:my_travel_app/data/repositories/participants/travelers_repository.dart';
@@ -32,6 +34,20 @@ class ShownTravelSession extends ChangeNotifier {
 
   TravelSessionStatus _status = TravelSessionStatus.idle;
 
+  Map<String, TravelerBasic> _groupMembers = {};
+
+  /* null許容しなくていいか。 */
+  Map<String, TravelerBasic> get groupMembers => _groupMembers;
+
+  String? _generalManager;
+
+  String? get generalManager => _generalManager;
+
+  Map<String, TravelerBasic> _planner = {};
+
+  /* 複数いたほうが良いかも */
+  Map<String, TravelerBasic> get planner => _planner;
+
   bool _initialized = false;
 
   bool get initialized => _initialized;
@@ -62,8 +78,9 @@ class ShownTravelSession extends ChangeNotifier {
       } else {
         /* 失敗したのでエラーにする */
         _status = TravelSessionStatus.error;
+        notifyListeners();
+        return travelRet.toVoid();
       }
-      notifyListeners();
 
       if (_shownTravel == null) {
         /* shownTravelが設定されていない場合はメンバーなど必要な情報を取りに行く必要はない */
@@ -76,25 +93,51 @@ class ShownTravelSession extends ChangeNotifier {
         /* これはおかしい。ここに来るはずはないが、 */
         _status = TravelSessionStatus.error;
         notifyListeners();
-        return ResultInfo.success();
+        return ResultInfo.failed(
+          error: ErrorInfo(errorMessage: "Shown Travel is not valid."),
+        );
       }
+      notifyListeners(); /* 正常かつ値がtravelに入っている */
+
+      /* ここまで来てnotifyListenersする。このときtravelを見ている部分は動き出す */
+      final groupId = _shownTravel!.groupId!;
+      final travelId = _shownTravel!.travelId!;
 
       /**
        *  shown travelが存在する場合
        *  */
       _status = TravelSessionStatus.loadingMembers;
       notifyListeners();
+      final membersRet = await _membersRepository.getAllMembers(groupId);
+      if (!membersRet.isSuccess) {
+        _status = TravelSessionStatus.error;
+        notifyListeners();
+        return membersRet.toVoid();
+      }
+      /* グループメンバーが取れたのでここで内部に持つ */
+      _groupMembers = membersRet.data!; /* nullチェックいるかも、、 */
+
+      /* 参加者をロードする */
+      _status = TravelSessionStatus.loadingParticipants;
+      notifyListeners();
+      final participantsRet = await _participantsRepository.getAllTravelers(
+        groupId,
+        travelId,
+      );
+
+      if (participantsRet.isSuccess) {
+        _planner = participantsRet.data!;
+      } else {
+        _status = TravelSessionStatus.error;
+        notifyListeners();
+        return participantsRet.toVoid();
+      }
 
       return ResultInfo.success();
     } finally {
       _initialized = true;
       notifyListeners();
     }
-  }
-
-  void setTravel(ShownTravelBasic? travel) {
-    _shownTravel = travel;
-    notifyListeners();
   }
 
   ShownTravelBasic? get currentTravel => _shownTravel;
