@@ -161,7 +161,7 @@ class FirebaseDatabaseService {
   static DatabaseReference singleTravelParticipantsRef(
     String groupId,
     String travelId,
-  ) => singleTravelRef(groupId, travelId).child("travelers");
+  ) => singleTravelRef(groupId, travelId).child("participants");
 
   static DatabaseReference singleTravelGManagerRef(
     String groupId,

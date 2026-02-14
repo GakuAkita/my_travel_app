@@ -65,7 +65,7 @@ class _GeneralManagerSelectScreenState
           }
         }
 
-        print("Get travelers");
+        print("Get participants");
         /* _groupTravelsをまたfor文で回して参加者の情報を取ってくる */
         for (final GroupTravels trl in _groupTravels) {
           final String groupId = trl.groupId;
@@ -77,7 +77,7 @@ class _GeneralManagerSelectScreenState
                   travelId,
                 ).get();
             if (!travelersSnap.exists) {
-              print("$groupId $travelId travelers not exist");
+              print("$groupId $travelId participants not exist");
             } else {
               final buf = travelersSnap.value as Map;
               final bufList =
