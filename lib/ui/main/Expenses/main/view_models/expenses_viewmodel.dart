@@ -47,11 +47,15 @@ class ExpensesViewModel extends ChangeNotifier {
 
   int _requestId = 0;
 
-  Future<ResultInfo<void>> getAllExpensesWithNotify() async {
+  Future<ResultInfo<void>> getAllExpensesWithNotify({
+    bool isStateNotify = true,
+  }) async {
     final currentId = ++_requestId;
 
-    _isLoading = true;
-    notifyListeners();
+    if (isStateNotify) {
+      _isLoading = true;
+      notifyListeners();
+    }
 
     try {
       final result = await getAllExpenses();
@@ -72,8 +76,10 @@ class ExpensesViewModel extends ChangeNotifier {
 
       return ResultInfo.success();
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (isStateNotify) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 

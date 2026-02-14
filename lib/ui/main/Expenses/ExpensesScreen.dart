@@ -37,10 +37,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               ? RefreshIndicator(
                 onRefresh: () async {
                   print("^^^^^ExpensesScreen: onRefresh called^^^^^^^");
-                  await expenseStore.loadAllExpenseDataWithNotify(
-                    expenseStore.shownTravelBasic,
+                  final result = await viewModel.getAllExpensesWithNotify(
                     isStateNotify: false,
                   );
+                  /* 失敗したらSnackBarを出す */
                 },
                 child: Column(
                   children: [
@@ -51,7 +51,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         children: [
                           RoundedButton(
                             title: "割り勘確認",
-                            enabled: expenseStore.allExpenses.isNotEmpty,
+                            enabled: viewModel.allExpenses.isNotEmpty,
                             onPressed: () {
                               Navigator.pushNamed(
                                 context,
