@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/Store/ExpenseStore.dart';
+import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Store/UserStore.dart';
@@ -28,6 +29,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     final userStore = Provider.of<UserStore>(context);
     final expenseStore = Provider.of<ExpenseStore>(context);
+    final viewModel = context.watch<ExpensesViewModel>();
     return LoadingOverlay(
       isLoading: expenseStore.expenseState.isLoading,
       child:

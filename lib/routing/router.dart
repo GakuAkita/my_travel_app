@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/app_session.dart';
-import 'package:my_travel_app/ui/main/Expenses/main/view_models/expense_viewmodel.dart';
+import 'package:my_travel_app/state/shown_travel_session.dart';
+import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
@@ -76,10 +76,10 @@ GoRouter createRouter(AppSession session) {
         builder: (context, state, child) {
           return MultiProvider(
             providers: [
-              ChangeNotifierProvider(create: (_) => ShownTravelBasic()),
-              ChangeNotifierProvider(
-                create: (innerContext) => ItineraryViewModel(),
-              ),
+              ChangeNotifierProvider(create: (_) => ShownTravelSession()),
+
+              ChangeNotifierProvider(create: (context) => ItineraryViewModel()),
+              ChangeNotifierProvider(create: (context) => ExpenseViewModel()),
             ],
             child: child,
           );

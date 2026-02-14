@@ -9,6 +9,8 @@ class ShownTravelSession extends ChangeNotifier {
     notifyListeners();
   }
 
+  ShownTravelBasic? get currentTravel => _shownTravel;
+
   @override
   void dispose() {
     print("ShownTravelSession was disposed");
