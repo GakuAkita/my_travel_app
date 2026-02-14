@@ -22,6 +22,7 @@ class ExpensesViewModel extends ChangeNotifier {
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
+  bool _disposed = false;
 
   ExpensesViewModel({
     required ExpenseRepository expenseRepository,
@@ -41,33 +42,43 @@ class ExpensesViewModel extends ChangeNotifier {
     _travel = _travelSession.currentTravel;
     /*_travelがnullの場合は空を返す*/
     /* ロードする */
-    getAllExpensesWithNotify();
+    await getAllExpensesWithNotify();
   }
 
   int _requestId = 0;
 
   Future<ResultInfo<void>> getAllExpensesWithNotify() async {
     final currentId = ++_requestId;
+
     _isLoading = true;
     notifyListeners();
 
-    final result = await getAllExpenses();
-    /* 途中で別リクエストが走っていたら無視 */
-    if (currentId != _requestId) return ResultInfo.success();
+    try {
+      final result = await getAllExpenses();
 
-    if (result.isSuccess) {
-      /* createdAtを基準に並べる */
-      _allExpenses = result.data!.values.toList();
+      if (_disposed || currentId != _requestId) {
+        /**
+         * disposedされたあとにFutureが返ってくるとクラッシュ？
+         * getAllExpensesWithNotifyが何度も呼ばれたときにおかしくなる可能性。
+         * その対処。一番最近のリクエストじゃない限りはUIを更新しない
+         * */
+        return ResultInfo.success();
+      }
+
+      if (result.isSuccess) {
+        /* @TODO createdAtで並び替える */
+        _allExpenses = result.data!.values.toList();
+      }
+
+      return ResultInfo.success();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return result;
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpenses() async {
-    final result = getAllExpensesForTravel(_travel);
-    return result;
+    return getAllExpensesForTravel(_travel);
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpensesForTravel(
@@ -93,6 +104,7 @@ class ExpensesViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _travelSession.removeListener(_onTravelChanged);
 
     print("ExpenseViewModel was disposed");
