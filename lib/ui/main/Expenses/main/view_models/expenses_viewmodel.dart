@@ -37,7 +37,9 @@ class ExpensesViewModel extends ChangeNotifier {
   Future<ResultInfo<void>> getAllExpensesWithNotify() async {
     final result = await getAllExpenses();
     if (result.isSuccess) {
-      /* ここでsortしていれる */
+      /* createdAtを基準に並べる */
+      _allExpenses = [];
+      notifyListeners();
     }
     return result;
   }
