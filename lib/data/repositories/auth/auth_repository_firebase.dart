@@ -19,6 +19,7 @@ class AuthRepositoryFirebase implements AuthRepository {
         return null;
       }
 
+      print("Detected AppUser change.");
       //FirebaseのUserをアプリのAppUserに変換
       return AppUser(uid: firebaseUser.uid, email: firebaseUser.email);
     });

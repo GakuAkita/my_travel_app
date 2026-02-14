@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/app_session.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
@@ -15,9 +16,17 @@ import 'package:provider/provider.dart';
 import '../ui/main/app_navigation_bar.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 
+final rootNavigationKey = GlobalKey<NavigatorState>();
+final itineraryNavigatorKey = GlobalKey<NavigatorState>();
+final expensesNavigatorKey = GlobalKey<NavigatorState>();
+final settingsNavigatorKey = GlobalKey<NavigatorState>();
+
 GoRouter createRouter(AppSession session) {
   print("--------- createRouter was called-----------");
   return GoRouter(
+    navigatorKey: rootNavigationKey,
+    refreshListenable: session,
+    initialLocation: Routes.start,
     redirect: (context, state) {
       final loggedIn = session.isLoggedIn;
       final isPublicRoute = Routes.publicRoutes.contains(state.matchedLocation);
@@ -81,6 +90,7 @@ GoRouter createRouter(AppSession session) {
             },
             branches: [
               StatefulShellBranch(
+                navigatorKey: itineraryNavigatorKey,
                 routes: [
                   GoRoute(
                     path: Routes.itinerary,
@@ -89,6 +99,7 @@ GoRouter createRouter(AppSession session) {
                 ],
               ),
               StatefulShellBranch(
+                navigatorKey: expensesNavigatorKey,
                 routes: [
                   GoRoute(
                     path: Routes.expenses,
@@ -101,6 +112,7 @@ GoRouter createRouter(AppSession session) {
                 ],
               ),
               StatefulShellBranch(
+                navigatorKey: settingsNavigatorKey,
                 routes: [
                   GoRoute(
                     path: Routes.settings,
