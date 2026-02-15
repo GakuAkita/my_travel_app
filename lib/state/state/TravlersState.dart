@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
-import 'package:my_travel_app/data/repositories/participants/travelers_repository.dart';
+import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
 /**

@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
+import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
+import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository_realtimedb.dart';
 import 'package:my_travel_app/routing/routes.dart';
@@ -18,6 +20,9 @@ import 'package:my_travel_app/ui/start/sign_in/widgets/sign_in_screen.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../data/repositories/expenses/expense_repository_realtimedb.dart';
+import '../data/repositories/general_manager/general_manager_repository_realtimedb.dart';
+import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
 import '../ui/main/app_navigation_bar.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 
@@ -96,7 +101,54 @@ GoRouter createRouter(AppSession session) {
                   );
                 },
               ),
-              Provider<ExpenseRepository>(create: (innerContext) {}),
+              Provider<ExpenseRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return ExpenseRepositoryRealtimeDb(
+                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<ItineraryRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return ItineraryRepositoryRealtimeDb(
+                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<GeneralManagerRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return GeneralManagerRepositoryRealtimeDb(
+                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
               ChangeNotifierProvider(
                 create:
                     (_) => ShownTravelSession(
