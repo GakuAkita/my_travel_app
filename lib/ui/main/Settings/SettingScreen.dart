@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/SettingMenuBar.dart';
-import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Services/AuthService.dart';
-import '../../../Store/ItineraryStore.dart';
-import '../../../Store/UserStore.dart';
-import '../../start/start/widgets/start_screen.dart';
-import 'CreateGroupScreen.dart';
-import 'DeleteGroupScreen.dart';
-import 'GeneralManagerSelectScreen.dart';
 import 'ProfileScreen.dart';
-import 'TravelManageScreen.dart';
-import 'VersionInfoScreen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -41,54 +32,54 @@ class _SettingScreenState extends State<SettingScreen> {
               },
               menuName: "プロフィール",
             ),
-            SettingMenubar(
-              onPressed: () {
-                userStore.userRole != ''
-                    ? Navigator.pushNamed(
-                      context,
-                      TravelManageScreen.id,
-                      arguments: {
-                        'userRole': userStore.userRole,
-                      }, //これ危ないな。すぐクラッシュしそう。
-                    )
-                    : null;
-              },
-              menuName:
-                  userStore.userRole == UserRole.admin
-                      ? "表示旅行選択  (旅行新規作成)"
-                      : "表示旅行選択",
-            ),
-            if (userStore.userRole == UserRole.admin) ...[
-              SizedBox(height: 50),
-              SettingMenubar(
-                onPressed: () {
-                  Navigator.pushNamed(context, CreateGroupScreen.id);
-                },
-                menuName: "グループ作成",
-              ),
-              SettingMenubar(
-                onPressed: () {
-                  Navigator.pushNamed(context, DeleteGroupScreen.id);
-                },
-                menuName: "グループ削除",
-              ),
-              SettingMenubar(
-                onPressed: () {
-                  Navigator.pushNamed(context, GeneralManagerSelectScreen.id);
-                },
-                menuName: "プランナー選択",
-              ),
-              SettingMenubar(onPressed: () {}, menuName: "旅行削除"),
-            ], //adminだったらこちらを表示
-            SettingMenubar(
-              onPressed: () {
-                Navigator.pushNamed(context, VersionInfoScreen.id);
-              },
-              menuName: "バージョン情報",
-            ),
+            // SettingMenubar(
+            //   onPressed: () {
+            //     userStore.userRole != ''
+            //         ? Navigator.pushNamed(
+            //           context,
+            //           TravelManageScreen.id,
+            //           arguments: {
+            //             'userRole': userStore.userRole,
+            //           }, //これ危ないな。すぐクラッシュしそう。
+            //         )
+            //         : null;
+            //   },
+            //   menuName:
+            //       userStore.userRole == UserRole.admin
+            //           ? "表示旅行選択  (旅行新規作成)"
+            //           : "表示旅行選択",
+            // ),
+            // if (userStore.userRole == UserRole.admin) ...[
+            //   SizedBox(height: 50),
+            //   SettingMenubar(
+            //     onPressed: () {
+            //       Navigator.pushNamed(context, CreateGroupScreen.id);
+            //     },
+            //     menuName: "グループ作成",
+            //   ),
+            //   SettingMenubar(
+            //     onPressed: () {
+            //       Navigator.pushNamed(context, DeleteGroupScreen.id);
+            //     },
+            //     menuName: "グループ削除",
+            //   ),
+            //   SettingMenubar(
+            //     onPressed: () {
+            //       Navigator.pushNamed(context, GeneralManagerSelectScreen.id);
+            //     },
+            //     menuName: "プランナー選択",
+            //   ),
+            //   SettingMenubar(onPressed: () {}, menuName: "旅行削除"),
+            // ], //adminだったらこちらを表示
+            // SettingMenubar(
+            //   onPressed: () {
+            //     Navigator.pushNamed(context, VersionInfoScreen.id);
+            //   },
+            //   menuName: "バージョン情報",
+            // ),
             TextButton(
               onPressed: () async {
-                viewModel
+                viewModel.signOut();
               },
               child: Text("Sign Out"),
             ),

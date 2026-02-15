@@ -22,9 +22,11 @@ class ExpensesViewModel extends ChangeNotifier {
 
   List<ExpenseInfo> get allExpenses => _allExpenses;
 
-  List<TravelerBasic> _allGroupMembers = [];
+  Map<String, TravelerBasic> _allGroupMembers = {};
 
-  List<TravelerBasic> get allGroupMembers => _allGroupMembers;
+  /* nullか空か区別 */
+
+  Map<String, TravelerBasic> get allGroupMembers => _allGroupMembers;
 
   bool _isLoading = false;
 

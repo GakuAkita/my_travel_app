@@ -2,11 +2,13 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
+import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository_realtimedb.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
+import 'package:my_travel_app/state/state/ExpensesState.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
@@ -130,8 +132,12 @@ GoRouter createRouter(AppSession session) {
                         (context, state) => ChangeNotifierProvider(
                           create:
                               (innerContext) => ExpensesViewModel(
-                                expenseRepository: innerContext.read(),
-                                travelSession: innerContext.read(),
+                                expenseRepository:
+                                    innerContext.read<ExpenseRepository>(),
+                                travelSession:
+                                    innerContext.read<ShownTravelSession>(),
+                                expensesState:
+                                    innerContext.read<ExpensesState>(),
                               ),
                           child: SignInScreen(),
                         ),
