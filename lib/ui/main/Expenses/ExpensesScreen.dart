@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/Store/ExpenseStore.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import '../../../Store/UserStore.dart';
 import '../../../components/BasicText.dart';
 import '../../../components/Expenses/ExpenseTile.dart';
 import '../../../components/RoundedButton.dart';
-import '../../../constants.dart';
 import 'EstimatedExpenseScreen.dart';
 import 'ExpensesResultScreen.dart';
 
@@ -59,8 +56,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               );
                             },
                           ),
-                          if (userStore.isGManager ||
-                              userStore.userRole == UserRole.admin) ...[
+                          /* 総監督とAdminだけは見れる */
+                          ...[
                             SizedBox(width: 10),
                             RoundedButton(
                               title: "費用概算",
@@ -75,15 +72,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         ],
                       ),
                     ),
-                    expenseStore.allExpenses.isNotEmpty
+                    viewModel.allExpenses.isNotEmpty
                         ? Expanded(
                           child: ListView.builder(
-                            itemCount: expenseStore.allExpenses.length,
+                            itemCount: viewModel.allExpenses.length,
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               return ExpenseTile(
-                                expense: expenseStore.allExpenses[index],
-                                members: expenseStore.allGroupMembers,
+                                expense: viewModel.allExpenses[index],
+                                members:
+                                    viewModel
+                                        .allGroupMembers /* viewModel内でStateを監視して取る */,
                               );
                             },
                           ),

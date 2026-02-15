@@ -7,4 +7,16 @@ class ExpensesState extends ChangeNotifier {
   final ExpenseRepository _expenseRepository;
 
   ShownTravelBasic? _travel;
+
+  ExpensesState({required ExpenseRepository expensesRepository})
+    : _expenseRepository = expensesRepository {
+    print("ExpensesState was created");
+  }
+
+  @override
+  void dispose() {
+    print("ExpensesState was created");
+    // TODO: implement dispose
+    super.dispose();
+  }
 }

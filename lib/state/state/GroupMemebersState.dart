@@ -27,4 +27,11 @@ class GroupMembersState extends ChangeNotifier {
 
     return result.toVoid();
   }
+
+  @override
+  void dispose() {
+    print("GroupMembersState was disposed");
+    // TODO: implement dispose
+    super.dispose();
+  }
 }

@@ -107,7 +107,11 @@ GoRouter createRouter(AppSession session) {
                     path: Routes.expenses,
                     builder:
                         (context, state) => ChangeNotifierProvider(
-                          create: (innerContext) => ExpenseViewModel(),
+                          create:
+                              (innerContext) => ExpensesViewModel(
+                                expenseRepository: innerContext.read(),
+                                travelSession: innerContext.read(),
+                              ),
                           child: SignInScreen(),
                         ),
                   ),
