@@ -85,6 +85,7 @@ GoRouter createRouter(AppSession session) {
             ),
       ),
       /* ログイン後 */
+      /* サインアウトしたらShellRouteごと死ぬっぽい。それでよい。 */
       ShellRoute(
         builder: (context, state, child) {
           return MultiProvider(
@@ -97,12 +98,15 @@ GoRouter createRouter(AppSession session) {
                     print("Warning!!! userId is null");
                     throw Exception("userId is null");
                   }
-                  print("uid:${userId}");
-
+                  print("ShownTravelRepository was created");
                   return ShownTravelRepositoryRealtimeDb(
                     firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
+                },
+                lazy: false,
+                dispose: (innerContext, repository) {
+                  print("ShownTravelRepository was disposed");
                 },
               ),
               Provider<ExpenseRepository>(
@@ -113,12 +117,16 @@ GoRouter createRouter(AppSession session) {
                     print("Warning!!! userId is null");
                     throw Exception("userId is null");
                   }
-                  print("uid:${userId}");
 
+                  print("ExpenseRepository was created");
                   return ExpenseRepositoryRealtimeDb(
                     firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
+                },
+                lazy: false,
+                dispose: (innerContext, repository) {
+                  print("ExpenseRepository was disposed");
                 },
               ),
               Provider<ItineraryRepository>(
@@ -129,12 +137,16 @@ GoRouter createRouter(AppSession session) {
                     print("Warning!!! userId is null");
                     throw Exception("userId is null");
                   }
-                  print("uid:${userId}");
 
+                  print("ItineraryRepository was created");
                   return ItineraryRepositoryRealtimeDb(
                     firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
+                },
+                lazy: false,
+                dispose: (innerContext, repo) {
+                  print("ItineraryRepository was disposed");
                 },
               ),
               Provider<GeneralManagerRepository>(
@@ -145,12 +157,16 @@ GoRouter createRouter(AppSession session) {
                     print("Warning!!! userId is null");
                     throw Exception("userId is null");
                   }
-                  print("uid:${userId}");
 
+                  print("GeneralManagerRepository was created");
                   return GeneralManagerRepositoryRealtimeDb(
                     firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
+                },
+                lazy: false,
+                dispose: (innerContext, repo) {
+                  print("GeneralManagerRepository was disposed");
                 },
               ),
               Provider<ParticipantsRepository>(
@@ -161,12 +177,16 @@ GoRouter createRouter(AppSession session) {
                     print("Warning!!! userId is null");
                     throw Exception("userId is null");
                   }
-                  print("uid:${userId}");
 
+                  print("ParticipantsRepository was created");
                   return ParticipantsRepositoryRealtimeDb(
                     firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
+                },
+                lazy: false,
+                dispose: (innerContext, repo) {
+                  print("ParticipantsRepository was disposed");
                 },
               ),
               Provider<GroupMembersRepository>(
@@ -178,11 +198,16 @@ GoRouter createRouter(AppSession session) {
                     print("Warning!!! userId is null");
                     throw Exception("userId is null");
                   }
-                  print("uid:${userId}");
+
+                  print("GroupMembersRepository was created");
                   return GroupMembersRepositoryRealtimeDb(
                     firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
+                },
+                lazy: false,
+                dispose: (innerContext, repo) {
+                  print("GroupMembersRepository was disposed");
                 },
               ),
               ChangeNotifierProvider(
@@ -191,6 +216,7 @@ GoRouter createRouter(AppSession session) {
                       shownTravelRepository:
                           innerContext.read<ShownTravelRepository>(),
                     ),
+                lazy: false,
               ),
               ChangeNotifierProvider(
                 create:
@@ -198,6 +224,7 @@ GoRouter createRouter(AppSession session) {
                       travelSession: innerContext.read(),
                       expensesRepository: innerContext.read(),
                     ),
+                lazy: false,
               ),
               ChangeNotifierProvider(
                 create:
@@ -205,6 +232,7 @@ GoRouter createRouter(AppSession session) {
                       travelSession: innerContext.read(),
                       groupMembersRepository: innerContext.read(),
                     ),
+                lazy: false,
               ),
               ChangeNotifierProvider(
                 create:
@@ -212,6 +240,7 @@ GoRouter createRouter(AppSession session) {
                       travelSession: innerContext.read(),
                       participantsRepository: innerContext.read(),
                     ),
+                lazy: false,
               ),
             ],
             child: child,
@@ -276,4 +305,4 @@ GoRouter createRouter(AppSession session) {
       ),
     ],
   );
-}}
+}
