@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/routing/router.dart';
-import 'package:my_travel_app/state/app_session.dart';
+import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/ui/core/theme/theme.dart';
 import 'package:provider/provider.dart';
 

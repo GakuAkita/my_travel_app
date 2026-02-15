@@ -8,7 +8,7 @@ import 'package:my_travel_app/data/repositories/members/members_repository.dart'
 import 'package:my_travel_app/data/repositories/participants/travelers_repository.dart';
 import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
-import '../data/repositories/shown_travel/shown_travel_repository.dart';
+import '../../data/repositories/shown_travel/shown_travel_repository.dart';
 
 enum TravelSessionStatus {
   /// シーケンスっっぽくなっているので順番は変えない
@@ -35,6 +35,8 @@ class ShownTravelSession extends ChangeNotifier {
   ShownTravelBasic? _shownTravel;
 
   TravelSessionStatus _status = TravelSessionStatus.idle;
+
+  TravelSessionStatus get status => _status;
 
   Map<String, TravelerBasic> _groupMembers = {};
 

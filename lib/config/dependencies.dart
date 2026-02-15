@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository_firebase.dart';
-import 'package:my_travel_app/state/app_session.dart';
+import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
-import 'package:my_travel_app/state/shown_travel_session.dart';
+import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
 import '../../../../../CommonClass/ExpenseInfo.dart';
@@ -30,6 +30,8 @@ class ExpensesViewModel extends ChangeNotifier {
   }) : _expenseRepository = expenseRepository,
        _travelSession = travelSession {
     print("ExpenseViewModel was created");
+
+    /* sessionでnotifyListenersをするたび意_onTravelChangedが走ってしまう */
     _travelSession.addListener(_onTravelChanged);
   }
 
@@ -39,7 +41,10 @@ class ExpensesViewModel extends ChangeNotifier {
    * したがって、requestIdを用いて最後のリクエストを正とする。
    */
   void _onTravelChanged() async {
+    if (_travel == _travelSession.currentTravel) return;
+
     _travel = _travelSession.currentTravel;
+
     /*_travelがnullの場合は空を返す*/
     /* ロードする */
     await getAllExpensesWithNotify();

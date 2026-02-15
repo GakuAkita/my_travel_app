@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 
-import '../data/model/app_user/app_user.dart';
+import '../../data/model/app_user/app_user.dart';
 
 class AppSession extends ChangeNotifier {
   final AuthRepository _authRepository;
