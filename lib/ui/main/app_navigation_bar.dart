@@ -19,8 +19,8 @@ class AppNavigationBar extends StatelessWidget {
             icon: Icon(Icons.edit_note),
             label: "Itinerary",
           ),
-          NavigationDestination(icon: Icon(Icons.paid), label: "Expenses"),
-          NavigationDestination(icon: Icon(Icons.settings), label: "Settings"),
+          NavigationDestination(icon: Icon(Icons.paid), label: "expenses"),
+          NavigationDestination(icon: Icon(Icons.settings), label: "settings"),
         ],
         onDestinationSelected: (index) {
           navigationShell.goBranch(
