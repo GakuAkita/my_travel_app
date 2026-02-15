@@ -96,6 +96,7 @@ GoRouter createRouter(AppSession session) {
                   );
                 },
               ),
+              Provider<ExpenseRepository>(create: (innerContext) {}),
               ChangeNotifierProvider(
                 create:
                     (_) => ShownTravelSession(
