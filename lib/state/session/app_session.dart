@@ -11,6 +11,8 @@ class AppSession extends ChangeNotifier {
 
   AppUser? _currentUser;
 
+  AppUser? get currentUser => _currentUser;
+
   bool get isLoggedIn => _currentUser != null;
 
   AppSession({required AuthRepository authRepository})

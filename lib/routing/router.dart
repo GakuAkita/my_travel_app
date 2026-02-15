@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
+import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
+import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository_realtimedb.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
@@ -8,7 +10,6 @@ import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmod
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
-import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/widgets/sign_in_screen.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
@@ -76,10 +77,26 @@ GoRouter createRouter(AppSession session) {
         builder: (context, state, child) {
           return MultiProvider(
             providers: [
-              ChangeNotifierProvider(create: (_) => ShownTravelSession()),
+              Provider<ShownTravelRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
 
-              ChangeNotifierProvider(create: (context) => ItineraryViewModel()),
-              ChangeNotifierProvider(create: (context) => ExpensesViewModel()),
+                  return ShownTravelRepositoryRealtimeDb(userId: userId);
+                },
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (_) => ShownTravelSession(
+                      shownTravelRepository:
+                          context.read<ShownTravelRepository>(),
+                    ),
+              ),
             ],
             child: child,
           );
