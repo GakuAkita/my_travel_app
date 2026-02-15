@@ -20,6 +20,7 @@ import 'package:my_travel_app/ui/main/Expenses/main/widgets/ExpensesScreen.dart'
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
+import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
@@ -258,7 +259,15 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.itinerary,
-                    builder: (context, state) => ItineraryScreen(),
+                    builder:
+                        (context, state) => ChangeNotifierProvider(
+                          create:
+                              (innerContext) => ItineraryViewModel(
+                                itineraryRepository: context.read(),
+                                travelSession: context.read(),
+                              ),
+                          child: ItineraryScreen(),
+                        ),
                   ),
                 ],
               ),
