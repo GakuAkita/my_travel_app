@@ -86,10 +86,10 @@ class _DeleteGroupScreenState extends State<DeleteGroupScreen> {
                                 _selectedGroupKey!,
                               );
                           if (!retMembers.isSuccess) {
-                            print("Failed to get group members");
+                            print("Failed to get group group_members");
                             return;
                           } else if (retMembers.data == null) {
-                            print("Group members are null");
+                            print("Group group_members are null");
                             /* shownTravelを調べて消す必要ない */
                             return;
                           } else {

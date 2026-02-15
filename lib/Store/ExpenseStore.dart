@@ -224,7 +224,9 @@ class ExpenseStore extends ChangeNotifier {
     if (fetchResult.isSuccess) {
       _allGroupMembers = fetchResult.data == null ? {} : fetchResult.data!;
     } else {
-      print("Failed to load group members: ${fetchResult.error?.errorMessage}");
+      print(
+        "Failed to load group group_members: ${fetchResult.error?.errorMessage}",
+      );
     }
     return fetchResult;
   }

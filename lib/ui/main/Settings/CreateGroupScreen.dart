@@ -217,7 +217,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                       //各グループ配下のキーが
                       groups.forEach((groupName) {
                         print("-----------$groupName----------------");
-                        final memberIds = data[groupName]["members"].keys;
+                        final memberIds = data[groupName]["group_members"].keys;
                         memberIds.forEach((memberId) {
                           print(memberId);
                           final ref =

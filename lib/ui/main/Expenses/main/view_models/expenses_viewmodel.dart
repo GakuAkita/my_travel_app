@@ -33,6 +33,11 @@ class ExpensesViewModel extends ChangeNotifier {
 
     /* sessionでnotifyListenersをするたび意_onTravelChangedが走ってしまう */
     _travelSession.addListener(_onTravelChanged);
+    /**
+     * ExpensesViewModelは画面を開かないとViewModelが作られないから、
+     * そのときにはすでにinitializedが終わっているかもしれない。
+     * だからinitializedが終わっていたらここでトリガーする必要がある。
+     */
   }
 
   /**

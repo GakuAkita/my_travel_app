@@ -98,7 +98,7 @@ class FirebaseDatabaseService {
       groupsRef.child(groupId);
 
   static DatabaseReference groupMembersRef(String groupId) =>
-      singleGroupRef(groupId).child("members");
+      singleGroupRef(groupId).child("group_members");
 
   static Future<ResultInfo<Map<String, TravelerBasic>?>> getGroupMembers(
     String groupId, {
