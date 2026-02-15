@@ -4,13 +4,16 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
+import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
+import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository_realtimedb.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/state/state/ExpensesState.dart';
+import 'package:my_travel_app/state/state/GroupMemebersState.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
@@ -22,7 +25,9 @@ import 'package:provider/provider.dart';
 
 import '../data/repositories/expenses/expense_repository_realtimedb.dart';
 import '../data/repositories/general_manager/general_manager_repository_realtimedb.dart';
+import '../data/repositories/group_members/group_members_repository_realtimedb.dart';
 import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
+import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/main/app_navigation_bar.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 
@@ -96,7 +101,7 @@ GoRouter createRouter(AppSession session) {
                   print("uid:${userId}");
 
                   return ShownTravelRepositoryRealtimeDb(
-                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
                 },
@@ -112,7 +117,7 @@ GoRouter createRouter(AppSession session) {
                   print("uid:${userId}");
 
                   return ExpenseRepositoryRealtimeDb(
-                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
                 },
@@ -128,7 +133,7 @@ GoRouter createRouter(AppSession session) {
                   print("uid:${userId}");
 
                   return ItineraryRepositoryRealtimeDb(
-                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
                 },
@@ -144,16 +149,62 @@ GoRouter createRouter(AppSession session) {
                   print("uid:${userId}");
 
                   return GeneralManagerRepositoryRealtimeDb(
-                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<ParticipantsRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return ParticipantsRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<GroupMembersRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+                  return GroupMembersRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
                     userId: userId,
                   );
                 },
               ),
               ChangeNotifierProvider(
                 create:
-                    (_) => ShownTravelSession(
+                    (innerContext) => ShownTravelSession(
                       shownTravelRepository:
-                          context.read<ShownTravelRepository>(),
+                          innerContext.read<ShownTravelRepository>(),
+                    ),
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => ExpensesState(
+                      travelSession: innerContext.read(),
+                      expensesRepository: innerContext.read(),
+                    ),
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => GroupMembersState(
+                      travelSession: innerContext.read(),
+                      groupMembersRepository: innerContext.read(),
                     ),
               ),
             ],
