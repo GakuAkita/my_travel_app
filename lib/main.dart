@@ -27,7 +27,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final GoRouter _router;
+  late GoRouter _router;
 
   @override
   void initState() {
@@ -40,9 +40,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final session = context.watch<AppSession>();
     return MaterialApp.router(
+      key: ValueKey(session.isLoggedIn),
       title: "Travel to the World",
       theme: customDarkBlueTheme,
+      //routerConfig: createRouter(session),
       routerConfig: _router,
     );
   }

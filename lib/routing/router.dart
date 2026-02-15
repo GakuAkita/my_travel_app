@@ -21,7 +21,6 @@ import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
-import 'package:my_travel_app/ui/start/sign_in/widgets/sign_in_screen.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +30,7 @@ import '../data/repositories/group_members/group_members_repository_realtimedb.d
 import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/main/app_navigation_bar.dart';
+import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 
 final rootNavigationKey = GlobalKey<NavigatorState>();
@@ -62,19 +62,7 @@ GoRouter createRouter(AppSession session) {
       return null;
     },
     routes: [
-      /* ログアウト時 */
       GoRoute(path: Routes.start, builder: (context, state) => StartScreen()),
-      GoRoute(
-        path: Routes.signIn,
-        builder:
-            (context, state) => ChangeNotifierProvider(
-              create:
-                  (innerContext) => SignInViewModel(
-                    authRepository: innerContext.read<AuthRepository>(),
-                  ),
-              child: SignInScreen(),
-            ),
-      ),
       GoRoute(
         path: Routes.signUp,
         builder:
@@ -85,6 +73,206 @@ GoRouter createRouter(AppSession session) {
                   ),
               child: SignUpScreen(),
             ),
+      ),
+      GoRoute(
+        path: Routes.signIn,
+        builder:
+            (context, state) => ChangeNotifierProvider(
+              create:
+                  (innerContext) =>
+                      SignInViewModel(authRepository: innerContext.read()),
+              child: SignInScreen(),
+            ),
+      ),
+      /* ログイン後 */
+      ShellRoute(
+        builder: (context, state, child) {
+          return MultiProvider(
+            providers: [
+              Provider<ShownTravelRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return ShownTravelRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<ExpenseRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return ExpenseRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<ItineraryRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return ItineraryRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<GeneralManagerRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return GeneralManagerRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<ParticipantsRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+
+                  return ParticipantsRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              Provider<GroupMembersRepository>(
+                create: (innerContext) {
+                  final appSession = innerContext.read<AppSession>();
+                  final userId = appSession.currentUser?.uid;
+
+                  if (userId == null) {
+                    print("Warning!!! userId is null");
+                    throw Exception("userId is null");
+                  }
+                  print("uid:${userId}");
+                  return GroupMembersRepositoryRealtimeDb(
+                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
+                },
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => ShownTravelSession(
+                      shownTravelRepository:
+                          innerContext.read<ShownTravelRepository>(),
+                    ),
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => ExpensesState(
+                      travelSession: innerContext.read(),
+                      expensesRepository: innerContext.read(),
+                    ),
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => GroupMembersState(
+                      travelSession: innerContext.read(),
+                      groupMembersRepository: innerContext.read(),
+                    ),
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => TravelersState(
+                      travelSession: innerContext.read(),
+                      participantsRepository: innerContext.read(),
+                    ),
+              ),
+            ],
+            child: child,
+          );
+        },
+        routes: [
+          //AppNavigationBarあり
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) {
+              return AppNavigationBar(navigationShell: navigationShell);
+            },
+            branches: [
+              StatefulShellBranch(
+                navigatorKey: itineraryNavigatorKey,
+                routes: [
+                  GoRoute(
+                    path: Routes.itinerary,
+                    builder: (context, state) => ItineraryScreen(),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                navigatorKey: expensesNavigatorKey,
+                routes: [
+                  GoRoute(
+                    path: Routes.expenses,
+                    builder:
+                        (context, state) => ChangeNotifierProvider(
+                          create:
+                              (innerContext) => ExpensesViewModel(
+                                expenseRepository:
+                                    innerContext.read<ExpenseRepository>(),
+                                travelSession:
+                                    innerContext.read<ShownTravelSession>(),
+                                expensesState:
+                                    innerContext.read<ExpensesState>(),
+                              ),
+                          child: ExpensesScreen(),
+                        ),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                navigatorKey: settingsNavigatorKey,
+                routes: [
+                  GoRoute(
+                    path: Routes.settings,
+                    builder:
+                        (context, state) => ChangeNotifierProvider(
+                          create:
+                              (innerContext) => SettingsViewModel(
+                                authRepository: context.read(),
+                              ),
+                          child: SettingScreen(),
+                        ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
@@ -114,198 +302,215 @@ List<RouteBase> publicRoutes() => [
           create:
               (innerContext) =>
                   SignInViewModel(authRepository: innerContext.read()),
-          child: SignUpScreen(),
+          child: SignInScreen(),
         ),
   ),
 ];
 
-List<RouteBase> loggedInRoutes() => [
-  /* ログイン後 */
-  ShellRoute(
-    builder: (context, state, child) {
-      return MultiProvider(
-        providers: [
-          Provider<ShownTravelRepository>(
-            create: (innerContext) {
-              final appSession = innerContext.read<AppSession>();
-              final userId = appSession.currentUser?.uid;
-              if (userId == null) {
-                print("Warning!!! userId is null");
-                throw Exception("userId is null");
-              }
-              print("uid:${userId}");
+/**
+ * もしかしてこんなことしなくてよい？
+ * 普通にroutesに並べてもインスタンスが死んでくれるかも、、
+ */
+List<RouteBase> loggedInRoutes(AppSession session) {
+  final itineraryNavigatorKey = GlobalKey<NavigatorState>();
+  final expensesNavigatorKey = GlobalKey<NavigatorState>();
+  final settingsNavigatorKey = GlobalKey<NavigatorState>();
 
-              return ShownTravelRepositoryRealtimeDb(
-                firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                userId: userId,
-              );
-            },
-          ),
-          Provider<ExpenseRepository>(
-            create: (innerContext) {
-              final appSession = innerContext.read<AppSession>();
-              final userId = appSession.currentUser?.uid;
-              if (userId == null) {
-                print("Warning!!! userId is null");
-                throw Exception("userId is null");
-              }
-              print("uid:${userId}");
+  if (!session.isLoggedIn) {
+    print("------------ not logged in yet. create empty route ---------------");
+    return [];
+  }
 
-              return ExpenseRepositoryRealtimeDb(
-                firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                userId: userId,
-              );
-            },
-          ),
-          Provider<ItineraryRepository>(
-            create: (innerContext) {
-              final appSession = innerContext.read<AppSession>();
-              final userId = appSession.currentUser?.uid;
-              if (userId == null) {
-                print("Warning!!! userId is null");
-                throw Exception("userId is null");
-              }
-              print("uid:${userId}");
+  print("--------- logged in screens were created -----------");
+  return [
+    /* ログイン後 */
+    ShellRoute(
+      builder: (context, state, child) {
+        return MultiProvider(
+          providers: [
+            Provider<ShownTravelRepository>(
+              create: (innerContext) {
+                final appSession = innerContext.read<AppSession>();
+                final userId = appSession.currentUser?.uid;
+                if (userId == null) {
+                  print("Warning!!! userId is null");
+                  throw Exception("userId is null");
+                }
+                print("uid:${userId}");
 
-              return ItineraryRepositoryRealtimeDb(
-                firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                userId: userId,
-              );
-            },
-          ),
-          Provider<GeneralManagerRepository>(
-            create: (innerContext) {
-              final appSession = innerContext.read<AppSession>();
-              final userId = appSession.currentUser?.uid;
-              if (userId == null) {
-                print("Warning!!! userId is null");
-                throw Exception("userId is null");
-              }
-              print("uid:${userId}");
+                return ShownTravelRepositoryRealtimeDb(
+                  firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                  userId: userId,
+                );
+              },
+            ),
+            Provider<ExpenseRepository>(
+              create: (innerContext) {
+                final appSession = innerContext.read<AppSession>();
+                final userId = appSession.currentUser?.uid;
+                if (userId == null) {
+                  print("Warning!!! userId is null");
+                  throw Exception("userId is null");
+                }
+                print("uid:${userId}");
 
-              return GeneralManagerRepositoryRealtimeDb(
-                firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                userId: userId,
-              );
-            },
-          ),
-          Provider<ParticipantsRepository>(
-            create: (innerContext) {
-              final appSession = innerContext.read<AppSession>();
-              final userId = appSession.currentUser?.uid;
-              if (userId == null) {
-                print("Warning!!! userId is null");
-                throw Exception("userId is null");
-              }
-              print("uid:${userId}");
+                return ExpenseRepositoryRealtimeDb(
+                  firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                  userId: userId,
+                );
+              },
+            ),
+            Provider<ItineraryRepository>(
+              create: (innerContext) {
+                final appSession = innerContext.read<AppSession>();
+                final userId = appSession.currentUser?.uid;
+                if (userId == null) {
+                  print("Warning!!! userId is null");
+                  throw Exception("userId is null");
+                }
+                print("uid:${userId}");
 
-              return ParticipantsRepositoryRealtimeDb(
-                firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                userId: userId,
-              );
-            },
-          ),
-          Provider<GroupMembersRepository>(
-            create: (innerContext) {
-              final appSession = innerContext.read<AppSession>();
-              final userId = appSession.currentUser?.uid;
+                return ItineraryRepositoryRealtimeDb(
+                  firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                  userId: userId,
+                );
+              },
+            ),
+            Provider<GeneralManagerRepository>(
+              create: (innerContext) {
+                final appSession = innerContext.read<AppSession>();
+                final userId = appSession.currentUser?.uid;
+                if (userId == null) {
+                  print("Warning!!! userId is null");
+                  throw Exception("userId is null");
+                }
+                print("uid:${userId}");
 
-              if (userId == null) {
-                print("Warning!!! userId is null");
-                throw Exception("userId is null");
-              }
-              print("uid:${userId}");
-              return GroupMembersRepositoryRealtimeDb(
-                firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                userId: userId,
-              );
-            },
-          ),
-          ChangeNotifierProvider(
-            create:
-                (innerContext) => ShownTravelSession(
-                  shownTravelRepository:
-                      innerContext.read<ShownTravelRepository>(),
+                return GeneralManagerRepositoryRealtimeDb(
+                  firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                  userId: userId,
+                );
+              },
+            ),
+            Provider<ParticipantsRepository>(
+              create: (innerContext) {
+                final appSession = innerContext.read<AppSession>();
+                final userId = appSession.currentUser?.uid;
+                if (userId == null) {
+                  print("Warning!!! userId is null");
+                  throw Exception("userId is null");
+                }
+                print("uid:${userId}");
+
+                return ParticipantsRepositoryRealtimeDb(
+                  firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                  userId: userId,
+                );
+              },
+            ),
+            Provider<GroupMembersRepository>(
+              create: (innerContext) {
+                final appSession = innerContext.read<AppSession>();
+                final userId = appSession.currentUser?.uid;
+
+                if (userId == null) {
+                  print("Warning!!! userId is null");
+                  throw Exception("userId is null");
+                }
+                print("uid:${userId}");
+                return GroupMembersRepositoryRealtimeDb(
+                  firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+                  userId: userId,
+                );
+              },
+            ),
+            ChangeNotifierProvider(
+              create:
+                  (innerContext) => ShownTravelSession(
+                    shownTravelRepository:
+                        innerContext.read<ShownTravelRepository>(),
+                  ),
+            ),
+            ChangeNotifierProvider(
+              create:
+                  (innerContext) => ExpensesState(
+                    travelSession: innerContext.read(),
+                    expensesRepository: innerContext.read(),
+                  ),
+            ),
+            ChangeNotifierProvider(
+              create:
+                  (innerContext) => GroupMembersState(
+                    travelSession: innerContext.read(),
+                    groupMembersRepository: innerContext.read(),
+                  ),
+            ),
+            ChangeNotifierProvider(
+              create:
+                  (innerContext) => TravelersState(
+                    travelSession: innerContext.read(),
+                    participantsRepository: innerContext.read(),
+                  ),
+            ),
+          ],
+          child: child,
+        );
+      },
+      routes: [
+        //AppNavigationBarあり
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return AppNavigationBar(navigationShell: navigationShell);
+          },
+          branches: [
+            StatefulShellBranch(
+              navigatorKey: itineraryNavigatorKey,
+              routes: [
+                GoRoute(
+                  path: Routes.itinerary,
+                  builder: (context, state) => ItineraryScreen(),
                 ),
-          ),
-          ChangeNotifierProvider(
-            create:
-                (innerContext) => ExpensesState(
-                  travelSession: innerContext.read(),
-                  expensesRepository: innerContext.read(),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: expensesNavigatorKey,
+              routes: [
+                GoRoute(
+                  path: Routes.expenses,
+                  builder:
+                      (context, state) => ChangeNotifierProvider(
+                        create:
+                            (innerContext) => ExpensesViewModel(
+                              expenseRepository:
+                                  innerContext.read<ExpenseRepository>(),
+                              travelSession:
+                                  innerContext.read<ShownTravelSession>(),
+                              expensesState: innerContext.read<ExpensesState>(),
+                            ),
+                        child: ExpensesScreen(),
+                      ),
                 ),
-          ),
-          ChangeNotifierProvider(
-            create:
-                (innerContext) => GroupMembersState(
-                  travelSession: innerContext.read(),
-                  groupMembersRepository: innerContext.read(),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: settingsNavigatorKey,
+              routes: [
+                GoRoute(
+                  path: Routes.settings,
+                  builder:
+                      (context, state) => ChangeNotifierProvider(
+                        create:
+                            (innerContext) => SettingsViewModel(
+                              authRepository: context.read(),
+                            ),
+                        child: SettingScreen(),
+                      ),
                 ),
-          ),
-          ChangeNotifierProvider(
-            create:
-                (innerContext) => TravelersState(
-                  travelSession: innerContext.read(),
-                  participantsRepository: innerContext.read(),
-                ),
-          ),
-        ],
-        child: child,
-      );
-    },
-    routes: [
-      //AppNavigationBarあり
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return AppNavigationBar(navigationShell: navigationShell);
-        },
-        branches: [
-          StatefulShellBranch(
-            navigatorKey: itineraryNavigatorKey,
-            routes: [
-              GoRoute(
-                path: Routes.itinerary,
-                builder: (context, state) => ItineraryScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            navigatorKey: expensesNavigatorKey,
-            routes: [
-              GoRoute(
-                path: Routes.expenses,
-                builder:
-                    (context, state) => ChangeNotifierProvider(
-                      create:
-                          (innerContext) => ExpensesViewModel(
-                            expenseRepository:
-                                innerContext.read<ExpenseRepository>(),
-                            travelSession:
-                                innerContext.read<ShownTravelSession>(),
-                            expensesState: innerContext.read<ExpensesState>(),
-                          ),
-                      child: ExpensesScreen(),
-                    ),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            navigatorKey: settingsNavigatorKey,
-            routes: [
-              GoRoute(
-                path: Routes.settings,
-                builder:
-                    (context, state) => ChangeNotifierProvider(
-                      create:
-                          (innerContext) =>
-                              SettingsViewModel(authRepository: context.read()),
-                      child: SettingScreen(),
-                    ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
-  ),
-];
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+  ];
+}

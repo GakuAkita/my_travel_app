@@ -37,7 +37,7 @@ class ExpensesState extends ChangeNotifier {
 
   @override
   void dispose() {
-    print("ExpensesState was created");
+    print("ExpensesState was disposed");
     // TODO: implement dispose
     super.dispose();
   }
