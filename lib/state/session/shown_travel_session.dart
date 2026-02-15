@@ -37,6 +37,7 @@ class ShownTravelSession extends ChangeNotifier {
      * loadingにしておいて、このsessionを見ている側で
      * loading中だったら終わるまで待てばよいのでは？？
      */
+    initialize();
   }
 
   Future<ResultInfo<void>> initialize() async {
