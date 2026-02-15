@@ -4,7 +4,7 @@ import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/state/state/ExpensesState.dart';
+import 'package:my_travel_app/state/state/expenses_state.dart';
 import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
 import '../../../../../CommonClass/ExpenseInfo.dart';

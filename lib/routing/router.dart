@@ -12,9 +12,9 @@ import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_reposi
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/state/state/ExpensesState.dart';
-import 'package:my_travel_app/state/state/GroupMemebersState.dart';
-import 'package:my_travel_app/state/state/TravlersState.dart';
+import 'package:my_travel_app/state/state/expenses_state.dart';
+import 'package:my_travel_app/state/state/group_members_state.dart';
+import 'package:my_travel_app/state/state/travelers_state.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/widgets/ExpensesScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
