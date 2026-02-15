@@ -14,6 +14,7 @@ import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/state/state/ExpensesState.dart';
 import 'package:my_travel_app/state/state/GroupMemebersState.dart';
+import 'package:my_travel_app/state/state/TravlersState.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
@@ -205,6 +206,13 @@ GoRouter createRouter(AppSession session) {
                     (innerContext) => GroupMembersState(
                       travelSession: innerContext.read(),
                       groupMembersRepository: innerContext.read(),
+                    ),
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => TravelersState(
+                      travelSession: innerContext.read(),
+                      participantsRepository: innerContext.read(),
                     ),
               ),
             ],
