@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
+import 'package:my_travel_app/state/state/ExpensesState.dart';
 import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
 import '../../../../../CommonClass/ExpenseInfo.dart';
@@ -10,6 +12,7 @@ import '../../../../../CommonClass/ExpenseInfo.dart';
 class ExpensesViewModel extends ChangeNotifier {
   final ExpenseRepository _expenseRepository;
   final ShownTravelSession _travelSession;
+  final ExpensesState _expensesState;
 
   ShownTravelBasic? _travel;
 
@@ -19,6 +22,10 @@ class ExpensesViewModel extends ChangeNotifier {
 
   List<ExpenseInfo> get allExpenses => _allExpenses;
 
+  List<TravelerBasic> _allGroupMembers = [];
+
+  List<TravelerBasic> get allGroupMembers => _allGroupMembers;
+
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
@@ -27,8 +34,10 @@ class ExpensesViewModel extends ChangeNotifier {
   ExpensesViewModel({
     required ExpenseRepository expenseRepository,
     required ShownTravelSession travelSession,
+    required ExpensesState expensesState,
   }) : _expenseRepository = expenseRepository,
-       _travelSession = travelSession {
+       _travelSession = travelSession,
+       _expensesState = expensesState {
     print("ExpenseViewModel was created");
 
     /* sessionでnotifyListenersをするたび意_onTravelChangedが走ってしまう */

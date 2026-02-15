@@ -3,11 +3,11 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import '../../../components/BasicText.dart';
-import '../../../components/Expenses/ExpenseTile.dart';
-import '../../../components/RoundedButton.dart';
-import 'EstimatedExpenseScreen.dart';
-import 'ExpensesResultScreen.dart';
+import '../../../../../components/BasicText.dart';
+import '../../../../../components/Expenses/ExpenseTile.dart';
+import '../../../../../components/RoundedButton.dart';
+import '../../EstimatedExpenseScreen.dart';
+import '../../ExpensesResultScreen.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});

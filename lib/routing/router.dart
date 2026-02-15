@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
@@ -87,7 +88,10 @@ GoRouter createRouter(AppSession session) {
                   }
                   print("uid:${userId}");
 
-                  return ShownTravelRepositoryRealtimeDb(userId: userId);
+                  return ShownTravelRepositoryRealtimeDb(
+                    firebaseDatabase: context.read<FirebaseDatabase>(),
+                    userId: userId,
+                  );
                 },
               ),
               ChangeNotifierProvider(
