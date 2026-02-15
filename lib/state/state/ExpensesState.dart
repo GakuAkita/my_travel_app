@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
@@ -12,6 +13,10 @@ class ExpensesState extends ChangeNotifier {
   final ShownTravelSession _travelSession;
 
   ShownTravelBasic? _travel;
+
+  Map<String, ExpenseInfo> _allExpenses = {};
+
+  Map<String, ExpenseInfo> get allExpenses => _allExpenses;
 
   ExpensesState({
     required ShownTravelSession travelSession,
