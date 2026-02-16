@@ -77,6 +77,10 @@ class ShownTravelSession extends ChangeNotifier {
     }
   }
 
+  Future<ResultInfo<void>> switchShownTravel(
+    ShownTravelBasic? newTravel,
+  ) async {}
+
   ShownTravelBasic? get currentTravel => _shownTravel;
 
   @override
