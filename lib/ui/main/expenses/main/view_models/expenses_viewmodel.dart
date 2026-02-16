@@ -6,7 +6,7 @@ import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
 import '../../../../../CommonClass/ExpenseInfo.dart';
 import '../../../../../CommonClass/ResultInfo.dart';
-import '../../../../../utils/CheckShownTravelBasic.dart';
+import '../../../../../core/utils/CheckShownTravelBasic.dart';
 
 class ExpensesViewModel extends ChangeNotifier {
   final ExpenseRepository _expenseRepository;

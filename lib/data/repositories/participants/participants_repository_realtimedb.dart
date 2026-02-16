@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 
 import '../../../CommonClass/ResultInfo.dart';
@@ -20,7 +21,7 @@ class ParticipantsRepositoryRealtimeDb implements ParticipantsRepository {
     String travelId,
   ) async {
     // TODO: implement getAllTravelers
-    return ResultInfo.success(data: {});
+    throw AppException("Not implemented getAllTravelers");
   }
 
   @override
@@ -30,6 +31,6 @@ class ParticipantsRepositoryRealtimeDb implements ParticipantsRepository {
     Map<String, TravelerBasic> travelers,
   ) async {
     // TODO: implement saveAllTravelers
-    return ResultInfo.success();
+    throw AppException("Not implemented saveAllTravelers");
   }
 }

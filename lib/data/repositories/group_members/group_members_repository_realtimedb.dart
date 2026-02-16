@@ -1,8 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 
-import '../../../CommonClass/ResultInfo.dart';
 import '../../../CommonClass/TravelerBasic.dart';
+import '../../../core/exceptions/app_exception.dart';
 
 class GroupMembersRepositoryRealtimeDb implements GroupMembersRepository {
   final FirebaseDatabase _firebaseDatabase;
@@ -15,15 +15,14 @@ class GroupMembersRepositoryRealtimeDb implements GroupMembersRepository {
        _userId = userId;
 
   @override
-  Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembers(
-    String groupId,
-  ) async {
-    return ResultInfo.success(data: {});
+  Future<Map<String, TravelerBasic>> getAllGroupMembers(String groupId) async {
+    // TODO: implement getAllGroupMembers
+    throw AppException("Not implemented getAllGroupMembers");
   }
 
   @override
-  Future<ResultInfo<void>> setGroupMembers(String groupId) async {
+  Future<void> setGroupMembers(String groupId) async {
     // TODO: implement setGroupMembers
-    return ResultInfo.success();
+    throw AppException("Not implemented setGroupMembers");
   }
 }
