@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 
 import '../../../CommonClass/ExpenseInfo.dart';
@@ -15,33 +16,30 @@ class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
        _userId = userId;
 
   @override
-  Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpenses(
+  Future<Map<String, ExpenseInfo>> getAllExpenses(
     String groupId,
     String travelId,
   ) async {
     // TODO: implement getAllExpenses
-    print("Not Implemented!");
-    return ResultInfo.success();
+    throw AppException("Not implemented getAllExpenses");
   }
 
   @override
-  Future<ResultInfo<ExpenseInfo>> addExpense(
+  Future<ExpenseInfo> addExpense(
     String groupId,
     String travelId,
     ExpenseInfo expense,
   ) async {
-    print("Not Implemented");
-    return ResultInfo.success();
+    throw AppException("Not implemented addExpense");
   }
 
   @override
-  Future<ResultInfo<void>> updateExpense(
+  Future<void> updateExpense(
     String groupId,
     String travelId,
     ExpenseInfo expense,
   ) async {
-    print("Not Implemented");
-    return ResultInfo.success();
+    throw AppException("Not implemented updateExpense");
   }
 
   @override
@@ -50,7 +48,6 @@ class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
     String travelId,
     String expenseId,
   ) async {
-    print("Not Implemented");
-    return ResultInfo.success();
+    throw AppException("Not implemented deleteExpense");
   }
 }
