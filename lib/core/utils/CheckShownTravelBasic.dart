@@ -1,7 +1,7 @@
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 
-import '../CommonClass/ErrorInfo.dart';
-import '../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
+import '../../CommonClass/ErrorInfo.dart';
+import '../../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
 /**
  * 命名が難しいけど、
