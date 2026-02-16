@@ -40,38 +40,36 @@ class ShownTravelSession extends ChangeNotifier {
     initialize();
   }
 
+  /**
+   * 旅行を変更したときだけnotifyListenersする
+   */
   Future<ResultInfo<void>> initialize() async {
     try {
       /* まずshownTravelを取ってくる */
       /* これが決まればItineraryとExpensesは動き出せる */
       _status = TravelSessionStatus.loadingShownTravel;
-      notifyListeners();
       final travelRet = await _shownTravelRepository.getShownTravel();
       if (travelRet.isSuccess) {
         _shownTravel = travelRet.data;
       } else {
         /* 失敗したのでエラーにする */
         _status = TravelSessionStatus.error;
-        notifyListeners();
         return travelRet.toVoid();
       }
 
       if (_shownTravel == null) {
         /* shownTravelが設定されていない場合はメンバーなど必要な情報を取りに行く必要はない */
         _status = TravelSessionStatus.ready;
-        notifyListeners();
         return ResultInfo.success();
       }
 
       if (!checkIsShownTravelValid(_shownTravel!).isSuccess) {
         /* これはおかしい。ここに来るはずはないが、 */
         _status = TravelSessionStatus.error;
-        notifyListeners();
         return ResultInfo.failed(
           error: ErrorInfo(errorMessage: "Shown Travel is not valid."),
         );
       }
-      notifyListeners(); /* 正常かつ値がtravelに入っている */
       return ResultInfo.success();
     } finally {
       _initialized = true;

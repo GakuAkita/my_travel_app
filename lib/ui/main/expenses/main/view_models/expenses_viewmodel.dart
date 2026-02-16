@@ -1,26 +1,22 @@
 import 'package:flutter/cupertino.dart';
-import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
 import '../../../../../CommonClass/ExpenseInfo.dart';
-import '../../../../../state/state/expenses_state.dart';
+import '../../../../../CommonClass/ResultInfo.dart';
+import '../../../../../utils/CheckShownTravelBasic.dart';
 
 class ExpensesViewModel extends ChangeNotifier {
   final ExpenseRepository _expenseRepository;
   final ShownTravelSession _travelSession;
-  final ExpensesState _expensesState;
 
   ShownTravelBasic? _travel;
 
   ShownTravelBasic? get travel => _travel;
 
-  List<ExpenseInfo> _allExpenses = [];
-
-  List<ExpenseInfo> get allExpenses => _allExpenses;
+  Map<String, ExpenseInfo>? _allExpenses;
 
   Map<String, TravelerBasic> _allGroupMembers = {};
 
@@ -36,19 +32,16 @@ class ExpensesViewModel extends ChangeNotifier {
   ExpensesViewModel({
     required ExpenseRepository expenseRepository,
     required ShownTravelSession travelSession,
-    required ExpensesState expensesState,
-  }) : _expenseRepository = expenseRepository,
-       _travelSession = travelSession,
-       _expensesState = expensesState {
+  }) : _travelSession = travelSession,
+       _expenseRepository = expenseRepository {
     print("ExpenseViewModel was created");
 
-    /* sessionでnotifyListenersをするたび意_onTravelChangedが走ってしまう */
-    _travelSession.addListener(_onTravelChanged);
     /**
      * ExpensesViewModelは画面を開かないとViewModelが作られないから、
      * そのときにはすでにinitializedが終わっているかもしれない。
      * だからinitializedが終わっていたらここでトリガーする必要がある。
      */
+    _travelSession.addListener(_onTravelChanged);
   }
 
   /**
@@ -56,14 +49,9 @@ class ExpensesViewModel extends ChangeNotifier {
    * 新しいリクエストを弾いてしまうと、選択した旅行と実際のExpensesが合っていないみたいな状況になりかねない。
    * したがって、requestIdを用いて最後のリクエストを正とする。
    */
+
   void _onTravelChanged() async {
-    if (_travel == _travelSession.currentTravel) return;
-
-    _travel = _travelSession.currentTravel;
-
-    /*_travelがnullの場合は空を返す*/
-    /* ロードする */
-    await getAllExpensesWithNotify();
+    print("Travel changed in ExpenseViewModel");
   }
 
   int _requestId = 0;
@@ -92,7 +80,7 @@ class ExpensesViewModel extends ChangeNotifier {
 
       if (result.isSuccess) {
         /* @TODO createdAtで並び替える */
-        _allExpenses = result.data!.values.toList();
+        _allExpenses = result.data!;
       }
 
       return ResultInfo.success();
@@ -133,7 +121,6 @@ class ExpensesViewModel extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _travelSession.removeListener(_onTravelChanged);
-
     print("ExpenseViewModel was disposed");
     // TODO: implement dispose
     super.dispose();

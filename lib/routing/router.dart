@@ -12,7 +12,6 @@ import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_reposi
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/state/state/expenses_state.dart';
 import 'package:my_travel_app/state/state/group_members_state.dart';
 import 'package:my_travel_app/state/state/travelers_state.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
@@ -221,14 +220,6 @@ GoRouter createRouter(AppSession session) {
               ),
               ChangeNotifierProvider(
                 create:
-                    (innerContext) => ExpensesState(
-                      travelSession: innerContext.read(),
-                      expensesRepository: innerContext.read(),
-                    ),
-                lazy: false,
-              ),
-              ChangeNotifierProvider(
-                create:
                     (innerContext) => GroupMembersState(
                       travelSession: innerContext.read(),
                       groupMembersRepository: innerContext.read(),
@@ -242,6 +233,13 @@ GoRouter createRouter(AppSession session) {
                       participantsRepository: innerContext.read(),
                     ),
                 lazy: false,
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (innerContext) => ExpensesViewModel(
+                      expenseRepository: innerContext.read(),
+                      travelSession: innerContext.read(),
+                    ),
               ),
             ],
             child: child,
@@ -284,8 +282,6 @@ GoRouter createRouter(AppSession session) {
                                     innerContext.read<ExpenseRepository>(),
                                 travelSession:
                                     innerContext.read<ShownTravelSession>(),
-                                expensesState:
-                                    innerContext.read<ExpensesState>(),
                               ),
                           child: ExpensesScreen(),
                         ),
