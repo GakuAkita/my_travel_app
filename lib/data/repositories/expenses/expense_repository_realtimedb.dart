@@ -3,7 +3,6 @@ import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 
 import '../../../CommonClass/ExpenseInfo.dart';
-import '../../../CommonClass/ResultInfo.dart';
 
 class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
   final FirebaseDatabase _firebaseDatabase;
@@ -43,7 +42,7 @@ class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
   }
 
   @override
-  Future<ResultInfo<void>> deleteExpense(
+  Future<void> deleteExpense(
     String groupId,
     String travelId,
     String expenseId,

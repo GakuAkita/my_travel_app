@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:my_travel_app/core/exceptions/app_exception.dart';
 
-import '../../../CommonClass/ResultInfo.dart';
 import 'itinerary_repository.dart';
 
 class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
@@ -14,21 +14,21 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
        _userId = userId;
 
   @override
-  Future<ResultInfo<List<Map<String, dynamic>>>> getItinerarySections(
+  Future<List<Map<String, dynamic>>> getItinerarySections(
     String groupId,
     String travelId,
   ) async {
     // TODO: implement getItinerarySections
-    throw UnimplementedError();
+    throw AppException("Not implemented yet!");
   }
 
   @override
-  Future<ResultInfo<void>> saveItinerarySections(
+  Future<void> saveItinerarySections(
     String groupId,
     String travelId,
     List<Map<String, dynamic>> sections,
   ) async {
     // TODO: implement saveItinerarySections
-    throw UnimplementedError();
+    throw AppException("No implemented yet!");
   }
 }

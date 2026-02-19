@@ -2,8 +2,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
 
-import '../../../CommonClass/ResultInfo.dart';
-
 class GeneralManagerRepositoryRealtimeDb implements GeneralManagerRepository {
   final FirebaseDatabase _firebaseDatabase;
   final String _userId;
@@ -21,7 +19,7 @@ class GeneralManagerRepositoryRealtimeDb implements GeneralManagerRepository {
   }
 
   @override
-  Future<ResultInfo<void>> setGeneralManager(
+  Future<void> setGeneralManager(
     String groupId,
     String travelId,
     String uid,
@@ -30,10 +28,7 @@ class GeneralManagerRepositoryRealtimeDb implements GeneralManagerRepository {
   }
 
   @override
-  Future<ResultInfo<void>> deleteGeneralManager(
-    String groupId,
-    String travelId,
-  ) async {
+  Future<void> deleteGeneralManager(String groupId, String travelId) async {
     // TODO: implement deleteGeneralManager
     throw AppException("Not implemented deleteGeneralManager");
   }

@@ -4,6 +4,7 @@ import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 
+import '../../core/utils/CheckShownTravelBasic.dart';
 import '../../data/repositories/shown_travel/shown_travel_repository.dart';
 
 enum TravelSessionStatus {
