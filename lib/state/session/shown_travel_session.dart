@@ -20,6 +20,10 @@ class ShownTravelSession extends ChangeNotifier {
     print("ShownTravelSession was created");
   }
 
+  /**
+   * ここは直接叩かないこと。
+   * UseCaseを経由して使用する。
+   */
   void setShownTravel(ShownTravelBasic? newTravel) async {
     _shownTravel = newTravel;
     notifyListeners();
