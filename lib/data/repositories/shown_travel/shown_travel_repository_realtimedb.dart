@@ -1,5 +1,4 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
 
@@ -17,14 +16,20 @@ class ShownTravelRepositoryRealtimeDb implements ShownTravelRepository {
 
   /* uidに依存させる */
   @override
-  Future<ResultInfo<ShownTravelBasic>> getShownTravel() async {
+  Future<ShownTravelBasic> getShownTravel() async {
     // TODO: implement getShownTravel
     throw AppException("Not implemented getShownTravel");
   }
 
   @override
-  Future<ResultInfo<void>> setShownTravel(ShownTravelBasic travel) async {
+  Future<void> setShownTravel(ShownTravelBasic travel) async {
     // TODO: implement setShownTravel
     throw AppException("Not implemented setShownTravel");
+  }
+
+  @override
+  Future<void> deleteShownTravel() async {
+    // TODO: implement deleteShownTravel
+    throw AppException("Not implemented deleteShownTravel");
   }
 }
