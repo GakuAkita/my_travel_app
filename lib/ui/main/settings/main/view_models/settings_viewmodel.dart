@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 
+import '../../../../../CommonClass/ErrorInfo.dart';
+
 class SettingsViewModel extends ChangeNotifier {
   AuthRepository _authRepository;
 
@@ -16,7 +18,11 @@ class SettingsViewModel extends ChangeNotifier {
   }
 
   Future<ResultInfo<void>> signOut() async {
-    final result = await _authRepository.signOut();
-    return result;
+    try {
+      await _authRepository.signOut();
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 }

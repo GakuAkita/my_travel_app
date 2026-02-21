@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
+import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
 import '../../../../../data/repositories/itinerary/itinerary_repository.dart';
@@ -16,11 +17,16 @@ class ItineraryViewModel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  late final ShownTravelBasic? travel;
+
   /**
    * Travelが変わったときは
    */
-  ItineraryViewModel({required ItineraryRepository itineraryRepository})
-    : _itineraryRepository = itineraryRepository {
+  ItineraryViewModel({
+    required ItineraryRepository itineraryRepository,
+    required ShownTravelBasic? travel,
+  }) : _itineraryRepository = itineraryRepository,
+       travel = travel {
     print("ItineraryViewModel was created");
   }
 

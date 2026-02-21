@@ -3,6 +3,8 @@ import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_credential.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 
+import '../../../../CommonClass/ErrorInfo.dart';
+
 class SignInViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
 
@@ -43,9 +45,12 @@ class SignInViewModel extends ChangeNotifier {
     String password,
   ) async {
     final credential = EmailAppCredential(email: email, password: password);
-    final result = await _authRepository.signIn(credential);
-    print("${result.error?.errorMessage}");
-    return result;
+    try {
+      await _authRepository.signIn(credential);
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 
   Future<ResultInfo<void>> _signUpWithEmail(
@@ -53,9 +58,12 @@ class SignInViewModel extends ChangeNotifier {
     String password,
   ) async {
     final credential = EmailAppCredential(email: email, password: password);
-    final result = await _authRepository.signUp(credential);
-    print("${result.error?.errorMessage}");
-    return result;
+    try {
+      await _authRepository.signUp(credential);
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 
   Future<ResultInfo<void>> signUpAndSignInWithEmail(

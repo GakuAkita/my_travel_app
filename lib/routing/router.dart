@@ -301,9 +301,20 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         return ExpensesViewModel(expenseRepository: context.read());
       },
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession,ItineraryViewModel>(
-        create:
-        (innerContext)=>ItineraryViewModel(itineraryRepository: context.read(), update: update),
+    ChangeNotifierProxyProvider<ShownTravelSession, ItineraryViewModel>(
+      create:
+          (innerContext) => ItineraryViewModel(
+            itineraryRepository: context.read(),
+            travel: null,
+          ),
+      update: (innerContext, session, vm) {
+        final travel = session.currentTravel;
+        return ItineraryViewModel(
+          itineraryRepository: context.read(),
+          travel: travel,
+        );
+      },
+    ),
     /* 生き続けるViewModel */
     ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeViewModel>(
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
