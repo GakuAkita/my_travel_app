@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
+import 'package:my_travel_app/core/utils/CheckShownTravelBasic.dart';
 
 import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ResultInfo.dart';

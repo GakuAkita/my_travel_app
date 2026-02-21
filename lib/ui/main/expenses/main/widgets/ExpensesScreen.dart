@@ -48,7 +48,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         children: [
                           RoundedButton(
                             title: "割り勘確認",
-                            enabled: viewModel.allExpenses.isNotEmpty,
+                            enabled: viewModel.isNotEmpty,
                             onPressed: () {
                               Navigator.pushNamed(
                                 context,
@@ -72,7 +72,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         ],
                       ),
                     ),
-                    viewModel.allExpenses.isNotEmpty
+                    viewModel.allExpensesList.isNotEmpty
                         ? Expanded(
                           child: ListView.builder(
                             itemCount: viewModel.allExpenses.length,

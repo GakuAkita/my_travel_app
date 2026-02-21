@@ -106,15 +106,7 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.itinerary,
-                    builder:
-                        (context, state) => ChangeNotifierProvider(
-                          create:
-                              (innerContext) => ItineraryViewModel(
-                                itineraryRepository: context.read(),
-                                travelSession: context.read(),
-                              ),
-                          child: ItineraryScreen(),
-                        ),
+                    builder: (context, state) => ItineraryScreen(),
                   ),
                 ],
               ),
@@ -123,15 +115,7 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.expenses,
-                    builder:
-                        (context, state) => ChangeNotifierProvider(
-                          create:
-                              (innerContext) => ExpensesViewModel(
-                                expenseRepository:
-                                    innerContext.read<ExpenseRepository>(),
-                              ),
-                          child: ExpensesScreen(),
-                        ),
+                    builder: (context, state) => ExpensesScreen(),
                   ),
                 ],
               ),
@@ -143,6 +127,7 @@ GoRouter createRouter(AppSession session) {
                     builder:
                         (context, state) => ChangeNotifierProvider(
                           create:
+                              /* SettingsViewModelは対して機能がないので、ログイン直後に作らなくて良い。 */
                               (innerContext) => SettingsViewModel(
                                 authRepository: context.read(),
                               ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
-import 'package:my_travel_app/utils/UidColorHelper.dart';
 
+import '../../core/utils/UidColorHelper.dart';
 import '../../ui/main/Expenses/AddEditExpenseScreen.dart';
 
 class ExpenseTile extends StatelessWidget {

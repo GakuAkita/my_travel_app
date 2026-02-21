@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/OnItineraryEdit.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
-import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
+import 'package:my_travel_app/core/utils/CheckShownTravelBasic.dart';
 
 import '../CommonClass/ErrorInfo.dart';
 import '../CommonClass/ItineraryDefaultTable.dart';

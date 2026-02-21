@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
-import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
 import '../../../../../CommonClass/ExpenseInfo.dart';
 import '../../../../../CommonClass/ResultInfo.dart';
@@ -16,6 +16,19 @@ class ExpensesViewModel extends ChangeNotifier {
   ShownTravelBasic? get travel => _travel;
 
   Map<String, ExpenseInfo>? _allExpenses;
+
+  List<ExpenseInfo> allExpensesList({bool sort = true}) {
+    if (_allExpenses == null) {
+      return [];
+    }
+
+    /* createdAtで並べる。引数で */
+    final listedExpenses = _allExpenses!.values.toList();
+    if (sort) {
+      listedExpenses.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    }
+    return listedExpenses;
+  }
 
   Map<String, TravelerBasic> _allGroupMembers = {};
 
@@ -36,9 +49,7 @@ class ExpensesViewModel extends ChangeNotifier {
     print("ExpenseViewModel was created");
 
     /**
-     * ExpensesViewModelは画面を開かないとViewModelが作られないから、
-     * そのときにはすでにinitializedが終わっているかもしれない。
-     * だからinitializedが終わっていたらここでトリガーする必要がある。
+     * Expensesをロードする
      */
   }
 
@@ -47,10 +58,6 @@ class ExpensesViewModel extends ChangeNotifier {
    * 新しいリクエストを弾いてしまうと、選択した旅行と実際のExpensesが合っていないみたいな状況になりかねない。
    * したがって、requestIdを用いて最後のリクエストを正とする。
    */
-
-  void _onTravelChanged() async {
-    print("Travel changed in ExpenseViewModel");
-  }
 
   int _requestId = 0;
 
@@ -107,18 +114,20 @@ class ExpensesViewModel extends ChangeNotifier {
       return ResultInfo.failed(error: isTravelValid.error, extraData: {});
     }
 
-    final result = await _expenseRepository.getAllExpenses(
-      argTravel.groupId!,
-      argTravel.travelId!,
-    );
-
-    return result;
+    try {
+      final data = await _expenseRepository.getAllExpenses(
+        argTravel.groupId!,
+        argTravel.travelId!,
+      );
+      return ResultInfo.success(data: data);
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 
   @override
   void dispose() {
     _disposed = true;
-    _travelSession.removeListener(_onTravelChanged);
     print("ExpenseViewModel was disposed");
     // TODO: implement dispose
     super.dispose();

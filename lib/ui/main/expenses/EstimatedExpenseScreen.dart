@@ -11,10 +11,10 @@ import 'package:my_travel_app/components/NumberField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
-import 'package:my_travel_app/utils/CheckShownTravelBasic.dart';
 import 'package:provider/provider.dart';
 
 import '../../../CommonClass/ErrorInfo.dart';
+import '../../../core/utils/CheckShownTravelBasic.dart';
 
 class EstimatedExpenseScreen extends StatefulWidget {
   static const String id = "estimated_expense_screen";

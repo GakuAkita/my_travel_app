@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/MoneyExchange.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
-import 'package:my_travel_app/utils/UidColorHelper.dart';
+
+import '../../core/utils/UidColorHelper.dart';
 
 class ExchangeTileList extends StatelessWidget {
   final List<MoneyExchange> exgData;
   final Map<String, TravelerBasic> participants;
+
   ExchangeTileList({
     required this.exgData,
     required this.participants,
