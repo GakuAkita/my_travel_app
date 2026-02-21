@@ -1,13 +1,12 @@
 import 'package:flutter/widgets.dart';
+import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
 import '../../../../../data/repositories/itinerary/itinerary_repository.dart';
-import '../../../../../state/session/shown_travel_session.dart';
 
 class ItineraryViewModel extends ChangeNotifier {
   final ItineraryRepository _itineraryRepository;
-  final ShownTravelSession _travelSession;
 
   List<ItinerarySection> _itinerarySections = [];
 
@@ -17,11 +16,11 @@ class ItineraryViewModel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  ItineraryViewModel({
-    required ItineraryRepository itineraryRepository,
-    required ShownTravelSession travelSession,
-  }) : _itineraryRepository = itineraryRepository,
-       _travelSession = travelSession {
+  /**
+   * Travelが変わったときは
+   */
+  ItineraryViewModel({required ItineraryRepository itineraryRepository})
+    : _itineraryRepository = itineraryRepository {
     print("ItineraryViewModel was created");
   }
 
@@ -35,23 +34,28 @@ class ItineraryViewModel extends ChangeNotifier {
     String travelId,
     List<Map<String, dynamic>> sections /* dynamicでいいのか？？ */,
   ) async {
-    final result = await _itineraryRepository.saveItinerarySections(
-      groupId,
-      travelId,
-      sections,
-    );
-    return result.toVoid();
+    try {
+      await _itineraryRepository.saveItinerarySections(
+        groupId,
+        travelId,
+        sections,
+      );
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 
   Future<ResultInfo<List<Map<String, dynamic>>>> loadItineraryForTravel(
     String groupId,
     String travelId,
   ) async {
-    final result = await _itineraryRepository.getItinerarySections(
-      groupId,
-      travelId,
-    );
-    return result;
+    try {
+      await _itineraryRepository.getItinerarySections(groupId, travelId);
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 
   Future<ResultInfo<void>> loadItineraryWithNotify() async {

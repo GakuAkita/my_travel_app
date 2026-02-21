@@ -292,25 +292,26 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             travelSession: innerContext.read<ShownTravelSession>(),
           ),
     ),
+    ChangeNotifierProxyProvider<ShownTravelSession, ExpensesViewModel>(
+      create:
+          (innerContext) =>
+              ExpensesViewModel(expenseRepository: context.read()),
+      update: (innerContext, session, vm) {
+        final travel = session.currentTravel;
+        return ExpensesViewModel(expenseRepository: context.read());
+      },
+    ),
+    ChangeNotifierProxyProvider<ShownTravelSession,ItineraryViewModel>(
+        create:
+        (innerContext)=>ItineraryViewModel(itineraryRepository: context.read(), update: update),
     /* 生き続けるViewModel */
     ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeViewModel>(
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
-          (_) => TravelScopeViewModel(
-            travel: null,
-            groupMembersRepository: context.read(),
-            generalManagerRepository: context.read(),
-            participantsRepository: context.read(),
-            expenseRepository: context.read(),
-          ),
+          (_) => TravelScopeViewModel(travel: null),
       update: (innerContext, session, vm) {
         /* 旅行が切り替わったらTravelScopeViewModelが再生成される */
-        return TravelScopeViewModel(
-          travel: session.currentTravel,
-          groupMembersRepository: innerContext.read(),
-          generalManagerRepository: innerContext.read(),
-          participantsRepository: innerContext.read(),
-          expenseRepository: innerContext.read(),
-        );
+        final travel = session.currentTravel;
+        return TravelScopeViewModel(travel: travel);
       },
     ),
   ];
