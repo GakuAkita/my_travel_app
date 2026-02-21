@@ -17,7 +17,6 @@ import 'package:my_travel_app/ui/main/Expenses/main/widgets/ExpensesScreen.dart'
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
-import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:my_travel_app/use_cases/travel_use_case.dart';
@@ -30,6 +29,7 @@ import '../data/repositories/group_members/group_members_repository_realtimedb.d
 import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/main/app_navigation_bar.dart';
+import '../ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 import '../ui/travel_scope_viewmodels.dart';
@@ -106,7 +106,25 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.itinerary,
-                    builder: (context, state) => ItineraryScreen(),
+                    builder:
+                        (context, state) => ChangeNotifierProxyProvider<
+                          ShownTravelSession,
+                          ItineraryViewModel
+                        >(
+                          create:
+                              (innerContext) => ItineraryViewModel(
+                                itineraryRepository: innerContext.read(),
+                                travel: null,
+                              ),
+                          update: (innerContext, session, vm) {
+                            final travel = session.currentTravel;
+                            return ItineraryViewModel(
+                              itineraryRepository: innerContext.read(),
+                              travel: travel,
+                            );
+                          },
+                          child: ItineraryScreen(),
+                        ),
                   ),
                 ],
               ),
@@ -115,7 +133,26 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.expenses,
-                    builder: (context, state) => ExpensesScreen(),
+                    builder:
+                        (context, state) => ChangeNotifierProxyProvider<
+                          ShownTravelSession,
+                          ExpensesViewModel
+                        >(
+                          create:
+                              (innerContext) => ExpensesViewModel(
+                                expenseRepository: innerContext.read(),
+                                travel: null,
+                              ),
+                          update: (innerContext, session, vm) {
+                            final _travel = session.currentTravel;
+                            return ExpensesViewModel(
+                              expenseRepository: innerContext.read(),
+                              travel: _travel,
+                            );
+                          },
+                          child: ExpensesScreen(),
+                          lazy: false,
+                        ),
                   ),
                 ],
               ),
@@ -127,7 +164,6 @@ GoRouter createRouter(AppSession session) {
                     builder:
                         (context, state) => ChangeNotifierProvider(
                           create:
-                              /* SettingsViewModelは対して機能がないので、ログイン直後に作らなくて良い。 */
                               (innerContext) => SettingsViewModel(
                                 authRepository: context.read(),
                               ),
@@ -277,35 +313,6 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             travelSession: innerContext.read<ShownTravelSession>(),
           ),
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession, ExpensesViewModel>(
-      create:
-          (innerContext) => ExpensesViewModel(
-            expenseRepository: innerContext.read(),
-            travel: null,
-          ),
-      update: (innerContext, session, vm) {
-        final _travel = session.currentTravel;
-        return ExpensesViewModel(
-          expenseRepository: innerContext.read(),
-          travel: _travel,
-        );
-      },
-    ),
-    ChangeNotifierProxyProvider<ShownTravelSession, ItineraryViewModel>(
-      create:
-          (innerContext) => ItineraryViewModel(
-            itineraryRepository: innerContext.read(),
-            travel: null,
-          ),
-      update: (innerContext, session, vm) {
-        final travel = session.currentTravel;
-        return ItineraryViewModel(
-          itineraryRepository: innerContext.read(),
-          travel: travel,
-        );
-      },
-    ),
-    /* 生き続けるViewModel */
     ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeViewModel>(
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
           (_) => TravelScopeViewModel(travel: null),
