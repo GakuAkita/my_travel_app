@@ -48,7 +48,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         children: [
                           RoundedButton(
                             title: "割り勘確認",
-                            enabled: viewModel.isNotEmpty,
+                            enabled: viewModel.allExpensesList().isNotEmpty,
                             onPressed: () {
                               Navigator.pushNamed(
                                 context,
@@ -72,14 +72,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         ],
                       ),
                     ),
-                    viewModel.allExpensesList.isNotEmpty
+                    viewModel.allExpensesList().isNotEmpty
                         ? Expanded(
                           child: ListView.builder(
-                            itemCount: viewModel.allExpenses.length,
+                            itemCount: viewModel.allExpensesList().length,
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               return ExpenseTile(
-                                expense: viewModel.allExpenses[index],
+                                expense: viewModel.allExpensesList()[index],
                                 members:
                                     viewModel
                                         .allGroupMembers /* viewModel内でStateを監視して取る */,
