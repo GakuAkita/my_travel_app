@@ -44,9 +44,14 @@ class ExpensesViewModel extends ChangeNotifier {
   /**
    * 旅行がスイッチされるたびにViewModelが再生成される。
    */
-  ExpensesViewModel({required ExpenseRepository expenseRepository})
-    : _expenseRepository = expenseRepository {
-    print("ExpenseViewModel was created");
+  ExpensesViewModel({
+    required ExpenseRepository expenseRepository,
+    required ShownTravelBasic? travel,
+  }) : _expenseRepository = expenseRepository,
+       _travel = travel {
+    print(
+      "ExpenseViewModel was created travel=${travel?.travelId} gropu=${travel?.groupId}",
+    );
 
     /**
      * Expensesをロードする

@@ -279,23 +279,28 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ),
     ChangeNotifierProxyProvider<ShownTravelSession, ExpensesViewModel>(
       create:
-          (innerContext) =>
-              ExpensesViewModel(expenseRepository: context.read()),
+          (innerContext) => ExpensesViewModel(
+            expenseRepository: innerContext.read(),
+            travel: null,
+          ),
       update: (innerContext, session, vm) {
-        final travel = session.currentTravel;
-        return ExpensesViewModel(expenseRepository: context.read());
+        final _travel = session.currentTravel;
+        return ExpensesViewModel(
+          expenseRepository: innerContext.read(),
+          travel: _travel,
+        );
       },
     ),
     ChangeNotifierProxyProvider<ShownTravelSession, ItineraryViewModel>(
       create:
           (innerContext) => ItineraryViewModel(
-            itineraryRepository: context.read(),
+            itineraryRepository: innerContext.read(),
             travel: null,
           ),
       update: (innerContext, session, vm) {
         final travel = session.currentTravel;
         return ItineraryViewModel(
-          itineraryRepository: context.read(),
+          itineraryRepository: innerContext.read(),
           travel: travel,
         );
       },

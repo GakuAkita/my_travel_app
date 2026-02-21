@@ -27,7 +27,9 @@ class ItineraryViewModel extends ChangeNotifier {
     required ShownTravelBasic? travel,
   }) : _itineraryRepository = itineraryRepository,
        travel = travel {
-    print("ItineraryViewModel was created");
+    print(
+      "ItineraryViewModel was created. travel=${travel?.travelId} group=${travel?.groupId}",
+    );
   }
 
   Future<ResultInfo<void>> saveItinerary() async {
