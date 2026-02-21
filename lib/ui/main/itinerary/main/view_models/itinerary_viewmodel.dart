@@ -17,7 +17,7 @@ class ItineraryViewModel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  late final ShownTravelBasic? travel;
+  final ShownTravelBasic? travel;
 
   /**
    * Travelが変わったときは

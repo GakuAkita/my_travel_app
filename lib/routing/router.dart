@@ -19,7 +19,6 @@ import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmod
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
-import 'package:my_travel_app/use_cases/travel_use_case.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -115,12 +114,14 @@ GoRouter createRouter(AppSession session) {
                               (innerContext) => ItineraryViewModel(
                                 itineraryRepository: innerContext.read(),
                                 travel: null,
+                                switchTravelUseCase: innerContext.read(),
                               ),
                           update: (innerContext, session, vm) {
                             final travel = session.currentTravel;
                             return ItineraryViewModel(
                               itineraryRepository: innerContext.read(),
                               travel: travel,
+                              switchTravelUseCase: innerContext.read(),
                             );
                           },
                           child: ItineraryScreen(),
@@ -305,13 +306,6 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ChangeNotifierProvider(
       create: (innerContext) => ShownTravelSession(),
       lazy: false,
-    ),
-    Provider(
-      create:
-          (innerContext) => SwitchTravelUseCase(
-            travelRepository: innerContext.read<ShownTravelRepository>(),
-            travelSession: innerContext.read<ShownTravelSession>(),
-          ),
     ),
     ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeViewModel>(
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
