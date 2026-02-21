@@ -10,7 +10,6 @@ import '../../../../../core/utils/CheckShownTravelBasic.dart';
 
 class ExpensesViewModel extends ChangeNotifier {
   final ExpenseRepository _expenseRepository;
-  final ShownTravelSession _travelSession;
 
   ShownTravelBasic? _travel;
 
@@ -29,11 +28,11 @@ class ExpensesViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool _disposed = false;
 
-  ExpensesViewModel({
-    required ExpenseRepository expenseRepository,
-    required ShownTravelSession travelSession,
-  }) : _travelSession = travelSession,
-       _expenseRepository = expenseRepository {
+  /**
+   * 旅行がスイッチされるたびにViewModelが再生成される。
+   */
+  ExpensesViewModel({required ExpenseRepository expenseRepository})
+    : _expenseRepository = expenseRepository {
     print("ExpenseViewModel was created");
 
     /**
@@ -41,7 +40,6 @@ class ExpensesViewModel extends ChangeNotifier {
      * そのときにはすでにinitializedが終わっているかもしれない。
      * だからinitializedが終わっていたらここでトリガーする必要がある。
      */
-    _travelSession.addListener(_onTravelChanged);
   }
 
   /**

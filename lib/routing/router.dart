@@ -12,8 +12,6 @@ import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_reposi
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/state/state/group_members_state.dart';
-import 'package:my_travel_app/state/state/travelers_state.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/widgets/ExpensesScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
@@ -22,7 +20,9 @@ import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
+import 'package:my_travel_app/use_cases/travel_use_case.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 import '../data/repositories/expenses/expense_repository_realtimedb.dart';
 import '../data/repositories/general_manager/general_manager_repository_realtimedb.dart';
@@ -32,6 +32,7 @@ import '../data/repositories/participants/participants_repository_realtimedb.dar
 import '../ui/main/app_navigation_bar.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
+import '../ui/travel_scope_viewmodels.dart';
 
 final rootNavigationKey = GlobalKey<NavigatorState>();
 final itineraryNavigatorKey = GlobalKey<NavigatorState>();
@@ -89,159 +90,7 @@ GoRouter createRouter(AppSession session) {
       ShellRoute(
         builder: (context, state, child) {
           return MultiProvider(
-            providers: [
-              Provider<ShownTravelRepository>(
-                create: (innerContext) {
-                  final appSession = innerContext.read<AppSession>();
-                  final userId = appSession.currentUser?.uid;
-                  if (userId == null) {
-                    print("Warning!!! userId is null");
-                    throw Exception("userId is null");
-                  }
-                  print("ShownTravelRepository was created");
-                  return ShownTravelRepositoryRealtimeDb(
-                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                    userId: userId,
-                  );
-                },
-                lazy: false,
-                dispose: (innerContext, repository) {
-                  print("ShownTravelRepository was disposed");
-                },
-              ),
-              Provider<ExpenseRepository>(
-                create: (innerContext) {
-                  final appSession = innerContext.read<AppSession>();
-                  final userId = appSession.currentUser?.uid;
-                  if (userId == null) {
-                    print("Warning!!! userId is null");
-                    throw Exception("userId is null");
-                  }
-
-                  print("ExpenseRepository was created");
-                  return ExpenseRepositoryRealtimeDb(
-                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                    userId: userId,
-                  );
-                },
-                lazy: false,
-                dispose: (innerContext, repository) {
-                  print("ExpenseRepository was disposed");
-                },
-              ),
-              Provider<ItineraryRepository>(
-                create: (innerContext) {
-                  final appSession = innerContext.read<AppSession>();
-                  final userId = appSession.currentUser?.uid;
-                  if (userId == null) {
-                    print("Warning!!! userId is null");
-                    throw Exception("userId is null");
-                  }
-
-                  print("ItineraryRepository was created");
-                  return ItineraryRepositoryRealtimeDb(
-                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                    userId: userId,
-                  );
-                },
-                lazy: false,
-                dispose: (innerContext, repo) {
-                  print("ItineraryRepository was disposed");
-                },
-              ),
-              Provider<GeneralManagerRepository>(
-                create: (innerContext) {
-                  final appSession = innerContext.read<AppSession>();
-                  final userId = appSession.currentUser?.uid;
-                  if (userId == null) {
-                    print("Warning!!! userId is null");
-                    throw Exception("userId is null");
-                  }
-
-                  print("GeneralManagerRepository was created");
-                  return GeneralManagerRepositoryRealtimeDb(
-                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                    userId: userId,
-                  );
-                },
-                lazy: false,
-                dispose: (innerContext, repo) {
-                  print("GeneralManagerRepository was disposed");
-                },
-              ),
-              Provider<ParticipantsRepository>(
-                create: (innerContext) {
-                  final appSession = innerContext.read<AppSession>();
-                  final userId = appSession.currentUser?.uid;
-                  if (userId == null) {
-                    print("Warning!!! userId is null");
-                    throw Exception("userId is null");
-                  }
-
-                  print("ParticipantsRepository was created");
-                  return ParticipantsRepositoryRealtimeDb(
-                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                    userId: userId,
-                  );
-                },
-                lazy: false,
-                dispose: (innerContext, repo) {
-                  print("ParticipantsRepository was disposed");
-                },
-              ),
-              Provider<GroupMembersRepository>(
-                create: (innerContext) {
-                  final appSession = innerContext.read<AppSession>();
-                  final userId = appSession.currentUser?.uid;
-
-                  if (userId == null) {
-                    print("Warning!!! userId is null");
-                    throw Exception("userId is null");
-                  }
-
-                  print("GroupMembersRepository was created");
-                  return GroupMembersRepositoryRealtimeDb(
-                    firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-                    userId: userId,
-                  );
-                },
-                lazy: false,
-                dispose: (innerContext, repo) {
-                  print("GroupMembersRepository was disposed");
-                },
-              ),
-              ChangeNotifierProvider(
-                create:
-                    (innerContext) => ShownTravelSession(
-                      shownTravelRepository:
-                          innerContext.read<ShownTravelRepository>(),
-                    ),
-                lazy: false,
-              ),
-              ChangeNotifierProvider(
-                create:
-                    (innerContext) => GroupMembersState(
-                      travelSession: innerContext.read(),
-                      groupMembersRepository: innerContext.read(),
-                    ),
-                lazy: false,
-              ),
-              ChangeNotifierProvider(
-                create:
-                    (innerContext) => TravelersState(
-                      travelSession: innerContext.read(),
-                      participantsRepository: innerContext.read(),
-                    ),
-                lazy: false,
-              ),
-              ChangeNotifierProvider(
-                create:
-                    (innerContext) => ExpensesViewModel(
-                      expenseRepository: innerContext.read(),
-                      travelSession: innerContext.read(),
-                    ),
-              ),
-            ],
+            providers: buildLoggedInProviders(context),
             child: child,
           );
         },
@@ -280,8 +129,6 @@ GoRouter createRouter(AppSession session) {
                               (innerContext) => ExpensesViewModel(
                                 expenseRepository:
                                     innerContext.read<ExpenseRepository>(),
-                                travelSession:
-                                    innerContext.read<ShownTravelSession>(),
                               ),
                           child: ExpensesScreen(),
                         ),
@@ -310,4 +157,161 @@ GoRouter createRouter(AppSession session) {
       ),
     ],
   );
+}
+
+List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
+  return [
+    Provider<ShownTravelRepository>(
+      create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        final userId = appSession.currentUser?.uid;
+        if (userId == null) {
+          print("Warning!!! userId is null");
+          throw Exception("userId is null");
+        }
+        print("ShownTravelRepository was created");
+        return ShownTravelRepositoryRealtimeDb(
+          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          userId: userId,
+        );
+      },
+      lazy: false,
+      dispose: (innerContext, repository) {
+        print("ShownTravelRepository was disposed");
+      },
+    ),
+    Provider<ExpenseRepository>(
+      create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        final userId = appSession.currentUser?.uid;
+        if (userId == null) {
+          print("Warning!!! userId is null");
+          throw Exception("userId is null");
+        }
+
+        print("ExpenseRepository was created");
+        return ExpenseRepositoryRealtimeDb(
+          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          userId: userId,
+        );
+      },
+      lazy: false,
+      dispose: (innerContext, repository) {
+        print("ExpenseRepository was disposed");
+      },
+    ),
+    Provider<ItineraryRepository>(
+      create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        final userId = appSession.currentUser?.uid;
+        if (userId == null) {
+          print("Warning!!! userId is null");
+          throw Exception("userId is null");
+        }
+
+        print("ItineraryRepository was created");
+        return ItineraryRepositoryRealtimeDb(
+          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          userId: userId,
+        );
+      },
+      lazy: false,
+      dispose: (innerContext, repo) {
+        print("ItineraryRepository was disposed");
+      },
+    ),
+    Provider<GeneralManagerRepository>(
+      create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        final userId = appSession.currentUser?.uid;
+        if (userId == null) {
+          print("Warning!!! userId is null");
+          throw Exception("userId is null");
+        }
+
+        print("GeneralManagerRepository was created");
+        return GeneralManagerRepositoryRealtimeDb(
+          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          userId: userId,
+        );
+      },
+      lazy: false,
+      dispose: (innerContext, repo) {
+        print("GeneralManagerRepository was disposed");
+      },
+    ),
+    Provider<ParticipantsRepository>(
+      create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        final userId = appSession.currentUser?.uid;
+        if (userId == null) {
+          print("Warning!!! userId is null");
+          throw Exception("userId is null");
+        }
+
+        print("ParticipantsRepository was created");
+        return ParticipantsRepositoryRealtimeDb(
+          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          userId: userId,
+        );
+      },
+      lazy: false,
+      dispose: (innerContext, repo) {
+        print("ParticipantsRepository was disposed");
+      },
+    ),
+    Provider<GroupMembersRepository>(
+      create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        final userId = appSession.currentUser?.uid;
+
+        if (userId == null) {
+          print("Warning!!! userId is null");
+          throw Exception("userId is null");
+        }
+
+        print("GroupMembersRepository was created");
+        return GroupMembersRepositoryRealtimeDb(
+          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          userId: userId,
+        );
+      },
+      lazy: false,
+      dispose: (innerContext, repo) {
+        print("GroupMembersRepository was disposed");
+      },
+    ),
+    ChangeNotifierProvider(
+      create: (innerContext) => ShownTravelSession(),
+      lazy: false,
+    ),
+    Provider(
+      create:
+          (innerContext) => SwitchTravelUseCase(
+            travelRepository: innerContext.read<ShownTravelRepository>(),
+            travelSession: innerContext.read<ShownTravelSession>(),
+          ),
+    ),
+    /* 生き続けるViewModel */
+    ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeViewModel>(
+      create: /* createはほとんど機能しない。すぐ生成しだすから。 */
+          (_) => TravelScopeViewModel(
+            travel: null,
+            groupMembersRepository: context.read(),
+            generalManagerRepository: context.read(),
+            participantsRepository: context.read(),
+            expenseRepository: context.read(),
+          ),
+      update: (innerContext, session, vm) {
+        /* 旅行が切り替わったらTravelScopeViewModelが再生成される */
+        return TravelScopeViewModel(
+          travel: session.currentTravel,
+          groupMembersRepository: innerContext.read(),
+          generalManagerRepository: innerContext.read(),
+          participantsRepository: innerContext.read(),
+          expenseRepository: innerContext.read(),
+        );
+      },
+    ),
+  ];
 }

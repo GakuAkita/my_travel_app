@@ -9,7 +9,6 @@ import '../CommonClass/ResultInfo.dart';
 import '../CommonClass/TravelerBasic.dart';
 import '../Services/FirebaseDatabaseService.dart';
 import '../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
-import '../utils/CheckShownTravelBasic.dart';
 
 class ExpenseStore extends ChangeNotifier {
   ShownTravelBasic? _shownTravelBasic;
