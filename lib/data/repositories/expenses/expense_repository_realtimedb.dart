@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 
-import '../../../CommonClass/ExpenseInfo.dart';
+import '../../model/expense/expense_info.dart';
 
 class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
   final FirebaseDatabase _firebaseDatabase;

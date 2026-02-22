@@ -1,4 +1,4 @@
-import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
+import '../../model/traveler/traveler_basic.dart';
 
 /**
  * 各グループのメンバー

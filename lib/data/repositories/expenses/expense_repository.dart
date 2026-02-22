@@ -1,4 +1,4 @@
-import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
+import '../../model/expense/expense_info.dart';
 
 abstract class ExpenseRepository {
   Future<Map<String, ExpenseInfo>> getAllExpenses(

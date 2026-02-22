@@ -1,5 +1,6 @@
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
-import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
+
+import '../../model/traveler/traveler_basic.dart';
 
 /**
  * 旅行の参加者の情報
