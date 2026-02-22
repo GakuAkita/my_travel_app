@@ -53,7 +53,7 @@ $Res call({
 });
 
 
-
+$TravelerBasicCopyWith<$Res> get payer;
 
 }
 /// @nodoc
@@ -78,7 +78,16 @@ as int?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore:
 as int?,
   ));
 }
-
+/// Create a copy of ExpenseInfo
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$TravelerBasicCopyWith<$Res> get payer {
+  
+  return $TravelerBasicCopyWith<$Res>(_self.payer, (value) {
+    return _then(_self.copyWith(payer: value));
+  });
+}
 }
 
 
@@ -271,7 +280,7 @@ $Res call({
 });
 
 
-
+@override $TravelerBasicCopyWith<$Res> get payer;
 
 }
 /// @nodoc
@@ -297,7 +306,16 @@ as int?,
   ));
 }
 
-
+/// Create a copy of ExpenseInfo
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$TravelerBasicCopyWith<$Res> get payer {
+  
+  return $TravelerBasicCopyWith<$Res>(_self.payer, (value) {
+    return _then(_self.copyWith(payer: value));
+  });
+}
 }
 
 // dart format on
