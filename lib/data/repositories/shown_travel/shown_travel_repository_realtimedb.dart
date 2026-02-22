@@ -18,6 +18,10 @@ class ShownTravelRepositoryRealtimeDb implements ShownTravelRepository {
   @override
   Future<ShownTravelBasic> getShownTravel() async {
     // TODO: implement getShownTravel
+    return ShownTravelBasic(
+      groupId: "waseda_rikoten_somu_tent_bosai_sokantoku67to69",
+      travelId: "-OfHGGicTa8l7lU5B5uO",
+    );
     throw AppException("Not implemented getShownTravel");
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -132,7 +133,16 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
 
     return LoadingOverlay(
       isLoading: viewModel.isLoading,
-      child: Column(),
+      child: Column(
+        children: [
+          RoundedButton(
+            title: "hascode print",
+            onPressed: () {
+              viewModel.printTest();
+            },
+          ),
+        ],
+      ),
       // itineraryStore.shownTravelBasic != null &&
       //         !itineraryStore.itineraryState.isLoading
       //     ? Column(

@@ -50,7 +50,7 @@ class ExpensesViewModel extends ChangeNotifier {
   }) : _expenseRepository = expenseRepository,
        _travel = travel {
     print(
-      "ExpenseViewModel was created travel=${travel?.travelId} gropu=${travel?.groupId}",
+      "ExpenseViewModel was created travel=${travel?.travelId} group=${travel?.groupId}",
     );
 
     /**

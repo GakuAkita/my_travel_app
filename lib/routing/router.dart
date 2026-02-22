@@ -17,6 +17,7 @@ import 'package:my_travel_app/ui/main/Expenses/main/widgets/ExpensesScreen.dart'
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
+import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,6 @@ import '../data/repositories/group_members/group_members_repository_realtimedb.d
 import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/main/app_navigation_bar.dart';
-import '../ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 import '../ui/travel_scope_viewmodels.dart';
@@ -89,7 +89,7 @@ GoRouter createRouter(AppSession session) {
       ShellRoute(
         builder: (context, state, child) {
           return MultiProvider(
-            providers: buildLoggedInProviders(context),
+            providers: buildUserScopeProviders(context),
             child: child,
           );
         },
@@ -105,27 +105,22 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.itinerary,
-                    builder:
-                        (context, state) => ChangeNotifierProxyProvider<
-                          ShownTravelSession,
-                          ItineraryViewModel
-                        >(
-                          create:
-                              (innerContext) => ItineraryViewModel(
-                                itineraryRepository: innerContext.read(),
-                                travel: null,
-                                switchTravelUseCase: innerContext.read(),
-                              ),
-                          update: (innerContext, session, vm) {
-                            final travel = session.currentTravel;
-                            return ItineraryViewModel(
+                    builder: (context, state) {
+                      final travel =
+                          context.watch<ShownTravelSession>().currentTravel;
+                      final travelId = travel?.travelId;
+                      /* ValueKeyにtravelIdを渡して、travelIdが変わればViewModelとUIごと再生成。 */
+                      return ChangeNotifierProvider(
+                        key: ValueKey(travelId),
+                        create:
+                            (innerContext) => ItineraryViewModel(
                               itineraryRepository: innerContext.read(),
                               travel: travel,
-                              switchTravelUseCase: innerContext.read(),
-                            );
-                          },
-                          child: ItineraryScreen(),
-                        ),
+                            ),
+                        child: ItineraryScreen(),
+                        lazy: false,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -134,26 +129,7 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.expenses,
-                    builder:
-                        (context, state) => ChangeNotifierProxyProvider<
-                          ShownTravelSession,
-                          ExpensesViewModel
-                        >(
-                          create:
-                              (innerContext) => ExpensesViewModel(
-                                expenseRepository: innerContext.read(),
-                                travel: null,
-                              ),
-                          update: (innerContext, session, vm) {
-                            final _travel = session.currentTravel;
-                            return ExpensesViewModel(
-                              expenseRepository: innerContext.read(),
-                              travel: _travel,
-                            );
-                          },
-                          child: ExpensesScreen(),
-                          lazy: false,
-                        ),
+                    builder: (context, state) => ExpensesScreen(),
                   ),
                 ],
               ),
@@ -181,7 +157,8 @@ GoRouter createRouter(AppSession session) {
   );
 }
 
-List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
+/* サインアウトで死ぬインスタンス */
+List<SingleChildWidget> buildUserScopeProviders(BuildContext context) {
   return [
     Provider<ShownTravelRepository>(
       create: (innerContext) {
@@ -304,16 +281,66 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
     ),
     ChangeNotifierProvider(
-      create: (innerContext) => ShownTravelSession(),
+      create: (innerContext) {
+        final session = ShownTravelSession();
+        print("call initialize for ShownTravelSession");
+        /* 最初はここでinitする必要がある */
+        session.initialize(innerContext.read<ShownTravelRepository>());
+        return session;
+      },
       lazy: false,
     ),
     ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeViewModel>(
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
           (_) => TravelScopeViewModel(travel: null),
-      update: (innerContext, session, vm) {
+      update: (innerContext, session, previous) {
         /* 旅行が切り替わったらTravelScopeViewModelが再生成される */
         final travel = session.currentTravel;
+        if (previous?.travel?.travelId == travel?.travelId) {
+          print("travel didn't change. Don't generate TravelScopeViewModel");
+          return previous!;
+        }
+        previous?.dispose();
         return TravelScopeViewModel(travel: travel);
+      },
+    ),
+    ChangeNotifierProxyProvider<ShownTravelSession, ItineraryViewModel>(
+      create:
+          (innerContext) => ItineraryViewModel(
+            itineraryRepository: innerContext.read(),
+            travel: null,
+          ),
+      update: (innerContext, session, previous) {
+        final travel = session.currentTravel;
+        if (previous?.travel?.travelId == travel?.travelId) {
+          print("travel didn't change. don't generate ItineraryViewModel");
+          return previous!;
+        }
+
+        previous?.dispose();
+        return ItineraryViewModel(
+          itineraryRepository: innerContext.read(),
+          travel: travel,
+        );
+      },
+    ),
+    ChangeNotifierProxyProvider<ShownTravelSession, ExpensesViewModel>(
+      create:
+          (innerContext) => ExpensesViewModel(
+            expenseRepository: innerContext.read(),
+            travel: null,
+          ),
+      update: (innerContext, session, previous) {
+        final travel = session.currentTravel;
+        if (previous?.travel?.travelId == travel?.travelId) {
+          print("travel didn't change. don't generate ExpensesViewModel");
+          return previous!;
+        }
+        previous?.dispose();
+        return ExpensesViewModel(
+          expenseRepository: innerContext.read(),
+          travel: travel,
+        );
       },
     ),
   ];

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
+import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
 
 enum TravelSessionStatus {
   /// シーケンスっっぽくなっているので順番は変えない
@@ -18,6 +19,14 @@ class ShownTravelSession extends ChangeNotifier {
 
   ShownTravelSession() {
     print("ShownTravelSession was created");
+  }
+
+  void initialize(ShownTravelRepository repo) {
+    print("ShownTravelSession was initialized");
+    repo.getShownTravel().then((value) {
+      _shownTravel = value;
+      notifyListeners();
+    });
   }
 
   /**

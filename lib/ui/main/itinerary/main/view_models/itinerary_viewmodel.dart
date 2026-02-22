@@ -27,9 +27,7 @@ class ItineraryViewModel extends ChangeNotifier {
     required ShownTravelBasic? travel,
   }) : _itineraryRepository = itineraryRepository,
        travel = travel {
-    print(
-      "ItineraryViewModel was created. travel=${travel?.travelId} group=${travel?.groupId}",
-    );
+    print("ItineraryViewModel was created. code=${hashCode}");
   }
 
   Future<ResultInfo<void>> saveItinerary() async {
@@ -76,9 +74,13 @@ class ItineraryViewModel extends ChangeNotifier {
     return ResultInfo.success();
   }
 
+  void printTest() {
+    print("code=~${hashCode} travel=${travel.toString()}");
+  }
+
   @override
   void dispose() {
-    print("ItineraryViewModel was disposed");
+    print("ItineraryViewModel was disposed. code=${hashCode}");
     // TODO: implement dispose
     super.dispose();
   }
