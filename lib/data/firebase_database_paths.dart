@@ -67,6 +67,8 @@ class GroupPath extends PathNode {
     : super(FirebaseDatabasePaths.groups.child(groupId));
 
   TravelsPath get travels => TravelsPath(path);
+
+  String get members => child("members");
 }
 
 /// ===============================
@@ -84,11 +86,30 @@ class TravelsPath extends PathNode {
 class TravelPath extends PathNode {
   TravelPath(String path) : super(path);
 
-  String get expenses => child("expenses");
+  ExpensesPath get expenses => ExpensesPath(path);
 
   String get itinerary => child("itinerary");
 
   String get travelers => child("travelers");
+}
 
-  String get members => child("travelers/members");
+class ExpensesPath extends PathNode {
+  ExpensesPath(String parentPath) : super("$parentPath/expenses");
+
+  final String exchangesStr = "exchanges";
+  final String estimatedStr = "estimated";
+
+  String get data => child("data");
+
+  String get balances => child("balances");
+
+  String get exchanges => child("$exchangesStr/result");
+}
+
+class ItineraryPath extends PathNode {
+  ItineraryPath(String parentPath) : super("$parentPath/itinerary");
+
+  String get sections => child("sections");
+
+  String get onEdit => child("on_edit");
 }
