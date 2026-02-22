@@ -44,9 +44,17 @@ class FirebaseDatabaseService<T> {
   }
 }
 
-extension FirebasDatabaseServiceExtension<T> on FirebaseDatabaseService<T> {
+extension FirebaseDatabaseServiceExtension<T extends Identifiable>
+    on FirebaseDatabaseService<T> {
   Future<T> addAuto(T item) async {
     final ref = _database.ref(path).push();
-    if (item is Identifiable) {}
+    final key = ref.key;
+
+    // copyWithが実装されていること前提！！
+    final newItem = (item as dynamic).copyWith(id: key) as T;
+
+    await ref.set(toJson(newItem));
+
+    return newItem;
   }
 }
