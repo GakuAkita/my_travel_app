@@ -13,7 +13,7 @@ import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
-import 'package:my_travel_app/ui/main/Expenses/main/widgets/ExpensesScreen.dart';
+import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
@@ -317,12 +317,12 @@ List<SingleChildWidget> buildUserScopeProviders(BuildContext context) {
           return previous!;
         }
 
-        previous?.dispose();
         return ItineraryViewModel(
           itineraryRepository: innerContext.read(),
           travel: travel,
         );
       },
+      lazy: false,
     ),
     ChangeNotifierProxyProvider<ShownTravelSession, ExpensesViewModel>(
       create:
@@ -336,12 +336,12 @@ List<SingleChildWidget> buildUserScopeProviders(BuildContext context) {
           print("travel didn't change. don't generate ExpensesViewModel");
           return previous!;
         }
-        previous?.dispose();
         return ExpensesViewModel(
           expenseRepository: innerContext.read(),
           travel: travel,
         );
       },
+      lazy: false,
     ),
   ];
 }

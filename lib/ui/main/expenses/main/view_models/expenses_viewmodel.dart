@@ -49,9 +49,7 @@ class ExpensesViewModel extends ChangeNotifier {
     required ShownTravelBasic? travel,
   }) : _expenseRepository = expenseRepository,
        _travel = travel {
-    print(
-      "ExpenseViewModel was created travel=${travel?.travelId} group=${travel?.groupId}",
-    );
+    print("ExpenseViewModel was created code=${hashCode}");
 
     /**
      * Expensesをロードする
@@ -133,7 +131,7 @@ class ExpensesViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
-    print("ExpenseViewModel was disposed");
+    print("ExpenseViewModel was disposed. code=${hashCode}");
     // TODO: implement dispose
     super.dispose();
   }
