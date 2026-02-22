@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/data/model/identifiable.dart';
+import 'package:my_travel_app/data/model/timestamped.dart';
 
 class FirebaseDatabaseService<T> {
   final FirebaseDatabase _database;
@@ -48,12 +49,22 @@ extension FirebaseDatabaseServiceExtension<T extends Identifiable>
     on FirebaseDatabaseService<T> {
   Future<T> addAuto(T item) async {
     final ref = _database.ref(path).push();
-    final key = ref.key;
+    final key = ref.key!;
 
     // copyWithが実装されていること前提！！
+    // freezedなら問題ない
     final newItem = (item as dynamic).copyWith(id: key) as T;
 
-    await ref.set(toJson(newItem));
+    Map<String, dynamic> newItemMap = toJson(newItem);
+    if (newItem is Creatable) {
+      newItemMap['createdAt'] = ServerValue.timestamp;
+    }
+
+    if (newItem is Updatable) {
+      newItemMap['updatedAt'] = ServerValue.timestamp;
+    }
+
+    await ref.set(newItemMap);
 
     return newItem;
   }

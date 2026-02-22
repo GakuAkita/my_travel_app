@@ -17,6 +17,7 @@ abstract class ExpenseInfo
     required Map<String, Map<String, String>> reimbursedBy,
     required String expenseItem,
     required int expense,
+    /* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
     @JsonKey(name: 'createdAt') int? createdAt, //一度決めたら変えない
     @JsonKey(name: 'updatedAt') int? updatedAt,
   }) = _ExpenseInfo;
