@@ -3,6 +3,8 @@ import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/identifiable.dart';
 import 'package:my_travel_app/data/model/timestamped.dart';
 
+import '../traveler/traveler_basic.dart';
+
 part 'expense_info.freezed.dart';
 part 'expense_info.g.dart';
 

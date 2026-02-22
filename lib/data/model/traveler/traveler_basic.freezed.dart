@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TravelerBasic {
 
- String get uid; String get email;@JsonKey(includeToJson: false, includeFromJson: false) String? get profile_name;
+ String get uid; String get email;@JsonKey(includeToJson: false, includeFromJson: true) String? get profile_name;
 /// Create a copy of TravelerBasic
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TravelerBasicCopyWith<$Res>  {
   factory $TravelerBasicCopyWith(TravelerBasic value, $Res Function(TravelerBasic) _then) = _$TravelerBasicCopyWithImpl;
 @useResult
 $Res call({
- String uid, String email,@JsonKey(includeToJson: false, includeFromJson: false) String? profile_name
+ String uid, String email,@JsonKey(includeToJson: false, includeFromJson: true) String? profile_name
 });
 
 
@@ -155,7 +155,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email, @JsonKey(includeToJson: false, includeFromJson: false)  String? profile_name)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email, @JsonKey(includeToJson: false, includeFromJson: true)  String? profile_name)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TravelerBasic() when $default != null:
 return $default(_that.uid,_that.email,_that.profile_name);case _:
@@ -176,7 +176,7 @@ return $default(_that.uid,_that.email,_that.profile_name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email, @JsonKey(includeToJson: false, includeFromJson: false)  String? profile_name)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email, @JsonKey(includeToJson: false, includeFromJson: true)  String? profile_name)  $default,) {final _that = this;
 switch (_that) {
 case _TravelerBasic():
 return $default(_that.uid,_that.email,_that.profile_name);case _:
@@ -196,7 +196,7 @@ return $default(_that.uid,_that.email,_that.profile_name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email, @JsonKey(includeToJson: false, includeFromJson: false)  String? profile_name)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email, @JsonKey(includeToJson: false, includeFromJson: true)  String? profile_name)?  $default,) {final _that = this;
 switch (_that) {
 case _TravelerBasic() when $default != null:
 return $default(_that.uid,_that.email,_that.profile_name);case _:
@@ -211,12 +211,12 @@ return $default(_that.uid,_that.email,_that.profile_name);case _:
 @JsonSerializable()
 
 class _TravelerBasic implements TravelerBasic {
-  const _TravelerBasic({required this.uid, required this.email, @JsonKey(includeToJson: false, includeFromJson: false) this.profile_name});
+  const _TravelerBasic({required this.uid, required this.email, @JsonKey(includeToJson: false, includeFromJson: true) this.profile_name});
   factory _TravelerBasic.fromJson(Map<String, dynamic> json) => _$TravelerBasicFromJson(json);
 
 @override final  String uid;
 @override final  String email;
-@override@JsonKey(includeToJson: false, includeFromJson: false) final  String? profile_name;
+@override@JsonKey(includeToJson: false, includeFromJson: true) final  String? profile_name;
 
 /// Create a copy of TravelerBasic
 /// with the given fields replaced by the non-null parameter values.
@@ -251,7 +251,7 @@ abstract mixin class _$TravelerBasicCopyWith<$Res> implements $TravelerBasicCopy
   factory _$TravelerBasicCopyWith(_TravelerBasic value, $Res Function(_TravelerBasic) _then) = __$TravelerBasicCopyWithImpl;
 @override @useResult
 $Res call({
- String uid, String email,@JsonKey(includeToJson: false, includeFromJson: false) String? profile_name
+ String uid, String email,@JsonKey(includeToJson: false, includeFromJson: true) String? profile_name
 });
 
 
