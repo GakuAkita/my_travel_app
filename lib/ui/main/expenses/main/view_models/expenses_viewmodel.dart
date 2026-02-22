@@ -54,6 +54,20 @@ class ExpensesViewModel extends ChangeNotifier {
     /**
      * Expensesをロードする
      */
+    initialize();
+  }
+
+  /* 最初はロードする必要がある */
+  void initialize() async {
+    if (travel == null) {
+      return;
+    }
+
+    try {
+      await getAllExpensesWithNotify();
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   /**

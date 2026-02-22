@@ -8,7 +8,9 @@ class SettingsViewModel extends ChangeNotifier {
   AuthRepository _authRepository;
 
   SettingsViewModel({required AuthRepository authRepository})
-    : _authRepository = authRepository;
+    : _authRepository = authRepository {
+    print("SettingsViewModel was created. hashCode=${hashCode}");
+  }
 
   @override
   void dispose() {

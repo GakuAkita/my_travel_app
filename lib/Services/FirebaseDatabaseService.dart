@@ -10,7 +10,7 @@ import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import '../CommonClass/ErrorInfo.dart';
 import '../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
-class FirebaseDatabaseService {
+class FirebaseDatabaseService_ {
   static final FirebaseDatabase database = FirebaseDatabase.instance;
 
   static DatabaseReference get usersRef => database.ref("users");

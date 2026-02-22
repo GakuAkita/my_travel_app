@@ -89,7 +89,7 @@ GoRouter createRouter(AppSession session) {
       ShellRoute(
         builder: (context, state, child) {
           return MultiProvider(
-            providers: buildUserScopeProviders(context),
+            providers: buildLoggedInProviders(context),
             child: child,
           );
         },
@@ -158,7 +158,7 @@ GoRouter createRouter(AppSession session) {
 }
 
 /* サインアウトで死ぬインスタンス */
-List<SingleChildWidget> buildUserScopeProviders(BuildContext context) {
+List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
   return [
     Provider<ShownTravelRepository>(
       create: (innerContext) {
@@ -297,7 +297,7 @@ List<SingleChildWidget> buildUserScopeProviders(BuildContext context) {
         /* 旅行が切り替わったらTravelScopeViewModelが再生成される */
         final travel = session.currentTravel;
         if (previous?.travel?.travelId == travel?.travelId) {
-          print("travel didn't change. Don't generate TravelScopeViewModel");
+          //print("travel didn't change. Don't generate TravelScopeViewModel");
           return previous!;
         }
         previous?.dispose();
@@ -313,7 +313,7 @@ List<SingleChildWidget> buildUserScopeProviders(BuildContext context) {
       update: (innerContext, session, previous) {
         final travel = session.currentTravel;
         if (previous?.travel?.travelId == travel?.travelId) {
-          print("travel didn't change. don't generate ItineraryViewModel");
+          //print("travel didn't change. don't generate ItineraryViewModel");
           return previous!;
         }
 
@@ -333,7 +333,7 @@ List<SingleChildWidget> buildUserScopeProviders(BuildContext context) {
       update: (innerContext, session, previous) {
         final travel = session.currentTravel;
         if (previous?.travel?.travelId == travel?.travelId) {
-          print("travel didn't change. don't generate ExpensesViewModel");
+          //print("travel didn't change. don't generate ExpensesViewModel");
           return previous!;
         }
         return ExpensesViewModel(
