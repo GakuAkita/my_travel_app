@@ -25,7 +25,16 @@ class ExpensesViewModel extends ChangeNotifier {
     /* createdAtで並べる。引数で */
     final listedExpenses = _allExpenses!.values.toList();
     if (sort) {
-      listedExpenses.sort((a, b) => b.createdAt.compareTo(a.createdAt ?? 0));
+      listedExpenses.sort((a, b) {
+        final aTime = a.createdAt;
+        final bTime = b.createdAt;
+
+        if (aTime == null && bTime == null) return 0;
+        if (aTime == null) return 1; // aを後ろへ
+        if (bTime == null) return -1; // bを後ろへ
+
+        return bTime.compareTo(aTime);
+      });
     }
     return listedExpenses;
   }
