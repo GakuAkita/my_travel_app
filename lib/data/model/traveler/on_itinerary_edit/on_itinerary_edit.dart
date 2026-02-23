@@ -12,7 +12,7 @@ abstract class OnItineraryEdit with _$OnItineraryEdit {
   const factory OnItineraryEdit({
     required String uid,
     required String email,
-    required bool onEdit,
+    required bool on_edit,
   }) = _OnItineraryEdit;
 
   factory OnItineraryEdit.fromJson(Map<String, dynamic> json) =>
@@ -23,6 +23,6 @@ abstract class OnItineraryEdit with _$OnItineraryEdit {
 
   /// Coreから生成
   factory OnItineraryEdit.fromCore(TravelerCore core, {required bool onEdit}) {
-    return OnItineraryEdit(uid: core.uid, email: core.email, onEdit: onEdit);
+    return OnItineraryEdit(uid: core.uid, email: core.email, on_edit: onEdit);
   }
 }

@@ -10,12 +10,12 @@ _OnItineraryEdit _$OnItineraryEditFromJson(Map<String, dynamic> json) =>
     _OnItineraryEdit(
       uid: json['uid'] as String,
       email: json['email'] as String,
-      onEdit: json['onEdit'] as bool,
+      on_edit: json['on_edit'] as bool,
     );
 
 Map<String, dynamic> _$OnItineraryEditToJson(_OnItineraryEdit instance) =>
     <String, dynamic>{
       'uid': instance.uid,
       'email': instance.email,
-      'onEdit': instance.onEdit,
+      'on_edit': instance.on_edit,
     };

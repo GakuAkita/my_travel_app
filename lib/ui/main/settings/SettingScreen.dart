@@ -3,9 +3,6 @@ import 'package:my_travel_app/components/SettingMenuBar.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import '../../../Services/AuthService.dart';
-import 'ProfileScreen.dart';
-
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
 
@@ -14,8 +11,6 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  final AuthService _authService = AuthService();
-
   @override
   Widget build(BuildContext context) {
     /* ログインをしたときに切り替える */
@@ -28,7 +23,7 @@ class _SettingScreenState extends State<SettingScreen> {
           children: [
             SettingMenubar(
               onPressed: () {
-                Navigator.pushNamed(context, ProfileScreen.id);
+                //Navigator.pushNamed(context, ProfileScreen.id);
               },
               menuName: "プロフィール",
             ),

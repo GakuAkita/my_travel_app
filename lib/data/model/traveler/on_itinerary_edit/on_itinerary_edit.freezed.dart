@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OnItineraryEdit {
 
- String get uid; String get email; bool get onEdit;
+ String get uid; String get email; bool get on_edit;
 /// Create a copy of OnItineraryEdit
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $OnItineraryEditCopyWith<OnItineraryEdit> get copyWith => _$OnItineraryEditCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnItineraryEdit&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.onEdit, onEdit) || other.onEdit == onEdit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnItineraryEdit&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.on_edit, on_edit) || other.on_edit == on_edit));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uid,email,onEdit);
+int get hashCode => Object.hash(runtimeType,uid,email,on_edit);
 
 @override
 String toString() {
-  return 'OnItineraryEdit(uid: $uid, email: $email, onEdit: $onEdit)';
+  return 'OnItineraryEdit(uid: $uid, email: $email, on_edit: $on_edit)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $OnItineraryEditCopyWith<$Res>  {
   factory $OnItineraryEditCopyWith(OnItineraryEdit value, $Res Function(OnItineraryEdit) _then) = _$OnItineraryEditCopyWithImpl;
 @useResult
 $Res call({
- String uid, String email, bool onEdit
+ String uid, String email, bool on_edit
 });
 
 
@@ -65,11 +65,11 @@ class _$OnItineraryEditCopyWithImpl<$Res>
 
 /// Create a copy of OnItineraryEdit
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? email = null,Object? onEdit = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? email = null,Object? on_edit = null,}) {
   return _then(_self.copyWith(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,onEdit: null == onEdit ? _self.onEdit : onEdit // ignore: cast_nullable_to_non_nullable
+as String,on_edit: null == on_edit ? _self.on_edit : on_edit // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -155,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  bool onEdit)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  bool on_edit)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnItineraryEdit() when $default != null:
-return $default(_that.uid,_that.email,_that.onEdit);case _:
+return $default(_that.uid,_that.email,_that.on_edit);case _:
   return orElse();
 
 }
@@ -176,10 +176,10 @@ return $default(_that.uid,_that.email,_that.onEdit);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  bool onEdit)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  bool on_edit)  $default,) {final _that = this;
 switch (_that) {
 case _OnItineraryEdit():
-return $default(_that.uid,_that.email,_that.onEdit);case _:
+return $default(_that.uid,_that.email,_that.on_edit);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +196,10 @@ return $default(_that.uid,_that.email,_that.onEdit);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  bool onEdit)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  bool on_edit)?  $default,) {final _that = this;
 switch (_that) {
 case _OnItineraryEdit() when $default != null:
-return $default(_that.uid,_that.email,_that.onEdit);case _:
+return $default(_that.uid,_that.email,_that.on_edit);case _:
   return null;
 
 }
@@ -211,12 +211,12 @@ return $default(_that.uid,_that.email,_that.onEdit);case _:
 @JsonSerializable()
 
 class _OnItineraryEdit extends OnItineraryEdit {
-  const _OnItineraryEdit({required this.uid, required this.email, required this.onEdit}): super._();
+  const _OnItineraryEdit({required this.uid, required this.email, required this.on_edit}): super._();
   factory _OnItineraryEdit.fromJson(Map<String, dynamic> json) => _$OnItineraryEditFromJson(json);
 
 @override final  String uid;
 @override final  String email;
-@override final  bool onEdit;
+@override final  bool on_edit;
 
 /// Create a copy of OnItineraryEdit
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnItineraryEdit&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.onEdit, onEdit) || other.onEdit == onEdit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnItineraryEdit&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.on_edit, on_edit) || other.on_edit == on_edit));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uid,email,onEdit);
+int get hashCode => Object.hash(runtimeType,uid,email,on_edit);
 
 @override
 String toString() {
-  return 'OnItineraryEdit(uid: $uid, email: $email, onEdit: $onEdit)';
+  return 'OnItineraryEdit(uid: $uid, email: $email, on_edit: $on_edit)';
 }
 
 
@@ -251,7 +251,7 @@ abstract mixin class _$OnItineraryEditCopyWith<$Res> implements $OnItineraryEdit
   factory _$OnItineraryEditCopyWith(_OnItineraryEdit value, $Res Function(_OnItineraryEdit) _then) = __$OnItineraryEditCopyWithImpl;
 @override @useResult
 $Res call({
- String uid, String email, bool onEdit
+ String uid, String email, bool on_edit
 });
 
 
@@ -268,11 +268,11 @@ class __$OnItineraryEditCopyWithImpl<$Res>
 
 /// Create a copy of OnItineraryEdit
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? email = null,Object? onEdit = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? email = null,Object? on_edit = null,}) {
   return _then(_OnItineraryEdit(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,onEdit: null == onEdit ? _self.onEdit : onEdit // ignore: cast_nullable_to_non_nullable
+as String,on_edit: null == on_edit ? _self.on_edit : on_edit // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

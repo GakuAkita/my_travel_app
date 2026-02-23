@@ -3,7 +3,7 @@ import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
 import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 
 import '../../core/utils/UidColorHelper.dart';
-import '../../ui/main/Expenses/AddEditExpenseScreen.dart';
+import '../../ui/main/Expenses/add_edit_expenses_screen.dart';
 
 class ExpenseTile extends StatelessWidget {
   final ExpenseInfo expense;

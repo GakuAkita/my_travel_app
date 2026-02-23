@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/Loadable.dart';
-import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
+
+import '../data/model/traveler/traveler_basic.dart';
 
 /**
  * 更新がほとんどされないもの。

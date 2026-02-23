@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
-import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
-import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
 import 'package:my_travel_app/components/BasicText.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/start/start/widgets/start_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../../../CommonClass/TravelerInfo.dart';
-import '../../../Store/ExpenseStore.dart';
-import '../../../components/BasicTextField.dart';
-import '../../../components/RoundedButton.dart';
+import '../../../../../CommonClass/TravelerInfo.dart';
+import '../../../../../Store/ExpenseStore.dart';
+import '../../../../../components/BasicTextField.dart';
+import '../../../../../components/RoundedButton.dart';
+import '../../../../../data/model/expense/expense_info.dart';
+import '../../../../../data/model/traveler/traveler_basic.dart';
 
 class AddEditExpenseScreen extends StatefulWidget {
   static const String id = "add_expense_screen";
