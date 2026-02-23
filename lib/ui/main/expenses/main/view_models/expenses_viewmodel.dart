@@ -27,7 +27,6 @@ class ExpensesViewModel extends ChangeNotifier {
     if (sort) {
       listedExpenses.sort((a, b) => b.createdAt.compareTo(a.createdAt ?? 0));
     }
-    TravelerBasic(id: "22", email: "aaa");
     return listedExpenses;
   }
 
