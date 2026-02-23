@@ -1,4 +1,4 @@
-import 'package:my_travel_app/data/model/traveler/traveler_core.dart';
+import '../traveler_core/traveler_core.dart';
 
 class TravelerBasic {
   final TravelerCore core;

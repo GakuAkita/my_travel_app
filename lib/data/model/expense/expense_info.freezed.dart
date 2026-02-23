@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExpenseInfo {
 
- String? get id; TravelerBasic get payer; Map<String, Map<String, String>> get reimbursedBy; String get expenseItem; int get expense;/* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
+ String? get id; TravelerCore get payer; Map<String, Map<String, String>> get reimbursedBy; String get expenseItem; int get expense;/* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
 @JsonKey(name: 'createdAt') int? get createdAt;
 /// Create a copy of ExpenseInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -49,11 +49,11 @@ abstract mixin class $ExpenseInfoCopyWith<$Res>  {
   factory $ExpenseInfoCopyWith(ExpenseInfo value, $Res Function(ExpenseInfo) _then) = _$ExpenseInfoCopyWithImpl;
 @useResult
 $Res call({
- String? id, TravelerBasic payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
+ String? id, TravelerCore payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
 });
 
 
-$TravelerBasicCopyWith<$Res> get payer;
+$TravelerCoreCopyWith<$Res> get payer;
 
 }
 /// @nodoc
@@ -70,7 +70,7 @@ class _$ExpenseInfoCopyWithImpl<$Res>
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,payer: null == payer ? _self.payer : payer // ignore: cast_nullable_to_non_nullable
-as TravelerBasic,reimbursedBy: null == reimbursedBy ? _self.reimbursedBy : reimbursedBy // ignore: cast_nullable_to_non_nullable
+as TravelerCore,reimbursedBy: null == reimbursedBy ? _self.reimbursedBy : reimbursedBy // ignore: cast_nullable_to_non_nullable
 as Map<String, Map<String, String>>,expenseItem: null == expenseItem ? _self.expenseItem : expenseItem // ignore: cast_nullable_to_non_nullable
 as String,expense: null == expense ? _self.expense : expense // ignore: cast_nullable_to_non_nullable
 as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -81,9 +81,9 @@ as int?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$TravelerBasicCopyWith<$Res> get payer {
+$TravelerCoreCopyWith<$Res> get payer {
   
-  return $TravelerBasicCopyWith<$Res>(_self.payer, (value) {
+  return $TravelerCoreCopyWith<$Res>(_self.payer, (value) {
     return _then(_self.copyWith(payer: value));
   });
 }
@@ -168,7 +168,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExpenseInfo() when $default != null:
 return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
@@ -189,7 +189,7 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseInfo():
 return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
@@ -209,7 +209,7 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseInfo() when $default != null:
 return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
@@ -228,7 +228,7 @@ class _ExpenseInfo implements ExpenseInfo {
   factory _ExpenseInfo.fromJson(Map<String, dynamic> json) => _$ExpenseInfoFromJson(json);
 
 @override final  String? id;
-@override final  TravelerBasic payer;
+@override final  TravelerCore payer;
  final  Map<String, Map<String, String>> _reimbursedBy;
 @override Map<String, Map<String, String>> get reimbursedBy {
   if (_reimbursedBy is EqualUnmodifiableMapView) return _reimbursedBy;
@@ -274,11 +274,11 @@ abstract mixin class _$ExpenseInfoCopyWith<$Res> implements $ExpenseInfoCopyWith
   factory _$ExpenseInfoCopyWith(_ExpenseInfo value, $Res Function(_ExpenseInfo) _then) = __$ExpenseInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, TravelerBasic payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
+ String? id, TravelerCore payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
 });
 
 
-@override $TravelerBasicCopyWith<$Res> get payer;
+@override $TravelerCoreCopyWith<$Res> get payer;
 
 }
 /// @nodoc
@@ -295,7 +295,7 @@ class __$ExpenseInfoCopyWithImpl<$Res>
   return _then(_ExpenseInfo(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,payer: null == payer ? _self.payer : payer // ignore: cast_nullable_to_non_nullable
-as TravelerBasic,reimbursedBy: null == reimbursedBy ? _self._reimbursedBy : reimbursedBy // ignore: cast_nullable_to_non_nullable
+as TravelerCore,reimbursedBy: null == reimbursedBy ? _self._reimbursedBy : reimbursedBy // ignore: cast_nullable_to_non_nullable
 as Map<String, Map<String, String>>,expenseItem: null == expenseItem ? _self.expenseItem : expenseItem // ignore: cast_nullable_to_non_nullable
 as String,expense: null == expense ? _self.expense : expense // ignore: cast_nullable_to_non_nullable
 as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -307,9 +307,9 @@ as int?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$TravelerBasicCopyWith<$Res> get payer {
+$TravelerCoreCopyWith<$Res> get payer {
   
-  return $TravelerBasicCopyWith<$Res>(_self.payer, (value) {
+  return $TravelerCoreCopyWith<$Res>(_self.payer, (value) {
     return _then(_self.copyWith(payer: value));
   });
 }

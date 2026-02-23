@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:my_travel_app/data/model/identifiable.dart';
 import 'package:my_travel_app/data/model/timestamped.dart';
 
-import '../traveler/traveler_basic/traveler_basic.dart';
+import '../traveler/traveler_core/traveler_core.dart';
 
 part 'expense_info.freezed.dart';
 part 'expense_info.g.dart';
@@ -13,7 +13,7 @@ abstract class ExpenseInfo
     implements Identifiable, Creatable {
   const factory ExpenseInfo({
     required String? id,
-    required TravelerBasic payer,
+    required TravelerCore payer,
     required Map<String, Map<String, String>> reimbursedBy,
     required String expenseItem,
     required int expense,
