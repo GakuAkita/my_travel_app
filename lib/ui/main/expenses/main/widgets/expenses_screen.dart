@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 import '../../../../../components/BasicText.dart';
 import '../../../../../components/Expenses/ExpenseTile.dart';
 import '../../../../../components/RoundedButton.dart';
-import '../../EstimatedExpenseScreen.dart';
-import '../../ExpensesResultScreen.dart';
+import '../../estimated/EstimatedExpenseScreen.dart';
+import '../../result/ExpensesResultScreen.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});

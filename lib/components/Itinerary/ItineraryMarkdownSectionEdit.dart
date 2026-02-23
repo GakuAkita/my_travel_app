@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:my_travel_app/Store/ItineraryStore.dart';
-import 'package:provider/provider.dart';
 
 import '../MultilineTextField.dart';
-import '../SimpleSwitch.dart';
 
 class ItineraryMarkdownSectionEdit extends StatefulWidget {
   final int index;
@@ -30,20 +27,20 @@ class _ItineraryMarkdownSectionEditState
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(
-      text:
-          Provider.of<ItineraryStore>(
-            context,
-            listen: false,
-          ).getData()[widget.index].title,
-    );
-    _contentController = TextEditingController(
-      text:
-          Provider.of<ItineraryStore>(
-            context,
-            listen: false,
-          ).getData()[widget.index].content,
-    );
+    // _titleController = TextEditingController(
+    //   text:
+    //       Provider.of<ItineraryStore>(
+    //         context,
+    //         listen: false,
+    //       ).getData()[widget.index].title,
+    // );
+    // _contentController = TextEditingController(
+    //   text:
+    //       Provider.of<ItineraryStore>(
+    //         context,
+    //         listen: false,
+    //       ).getData()[widget.index].content,
+    // );
   }
 
   @override
@@ -55,49 +52,49 @@ class _ItineraryMarkdownSectionEditState
 
   @override
   Widget build(BuildContext context) {
-    final itinerarySections = Provider.of<ItineraryStore>(context);
+    //final itinerarySections = Provider.of<ItineraryStore>(context);
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
         children: [
           Row(
             children: [
-              Expanded(
-                flex: 2,
-                child: TextField(
-                  controller: _titleController,
-                  onChanged: (newTitle) {
-                    itinerarySections.updateSectionTitle(
-                      widget.index,
-                      newTitle,
-                    );
-                  },
-                  decoration: InputDecoration(
-                    hintText: "タイトル(空でも可)",
-                    hintStyle: TextStyle(color: Colors.white38),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text("Preview", overflow: TextOverflow.ellipsis),
-                    ),
-                    SimpleSwitch(
-                      width: 50,
-                      height: 30,
-                      isEnabled: _contentController.text.isNotEmpty,
-                      onChanged: (status) {
-                        setState(() {
-                          previewStatus = status;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
+              // Expanded(
+              //   flex: 2,
+              //   child: TextField(
+              //     controller: _titleController,
+              //     onChanged: (newTitle) {
+              //       itinerarySections.updateSectionTitle(
+              //         widget.index,
+              //         newTitle,
+              //       );
+              //     },
+              //     decoration: InputDecoration(
+              //       hintText: "タイトル(空でも可)",
+              //       hintStyle: TextStyle(color: Colors.white38),
+              //     ),
+              //   ),
+              // ),
+              // Expanded(
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       Flexible(
+              //         child: Text("Preview", overflow: TextOverflow.ellipsis),
+              //       ),
+              //       SimpleSwitch(
+              //         width: 50,
+              //         height: 30,
+              //         isEnabled: _contentController.text.isNotEmpty,
+              //         onChanged: (status) {
+              //           setState(() {
+              //             previewStatus = status;
+              //           });
+              //         },
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
           SizedBox(height: 4),
@@ -119,10 +116,10 @@ class _ItineraryMarkdownSectionEditState
               hintText: "Markdown",
               controller: _contentController,
               onChanged: (newContent) {
-                itinerarySections.updateSectionContent(
-                  widget.index,
-                  newContent,
-                );
+                // itinerarySections.updateSectionContent(
+                //   widget.index,
+                //   newContent,
+                // );
               },
             ),
         ],

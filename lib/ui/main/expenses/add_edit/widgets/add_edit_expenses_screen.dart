@@ -3,10 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:my_travel_app/components/BasicText.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/start/start/widgets/start_screen.dart';
-import 'package:provider/provider.dart';
 
-import '../../../../../CommonClass/TravelerInfo.dart';
-import '../../../../../Store/ExpenseStore.dart';
 import '../../../../../components/BasicTextField.dart';
 import '../../../../../components/RoundedButton.dart';
 import '../../../../../data/model/expense/expense_info.dart';
@@ -36,7 +33,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   List<TravelerBasic> _allGroupMembers = [];
 
   /* isCheckedも含んでいる */
-  List<TravelerInfo> _travelersOptions = [];
+  //List<TravelerInfo> _travelersOptions = [];
 
   /* チェックされた人(支払われた人) */
 
@@ -69,101 +66,101 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   void initState() {
     super.initState();
 
-    final expenseStore = context.read<ExpenseStore>();
+    //final expenseStore = context.read<ExpenseStore>();
 
-    _shownGroupId = expenseStore.shownTravelBasic?.groupId;
-    _shownTravelId = expenseStore.shownTravelBasic?.travelId;
+    // _shownGroupId = expenseStore.shownTravelBasic?.groupId;
+    // _shownTravelId = expenseStore.shownTravelBasic?.travelId;
 
-    /* プロファイル名は入ってないはず、、 */
-    _allParticipants =
-        expenseStore.allParticipants.entries.map((entry) {
-          final value = entry.value;
-          return value;
-        }).toList();
+    // /* プロファイル名は入ってないはず、、 */
+    // _allParticipants =
+    //     expenseStore.allParticipants.entries.map((entry) {
+    //       final value = entry.value;
+    //       return value;
+    //     }).toList();
+    //
+    // _allGroupMembers =
+    //     expenseStore.allGroupMembers.entries.map((entry) {
+    //       final value = entry.value;
+    //       return value;
+    //     }).toList();
+    //
+    // /**
+    //  * 全員参加ではない
+    //  */
+    // if (widget.expenseId == null) {
+    //   /* 新規作成時は全メンバーの中で参加している人だけチェック入れる */
+    //   _travelersOptions =
+    //       expenseStore.allGroupMembers.entries.map((entry) {
+    //         final member = entry.value;
+    //         final bool isParticipate = _allParticipants.any(
+    //           (participant) => participant.core.uid == member.core.uid,
+    //         );
+    //
+    //         return TravelerInfo(
+    //           uid: member.core.uid,
+    //           email: member.core.email,
+    //           profile_name: member.profile_name,
+    //           isChecked: isParticipate,
+    //         );
+    //       }).toList();
+    //
+    //   if (_allGroupMembers.isNotEmpty) {
+    //     for (final traveler in _allGroupMembers) {
+    //       if (traveler.core.uid == expenseStore.currentUserId) {
+    //         _payer = traveler;
+    //         break;
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   /**
+    //    * expenseIdだけ渡されて、ここで初期値を設定していく
+    //    */
+    //   int initialExpenseIndex = -1;
+    //   for (int i = 0; i < expenseStore.allExpenses.length; i++) {
+    //     if (expenseStore.allExpenses[i].id == widget.expenseId) {
+    //       initialExpenseIndex = i;
+    //       break;
+    //     }
+    //   }
+    //   if (initialExpenseIndex == -1) {
+    //     print(
+    //       "Unable to find expense with id ${widget.expenseId}!! Something went wrong!!!",
+    //     );
+    //     /* 入力不可にしたい、、、 */
+    //     return;
+    //   }
+    //   final initialExpense = expenseStore.allExpenses[initialExpenseIndex];
+    //   _initialExpense = initialExpense;
 
-    _allGroupMembers =
-        expenseStore.allGroupMembers.entries.map((entry) {
-          final value = entry.value;
-          return value;
-        }).toList();
+    // final TravelerBasic payerBasic = initialExpense.payer;
+    // for (final traveler in _allGroupMembers) {
+    //   if (traveler.uid == payerBasic.uid) {
+    //     _payer = traveler;
+    //     break;
+    //   }
+    // }
 
-    /**
-     * 全員参加ではない
-     */
-    if (widget.expenseId == null) {
-      /* 新規作成時は全メンバーの中で参加している人だけチェック入れる */
-      _travelersOptions =
-          expenseStore.allGroupMembers.entries.map((entry) {
-            final member = entry.value;
-            final bool isParticipate = _allParticipants.any(
-              (participant) => participant.core.uid == member.core.uid,
-            );
-
-            return TravelerInfo(
-              uid: member.core.uid,
-              email: member.core.email,
-              profile_name: member.profile_name,
-              isChecked: isParticipate,
-            );
-          }).toList();
-
-      if (_allGroupMembers.isNotEmpty) {
-        for (final traveler in _allGroupMembers) {
-          if (traveler.core.uid == expenseStore.currentUserId) {
-            _payer = traveler;
-            break;
-          }
-        }
-      }
-    } else {
-      /**
-       * expenseIdだけ渡されて、ここで初期値を設定していく
-       */
-      int initialExpenseIndex = -1;
-      for (int i = 0; i < expenseStore.allExpenses.length; i++) {
-        if (expenseStore.allExpenses[i].id == widget.expenseId) {
-          initialExpenseIndex = i;
-          break;
-        }
-      }
-      if (initialExpenseIndex == -1) {
-        print(
-          "Unable to find expense with id ${widget.expenseId}!! Something went wrong!!!",
-        );
-        /* 入力不可にしたい、、、 */
-        return;
-      }
-      final initialExpense = expenseStore.allExpenses[initialExpenseIndex];
-      _initialExpense = initialExpense;
-
-      // final TravelerBasic payerBasic = initialExpense.payer;
-      // for (final traveler in _allGroupMembers) {
-      //   if (traveler.uid == payerBasic.uid) {
-      //     _payer = traveler;
-      //     break;
-      //   }
-      // }
-
-      _travelersOptions =
-          expenseStore.allGroupMembers.entries.map((entry) {
-            final value = entry.value;
-            /* isCheckedを */
-            return TravelerInfo(
-              uid: value.core.uid,
-              email: value.core.email,
-              profile_name: value.profile_name,
-              isChecked: initialExpense.reimbursedBy.containsKey(
-                value.core.uid,
-              ),
-            );
-          }).toList();
-
-      _expenseController.text = initialExpense.expense.toString();
-      _expense = initialExpense.expense;
-
-      _expenseItemController.text = initialExpense.expenseItem;
-      _expenseItem = initialExpense.expenseItem;
-    }
+    //   _travelersOptions =
+    //       expenseStore.allGroupMembers.entries.map((entry) {
+    //         final value = entry.value;
+    //         /* isCheckedを */
+    //         return TravelerInfo(
+    //           uid: value.core.uid,
+    //           email: value.core.email,
+    //           profile_name: value.profile_name,
+    //           isChecked: initialExpense.reimbursedBy.containsKey(
+    //             value.core.uid,
+    //           ),
+    //         );
+    //       }).toList();
+    //
+    //   _expenseController.text = initialExpense.expense.toString();
+    //   _expense = initialExpense.expense;
+    //
+    //   _expenseItemController.text = initialExpense.expenseItem;
+    //   _expenseItem = initialExpense.expenseItem;
+    // }
     setState(() {});
   }
 
@@ -215,41 +212,41 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                   Wrap(
                     spacing: 2, // 横の隙間
                     runSpacing: 8.0, // 縦の隙間
-                    children:
-                        _travelersOptions.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final traveler = entry.value;
-                          final displayName =
-                              traveler.profile_name ?? traveler.core.email;
-
-                          return SizedBox(
-                            width:
-                                MediaQuery.of(context).size.width / 2 -
-                                24, // 2列になるよう幅を調整
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Checkbox(
-                                  value: traveler.isChecked,
-                                  onChanged: (bool? newValue) {
-                                    setState(() {
-                                      _travelersOptions[index] = traveler
-                                          .copyWith(
-                                            isChecked: newValue ?? false,
-                                          );
-                                    });
-                                  },
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    displayName,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                    // children:
+                    //     _travelersOptions.asMap().entries.map((entry) {
+                    //       final index = entry.key;
+                    //       final traveler = entry.value;
+                    //       final displayName =
+                    //           traveler.profile_name ?? traveler.core.email;
+                    //
+                    //       return SizedBox(
+                    //         width:
+                    //             MediaQuery.of(context).size.width / 2 -
+                    //             24, // 2列になるよう幅を調整
+                    //         child: Row(
+                    //           mainAxisSize: MainAxisSize.min,
+                    //           children: [
+                    //             Checkbox(
+                    //               value: traveler.isChecked,
+                    //               onChanged: (bool? newValue) {
+                    //                 setState(() {
+                    //                   _travelersOptions[index] = traveler
+                    //                       .copyWith(
+                    //                         isChecked: newValue ?? false,
+                    //                       );
+                    //                 });
+                    //               },
+                    //             ),
+                    //             Flexible(
+                    //               child: Text(
+                    //                 displayName,
+                    //                 overflow: TextOverflow.ellipsis,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       );
+                    //     }).toList(),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -327,11 +324,11 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
 
                       /* isCheckedの人数をカウントして何もチェックされていなかったら弾く */
                       int cnt = 0;
-                      for (final traveler in _travelersOptions) {
-                        if (traveler.isChecked) {
-                          cnt++;
-                        }
-                      }
+                      // for (final traveler in _travelersOptions) {
+                      //   if (traveler.isChecked) {
+                      //     cnt++;
+                      //   }
+                      // }
                       if (cnt == 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -396,14 +393,14 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       /* ここでセットするデータを作っていく */
                       //今払ってもらった人側は配列なのでdicに変換していく
                       Map<String, Map<String, String>> reimbursedBy = {};
-                      _travelersOptions.forEach((traveler) {
-                        if (traveler.isChecked == true) {
-                          reimbursedBy[traveler.core.uid] = {
-                            "uid": traveler.core.uid,
-                            "email": traveler.core.email,
-                          };
-                        }
-                      });
+                      // _travelersOptions.forEach((traveler) {
+                      //   if (traveler.isChecked == true) {
+                      //     reimbursedBy[traveler.core.uid] = {
+                      //       "uid": traveler.core.uid,
+                      //       "email": traveler.core.email,
+                      //     };
+                      //   }
+                      // });
 
                       // if (widget.expenseId == null) {
                       //   /* ここでRealtime Databaseに保存 */

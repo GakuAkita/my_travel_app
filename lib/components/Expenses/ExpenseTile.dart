@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_travel_app/CommonClass/ExpenseInfo.dart';
-import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 
 import '../../core/utils/UidColorHelper.dart';
-import '../../ui/main/Expenses/add_edit_expenses_screen.dart';
+import '../../data/model/expense/expense_info.dart';
+import '../../data/model/traveler/traveler_basic.dart';
 
 class ExpenseTile extends StatelessWidget {
   final ExpenseInfo expense;
@@ -15,7 +14,7 @@ class ExpenseTile extends StatelessWidget {
     if (members[uid] == null) {
       return "*"; /*uidが見つからなかった時*/
     }
-    String nameShown = members[uid]!.profile_name ?? members[uid]!.email;
+    String nameShown = members[uid]!.profile_name ?? members[uid]!.core.email;
 
     return nameShown;
   }
@@ -29,7 +28,7 @@ class ExpenseTile extends StatelessWidget {
         UidColorHelper.getUidColorIndexMap(members);
 
     return uids.map((uid) {
-      String head = TravelerBasic.getProfileNameFromUid(uid, members);
+      String head = ""; //TravelerBasic.getProfileNameFromUid(uid, members);
       if (head.length >= 2) {
         head = head.substring(0, 2);
       }
@@ -69,11 +68,11 @@ class ExpenseTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(
-            context,
-            AddEditExpenseScreen.id,
-            arguments: {"expenseId": expense.id},
-          );
+          // Navigator.pushNamed(
+          //   context,
+          //   AddEditExpenseScreen.id,
+          //   arguments: {"expenseId": expense.id},
+          // );
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(

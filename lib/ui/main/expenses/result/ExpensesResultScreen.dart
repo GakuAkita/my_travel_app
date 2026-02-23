@@ -2,15 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
 import 'package:my_travel_app/CommonClass/ExchangeData.dart';
-import 'package:my_travel_app/Services/FirebaseDatabaseService.dart';
-import 'package:my_travel_app/Store/ExpenseStore.dart';
-import 'package:my_travel_app/components/Expenses/BalancesTable.dart';
-import 'package:provider/provider.dart';
 
-import '../../../components/BasicText.dart';
-import '../../../components/Expenses/ExchangeTileList.dart';
-import '../../../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
-import '../../core/ui/TopAppBar.dart';
+import '../../../../components/BasicText.dart';
+import '../../../core/ui/TopAppBar.dart';
 
 /***
  * 計算自体はクラウドfunctionでやってもらう。
@@ -36,42 +30,42 @@ class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
   void initState() {
     super.initState();
 
-    final expenseStore = context.read<ExpenseStore>();
+    //final expenseStore = context.read<ExpenseStore>();
     /**
      * ExpenseStoreが更新されたときに
      * スナックバーを出せるようにしておく
      */
-    expenseStore.addListener(() {
-      final messenger = ScaffoldMessenger.of(context);
-      messenger.clearSnackBars();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text("費用が更新されました。一度ページを閉じて再度開いてください。"),
-          duration: Duration(seconds: 5),
-        ),
-      );
-    });
+    // expenseStore.addListener(() {
+    //   final messenger = ScaffoldMessenger.of(context);
+    //   messenger.clearSnackBars();
+    //   messenger.showSnackBar(
+    //     SnackBar(
+    //       content: Text("費用が更新されました。一度ページを閉じて再度開いてください。"),
+    //       duration: Duration(seconds: 5),
+    //     ),
+    //   );
+    // });
     Future.microtask(() async {
       try {
         _isLoading = true;
-        final ShownTravelBasic? shownTravelBasic =
-            expenseStore.shownTravelBasic;
-        if (shownTravelBasic == null) {
-          print("shown Travelが取れなかった。まあこんなことはほぼないけど。");
-          return;
-        } else if (shownTravelBasic.groupId == null ||
-            shownTravelBasic.travelId == null) {
-          print("shownTravelBasicがnullではないけど、idとか入っていない");
-          return;
-        } else {
-          /* Do nothing */
-        }
+        // final ShownTravelBasic? shownTravelBasic =
+        //     expenseStore.shownTravelBasic;
+        // if (shownTravelBasic == null) {
+        //   print("shown Travelが取れなかった。まあこんなことはほぼないけど。");
+        //   return;
+        // } else if (shownTravelBasic.groupId == null ||
+        //     shownTravelBasic.travelId == null) {
+        //   print("shownTravelBasicがnullではないけど、idとか入っていない");
+        //   return;
+        // } else {
+        //   /* Do nothing */
+        // }
 
-        _exchangeData =
-            await FirebaseDatabaseService.getSingleTravelExpensesExchanges(
-              shownTravelBasic.groupId!,
-              shownTravelBasic.travelId!,
-            );
+        // _exchangeData =
+        //     await FirebaseDatabaseService.getSingleTravelExpensesExchanges(
+        //       shownTravelBasic.groupId!,
+        //       shownTravelBasic.travelId!,
+        //     );
         if (_exchangeData == null) {
           /* まずexpensesがないと、そもそもここに来れないようになっている(webの場合は複数タブを開けばいけるが,,,,) */
           /* まあ表示するだけだからいいか。 */
@@ -86,11 +80,11 @@ class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
         }
 
         /* 精算をDBから取ってくる */
-        _balances =
-            await FirebaseDatabaseService.getSingleTravelExpensesBalances(
-              shownTravelBasic.groupId!,
-              shownTravelBasic.travelId!,
-            );
+        // _balances =
+        //     await FirebaseDatabaseService.getSingleTravelExpensesBalances(
+        //       shownTravelBasic.groupId!,
+        //       shownTravelBasic.travelId!,
+        //     );
         if (_balances == null) {
           print("balances are null!!");
         } else if (_balances == {}) {
@@ -108,7 +102,7 @@ class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
   @override
   Widget build(BuildContext context) {
     /* ここでwatchしておくと、もう一度再描画される？？->されてないな。 */
-    final expenseStore = context.watch<ExpenseStore>();
+    //final expenseStore = context.watch<ExpenseStore>();
     return Scaffold(
       appBar: TopAppBar(automaticallyImplyLeading: true, title: "割り勘"),
       body: LoadingOverlay(
@@ -124,18 +118,18 @@ class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
                                 ? "最終更新日時: ${_parsedLastUpdated!.add(const Duration(hours: 9)).toString().split(".").first}\nUTC:${_parsedLastUpdated}" //ミリ秒の部分はいらないからカット。
                                 : "最終更新日時: 不明",
                       ),
-                      ExchangeTileList(
-                        exgData: _exchangeData!.result,
-                        participants: expenseStore.allGroupMembers,
-                      ),
+                      // ExchangeTileList(
+                      //   exgData: _exchangeData!.result,
+                      //   participants: expenseStore.allGroupMembers,
+                      // ),
                       SizedBox(height: 20),
                       Divider(),
                       SizedBox(height: 20),
                       /* 精算もここに表示する。 */
-                      BalancesTable(
-                        balances: _balances!,
-                        participants: expenseStore.allGroupMembers,
-                      ),
+                      // BalancesTable(
+                      //   balances: _balances!,
+                      //   participants: expenseStore.allGroupMembers,
+                      // ),
                     ],
                   )
                   : _isLoading //else ifのイメージ
