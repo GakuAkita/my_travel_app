@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$ExpenseInfo {
 
  String? get id; TravelerCore get payer; Map<String, Map<String, String>> get reimbursedBy; String get expenseItem; int get expense;/* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
-@JsonKey(name: 'createdAt') int? get createdAt;
+@JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson) int? get createdAt;
 /// Create a copy of ExpenseInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $ExpenseInfoCopyWith<$Res>  {
   factory $ExpenseInfoCopyWith(ExpenseInfo value, $Res Function(ExpenseInfo) _then) = _$ExpenseInfoCopyWithImpl;
 @useResult
 $Res call({
- String? id, TravelerCore payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
+ String? id, TravelerCore payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson) int? createdAt
 });
 
 
@@ -168,7 +168,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson)  int? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExpenseInfo() when $default != null:
 return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
@@ -189,7 +189,7 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson)  int? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseInfo():
 return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
@@ -209,7 +209,7 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  TravelerCore payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson)  int? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseInfo() when $default != null:
 return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
@@ -224,7 +224,7 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 @JsonSerializable()
 
 class _ExpenseInfo implements ExpenseInfo {
-  const _ExpenseInfo({required this.id, required this.payer, required final  Map<String, Map<String, String>> reimbursedBy, required this.expenseItem, required this.expense, @JsonKey(name: 'createdAt') this.createdAt}): _reimbursedBy = reimbursedBy;
+  const _ExpenseInfo({required this.id, required this.payer, required final  Map<String, Map<String, String>> reimbursedBy, required this.expenseItem, required this.expense, @JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson) this.createdAt}): _reimbursedBy = reimbursedBy;
   factory _ExpenseInfo.fromJson(Map<String, dynamic> json) => _$ExpenseInfoFromJson(json);
 
 @override final  String? id;
@@ -239,7 +239,7 @@ class _ExpenseInfo implements ExpenseInfo {
 @override final  String expenseItem;
 @override final  int expense;
 /* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
-@override@JsonKey(name: 'createdAt') final  int? createdAt;
+@override@JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson) final  int? createdAt;
 
 /// Create a copy of ExpenseInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -274,7 +274,7 @@ abstract mixin class _$ExpenseInfoCopyWith<$Res> implements $ExpenseInfoCopyWith
   factory _$ExpenseInfoCopyWith(_ExpenseInfo value, $Res Function(_ExpenseInfo) _then) = __$ExpenseInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, TravelerCore payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
+ String? id, TravelerCore payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson) int? createdAt
 });
 
 

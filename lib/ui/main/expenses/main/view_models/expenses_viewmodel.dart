@@ -58,7 +58,9 @@ class ExpensesViewModel extends ChangeNotifier {
     required ShownTravelBasic? travel,
   }) : _expenseRepository = expenseRepository,
        _travel = travel {
-    print("ExpenseViewModel was created code=${hashCode}");
+    print(
+      "ExpenseViewModel was created code=${hashCode} groupId=${_travel?.groupId} travelId=${_travel?.travelId}",
+    );
 
     /**
      * Expensesをロードする
@@ -99,8 +101,11 @@ class ExpensesViewModel extends ChangeNotifier {
 
     try {
       final result = await getAllExpenses();
+      print("ViewModel getAllExpenses done.");
 
       if (_disposed || currentId != _requestId) {
+        print("diposed or requestId was changed.");
+        print("currentId=$currentId, _requestId=$_requestId");
         /**
          * disposedされたあとにFutureが返ってくるとクラッシュ？
          * getAllExpensesWithNotifyが何度も呼ばれたときにおかしくなる可能性。
@@ -112,6 +117,8 @@ class ExpensesViewModel extends ChangeNotifier {
       if (result.isSuccess) {
         /* @TODO createdAtで並び替える */
         _allExpenses = result.data!;
+      } else {
+        print("ExpensesViewModel: ${result.error?.errorMessage}");
       }
 
       return ResultInfo.success();
@@ -145,6 +152,7 @@ class ExpensesViewModel extends ChangeNotifier {
         argTravel.groupId!,
         argTravel.travelId!,
       );
+      print("getAllExpenses was calleD!!!!!");
       return ResultInfo.success(data: data);
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));

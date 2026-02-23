@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:my_travel_app/core/utils/normalize.dart';
 import 'package:my_travel_app/data/model/identifiable.dart';
 import 'package:my_travel_app/data/model/timestamped.dart';
 
@@ -37,12 +38,13 @@ class FirebaseDatabaseService<T> {
   // 一気に取る場合はこっち(ただし、同じ構造になっている前提)
   Future<Map<String, T>> getAll() async {
     final snapshot = await _database.ref(path).get();
-    if (!snapshot.exists) return {};
+    if (!snapshot.exists || snapshot.value == null) return {};
 
-    final raw = Map<String, dynamic>.from(snapshot.value as Map);
+    final normalized =
+        normalizeMapStructure(snapshot.value) as Map<String, dynamic>;
 
-    return raw.map((key, value) {
-      final item = fromJson(Map<String, dynamic>.from(value as Map));
+    return normalized.map((key, value) {
+      final item = fromJson(value as Map<String, dynamic>);
       return MapEntry(key, item);
     });
   }
@@ -85,8 +87,4 @@ extension FirebaseDatabaseServiceExtension<T extends Identifiable>
 
     return newItem;
   }
-
-  // Future<T> updateAuto(T item) async{
-  //
-  // }
 }

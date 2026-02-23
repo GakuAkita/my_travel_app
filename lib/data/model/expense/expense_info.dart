@@ -18,9 +18,40 @@ abstract class ExpenseInfo
     required String expenseItem,
     required int expense,
     /* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
-    @JsonKey(name: 'createdAt') int? createdAt, //一度決めたら変えない
+    @JsonKey(
+      name: 'createdAt',
+      fromJson: _createdAtFromJson,
+      toJson: _createdAtToJson,
+    )
+    int? createdAt, //一度決めたら変えない
   }) = _ExpenseInfo;
 
   factory ExpenseInfo.fromJson(Map<String, dynamic> json) =>
       _$ExpenseInfoFromJson(json);
 }
+
+/**
+ * 以前はcreatedAtをISOのdatetimeで保存していたが、それをUNIXミリ秒のint?二変更。
+ * 後方互換戦を持たせるために、converterを定義
+ */
+int? _createdAtFromJson(dynamic value) {
+  if (value == null) return null;
+
+  // すでにミリ秒(int)
+  if (value is int) return value;
+
+  // 万一 double で来た場合
+  if (value is num) return value.toInt();
+
+  // 旧ISO文字列
+  if (value is String) {
+    final date = DateTime.tryParse(value);
+    if (date != null) {
+      return date.millisecondsSinceEpoch; // ← ミリ秒
+    }
+  }
+
+  return null;
+}
+
+int? _createdAtToJson(int? value) => value;
