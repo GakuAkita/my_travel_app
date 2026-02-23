@@ -3,7 +3,7 @@ import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 
 import '../../../CommonClass/ResultInfo.dart';
-import '../../model/traveler/traveler_basic.dart';
+import '../../model/traveler/traveler_basic/traveler_basic.dart';
 
 class ParticipantsRepositoryRealtimeDb implements ParticipantsRepository {
   final FirebaseDatabase _firebaseDatabase;

@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 
 import '../../../core/exceptions/app_exception.dart';
-import '../../model/traveler/traveler_basic.dart';
+import '../../model/traveler/traveler_basic/traveler_basic.dart';
 
 class GroupMembersRepositoryRealtimeDb implements GroupMembersRepository {
   final FirebaseDatabase _firebaseDatabase;

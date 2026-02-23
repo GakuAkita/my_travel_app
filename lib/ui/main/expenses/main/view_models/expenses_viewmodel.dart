@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
-import 'package:my_travel_app/CommonClass/TravelerBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_basic/traveler_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 
-import '../../../../../CommonClass/ExpenseInfo.dart';
 import '../../../../../CommonClass/ResultInfo.dart';
 import '../../../../../core/utils/CheckShownTravelBasic.dart';
+import '../../../../../data/model/expense/expense_info.dart';
 
 class ExpensesViewModel extends ChangeNotifier {
   final ExpenseRepository _expenseRepository;
@@ -25,8 +25,9 @@ class ExpensesViewModel extends ChangeNotifier {
     /* createdAtで並べる。引数で */
     final listedExpenses = _allExpenses!.values.toList();
     if (sort) {
-      listedExpenses.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      listedExpenses.sort((a, b) => b.createdAt.compareTo(a.createdAt ?? 0));
     }
+    TravelerBasic(id: "22", email: "aaa");
     return listedExpenses;
   }
 

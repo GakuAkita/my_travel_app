@@ -1,4 +1,4 @@
-import '../../model/traveler/traveler_basic.dart';
+import '../../model/traveler/traveler_basic/traveler_basic.dart';
 
 /**
  * 各グループのメンバー

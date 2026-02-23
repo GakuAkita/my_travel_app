@@ -210,8 +210,8 @@ return $default(_that.uid,_that.email,_that.profile_name);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _TravelerBasic implements TravelerBasic {
-  const _TravelerBasic({required this.uid, required this.email, @JsonKey(includeToJson: false, includeFromJson: true) this.profile_name});
+class _TravelerBasic extends TravelerBasic {
+  const _TravelerBasic({required this.uid, required this.email, @JsonKey(includeToJson: false, includeFromJson: true) this.profile_name}): super._();
   factory _TravelerBasic.fromJson(Map<String, dynamic> json) => _$TravelerBasicFromJson(json);
 
 @override final  String uid;
