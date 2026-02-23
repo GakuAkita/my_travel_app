@@ -96,12 +96,12 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
           expenseStore.allGroupMembers.entries.map((entry) {
             final member = entry.value;
             final bool isParticipate = _allParticipants.any(
-              (participant) => participant.uid == member.uid,
+              (participant) => participant.core.uid == member.core.uid,
             );
 
             return TravelerInfo(
-              uid: member.uid,
-              email: member.email,
+              uid: member.core.uid,
+              email: member.core.email,
               profile_name: member.profile_name,
               isChecked: isParticipate,
             );
@@ -109,7 +109,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
 
       if (_allGroupMembers.isNotEmpty) {
         for (final traveler in _allGroupMembers) {
-          if (traveler.uid == expenseStore.currentUserId) {
+          if (traveler.core.uid == expenseStore.currentUserId) {
             _payer = traveler;
             break;
           }
@@ -136,23 +136,25 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
       final initialExpense = expenseStore.allExpenses[initialExpenseIndex];
       _initialExpense = initialExpense;
 
-      final TravelerBasic payerBasic = initialExpense.payer;
-      for (final traveler in _allGroupMembers) {
-        if (traveler.uid == payerBasic.uid) {
-          _payer = traveler;
-          break;
-        }
-      }
+      // final TravelerBasic payerBasic = initialExpense.payer;
+      // for (final traveler in _allGroupMembers) {
+      //   if (traveler.uid == payerBasic.uid) {
+      //     _payer = traveler;
+      //     break;
+      //   }
+      // }
 
       _travelersOptions =
           expenseStore.allGroupMembers.entries.map((entry) {
             final value = entry.value;
             /* isCheckedを */
             return TravelerInfo(
-              uid: value.uid,
-              email: value.email,
+              uid: value.core.uid,
+              email: value.core.email,
               profile_name: value.profile_name,
-              isChecked: initialExpense.reimbursedBy.containsKey(value.uid),
+              isChecked: initialExpense.reimbursedBy.containsKey(
+                value.core.uid,
+              ),
             );
           }).toList();
 
@@ -192,7 +194,8 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                           items:
                               _allGroupMembers.map((traveler) {
                                 final displayName =
-                                    traveler.profile_name ?? traveler.email;
+                                    traveler.profile_name ??
+                                    traveler.core.email;
                                 return DropdownMenuItem<TravelerBasic>(
                                   value: traveler,
                                   child: Text(displayName),
@@ -217,7 +220,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                           final index = entry.key;
                           final traveler = entry.value;
                           final displayName =
-                              traveler.profile_name ?? traveler.email;
+                              traveler.profile_name ?? traveler.core.email;
 
                           return SizedBox(
                             width:
@@ -395,65 +398,65 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       Map<String, Map<String, String>> reimbursedBy = {};
                       _travelersOptions.forEach((traveler) {
                         if (traveler.isChecked == true) {
-                          reimbursedBy[traveler.uid] = {
-                            "uid": traveler.uid,
-                            "email": traveler.email,
+                          reimbursedBy[traveler.core.uid] = {
+                            "uid": traveler.core.uid,
+                            "email": traveler.core.email,
                           };
                         }
                       });
 
-                      if (widget.expenseId == null) {
-                        /* ここでRealtime Databaseに保存 */
-                        final ref =
-                            FirebaseDatabaseService.singleTravelExpensesDataRef(
-                              _shownGroupId!,
-                              _shownTravelId!,
-                            );
-                        var newRef = ref.push();
-                        final generatedId = newRef.key as String;
-                        final expenseInfo = ExpenseInfo(
-                          id: generatedId,
-                          payer: TravelerBasic(
-                            uid: _payer?.uid as String,
-                            email: _payer?.email as String,
-                          ),
-                          reimbursedBy: reimbursedBy,
-                          expenseItem: _expenseItem,
-                          expense: _expense,
-                          createdAt: DateTime.now().toIso8601String(),
-                        );
-
-                        final dataset = expenseInfo.toMap();
-                        print(dataset);
-                        /* 最後に追加する */
-                        newRef.set(dataset);
-                      } else {
-                        /* なんかもっと良い方法あるきがする */
-                        final expenseInfo = ExpenseInfo(
-                          id: widget.expenseId!,
-                          //ここに来るときにはnullでなくなっている
-                          payer: TravelerBasic(
-                            uid: _payer?.uid as String,
-                            email: _payer?.email as String,
-                          ),
-                          reimbursedBy: reimbursedBy,
-                          expenseItem: _expenseItem,
-                          expense: _expense,
-                          createdAt:
-                              _initialExpense!.createdAt, //null Pointが起こるかも。
-                        );
-
-                        final dataset = expenseInfo.toMap();
-
-                        final ref =
-                            FirebaseDatabaseService.singleTravelExpenseIdRef(
-                              _shownGroupId!,
-                              _shownTravelId!,
-                              widget.expenseId!,
-                            );
-                        ref.set(dataset);
-                        // ref.update()
-                      }
+                      // if (widget.expenseId == null) {
+                      //   /* ここでRealtime Databaseに保存 */
+                      //   final ref =
+                      //       FirebaseDatabaseService.singleTravelExpensesDataRef(
+                      //         _shownGroupId!,
+                      //         _shownTravelId!,
+                      //       );
+                      //   var newRef = ref.push();
+                      //   final generatedId = newRef.key as String;
+                      //   final expenseInfo = ExpenseInfo(
+                      //     id: generatedId,
+                      //     payer: TravelerBasic(
+                      //       uid: _payer?.uid as String,
+                      //       email: _payer?.email as String,
+                      //     ),
+                      //     reimbursedBy: reimbursedBy,
+                      //     expenseItem: _expenseItem,
+                      //     expense: _expense,
+                      //     createdAt: DateTime.now().toIso8601String(),
+                      //   );
+                      //
+                      //   final dataset = expenseInfo.toMap();
+                      //   print(dataset);
+                      //   /* 最後に追加する */
+                      //   newRef.set(dataset);
+                      // } else {
+                      //   /* なんかもっと良い方法あるきがする */
+                      //   final expenseInfo = ExpenseInfo(
+                      //     id: widget.expenseId!,
+                      //     //ここに来るときにはnullでなくなっている
+                      //     payer: TravelerBasic(
+                      //       uid: _payer?.uid as String,
+                      //       email: _payer?.email as String,
+                      //     ),
+                      //     reimbursedBy: reimbursedBy,
+                      //     expenseItem: _expenseItem,
+                      //     expense: _expense,
+                      //     createdAt:
+                      //         _initialExpense!.createdAt, //null Pointが起こるかも。
+                      //   );
+                      //
+                      //   final dataset = expenseInfo.toMap();
+                      //
+                      //   final ref =
+                      //       FirebaseDatabaseService.singleTravelExpenseIdRef(
+                      //         _shownGroupId!,
+                      //         _shownTravelId!,
+                      //         widget.expenseId!,
+                      //       );
+                      //   ref.set(dataset);
+                      //   // ref.update()
+                      // }
 
                       //popだとExpensesScreenに戻ったときに更新されない。
                       Navigator.pushNamed(
@@ -489,19 +492,19 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                           return;
                         }
 
-                        final ref =
-                            FirebaseDatabaseService.singleTravelExpenseIdRef(
-                              _shownGroupId!,
-                              _shownTravelId!,
-                              widget.expenseId!,
-                            );
-
-                        await ref.remove();
-                        Navigator.pushNamed(
-                          context,
-                          StartScreen.id,
-                          arguments: {"index": 1},
-                        );
+                        // final ref =
+                        //     FirebaseDatabaseService.singleTravelExpenseIdRef(
+                        //       _shownGroupId!,
+                        //       _shownTravelId!,
+                        //       widget.expenseId!,
+                        //     );
+                        //
+                        // await ref.remove();
+                        // Navigator.pushNamed(
+                        //   context,
+                        //   StartScreen.id,
+                        //   arguments: {"index": 1},
+                        // );
                       },
                     ),
                 ],
