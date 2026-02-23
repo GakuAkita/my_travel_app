@@ -1,4 +1,4 @@
-import '../data/model/traveler/traveler_basic/traveler_basic.dart';
+import '../data/model/traveler/traveler_basic.dart';
 
 class TravelerInfo extends TravelerBasic {
   final bool isChecked;

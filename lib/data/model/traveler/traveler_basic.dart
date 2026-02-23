@@ -1,4 +1,4 @@
-import '../traveler_core/traveler_core.dart';
+import 'traveler_core/traveler_core.dart';
 
 class TravelerBasic {
   final TravelerCore core;

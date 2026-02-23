@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
-import 'package:my_travel_app/data/model/traveler/traveler_basic/traveler_basic.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
