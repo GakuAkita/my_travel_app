@@ -25,13 +25,26 @@ class FirebaseDatabaseService<T> {
     await _database.ref(path).update(toJson(item));
   }
 
-  /// データ取得
+  /// データ取得 (単一ノード)
   Future<T?> get() async {
     final snapshot = await _database.ref(path).get();
     if (!snapshot.exists) return null;
 
     final map = Map<String, dynamic>.from(snapshot.value as Map);
     return fromJson(map);
+  }
+
+  // 一気に取る場合はこっち(ただし、同じ構造になっている前提)
+  Future<Map<String, T>> getAll() async {
+    final snapshot = await _database.ref(path).get();
+    if (!snapshot.exists) return {};
+
+    final raw = Map<String, dynamic>.from(snapshot.value as Map);
+
+    return raw.map((key, value) {
+      final item = fromJson(Map<String, dynamic>.from(value as Map));
+      return MapEntry(key, item);
+    });
   }
 
   /// データをlisten

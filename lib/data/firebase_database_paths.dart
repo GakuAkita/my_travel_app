@@ -48,6 +48,8 @@ class FirebaseDatabasePaths {
   static const PathNode users = PathNode("users");
   static const PathNode groups = PathNode("groups");
   static const PathNode groupKeys = PathNode("group_keys");
+
+  static GroupPath group(String groupId) => GroupPath(groups.child(groupId));
 }
 
 /// ===============================
@@ -63,8 +65,7 @@ class UserPath extends PathNode {
 /// Groups
 /// ===============================
 class GroupPath extends PathNode {
-  GroupPath(String groupId)
-    : super(FirebaseDatabasePaths.groups.child(groupId));
+  GroupPath(String path) : super(path);
 
   TravelsPath get travels => TravelsPath(path);
 
@@ -96,14 +97,17 @@ class TravelPath extends PathNode {
 class ExpensesPath extends PathNode {
   ExpensesPath(String parentPath) : super("$parentPath/expenses");
 
-  final String exchangesStr = "exchanges";
-  final String estimatedStr = "estimated";
+  final String _exchangesStr = "exchanges";
+  final String _estimatedStr = "estimated";
+  final String _dataStr = "data";
 
-  String get data => child("data");
+  String get data => child(_dataStr);
+
+  String singleData(String expenseId) => child("$_dataStr/$expenseId");
 
   String get balances => child("balances");
 
-  String get exchanges => child("$exchangesStr/result");
+  String get exchanges => child("$_exchangesStr/result");
 }
 
 class ItineraryPath extends PathNode {
