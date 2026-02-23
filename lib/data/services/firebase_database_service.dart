@@ -47,6 +47,10 @@ class FirebaseDatabaseService<T> {
     });
   }
 
+  Future<void> delete() async {
+    await _database.ref(path).remove();
+  }
+
   /// データをlisten
   Stream<T?> stream() {
     return _database.ref(path).onValue.map((event) {
