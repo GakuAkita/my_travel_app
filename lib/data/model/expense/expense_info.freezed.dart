@@ -15,8 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExpenseInfo {
 
- String? get id; TravelerBasic get payer; Map<String, Map<String, String>> get reimbursedBy; String get expenseItem; int get expense;@JsonKey(name: 'createdAt') int? get createdAt;//一度決めたら変えない
-@JsonKey(name: 'updatedAt') int? get updatedAt;
+ String? get id; TravelerBasic get payer; Map<String, Map<String, String>> get reimbursedBy; String get expenseItem; int get expense;/* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
+@JsonKey(name: 'createdAt') int? get createdAt;
 /// Create a copy of ExpenseInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $ExpenseInfoCopyWith<ExpenseInfo> get copyWith => _$ExpenseInfoCopyWithImpl<Expe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.payer, payer) || other.payer == payer)&&const DeepCollectionEquality().equals(other.reimbursedBy, reimbursedBy)&&(identical(other.expenseItem, expenseItem) || other.expenseItem == expenseItem)&&(identical(other.expense, expense) || other.expense == expense)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.payer, payer) || other.payer == payer)&&const DeepCollectionEquality().equals(other.reimbursedBy, reimbursedBy)&&(identical(other.expenseItem, expenseItem) || other.expenseItem == expenseItem)&&(identical(other.expense, expense) || other.expense == expense)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,payer,const DeepCollectionEquality().hash(reimbursedBy),expenseItem,expense,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,payer,const DeepCollectionEquality().hash(reimbursedBy),expenseItem,expense,createdAt);
 
 @override
 String toString() {
-  return 'ExpenseInfo(id: $id, payer: $payer, reimbursedBy: $reimbursedBy, expenseItem: $expenseItem, expense: $expense, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'ExpenseInfo(id: $id, payer: $payer, reimbursedBy: $reimbursedBy, expenseItem: $expenseItem, expense: $expense, createdAt: $createdAt)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $ExpenseInfoCopyWith<$Res>  {
   factory $ExpenseInfoCopyWith(ExpenseInfo value, $Res Function(ExpenseInfo) _then) = _$ExpenseInfoCopyWithImpl;
 @useResult
 $Res call({
- String? id, TravelerBasic payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt,@JsonKey(name: 'updatedAt') int? updatedAt
+ String? id, TravelerBasic payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
 });
 
 
@@ -66,7 +66,7 @@ class _$ExpenseInfoCopyWithImpl<$Res>
 
 /// Create a copy of ExpenseInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? payer = null,Object? reimbursedBy = null,Object? expenseItem = null,Object? expense = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? payer = null,Object? reimbursedBy = null,Object? expenseItem = null,Object? expense = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,payer: null == payer ? _self.payer : payer // ignore: cast_nullable_to_non_nullable
@@ -74,7 +74,6 @@ as TravelerBasic,reimbursedBy: null == reimbursedBy ? _self.reimbursedBy : reimb
 as Map<String, Map<String, String>>,expenseItem: null == expenseItem ? _self.expenseItem : expenseItem // ignore: cast_nullable_to_non_nullable
 as String,expense: null == expense ? _self.expense : expense // ignore: cast_nullable_to_non_nullable
 as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as int?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -169,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt, @JsonKey(name: 'updatedAt')  int? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExpenseInfo() when $default != null:
-return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
   return orElse();
 
 }
@@ -190,10 +189,10 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt, @JsonKey(name: 'updatedAt')  int? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseInfo():
-return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +209,10 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt, @JsonKey(name: 'updatedAt')  int? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  TravelerBasic payer,  Map<String, Map<String, String>> reimbursedBy,  String expenseItem,  int expense, @JsonKey(name: 'createdAt')  int? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseInfo() when $default != null:
-return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.expense,_that.createdAt);case _:
   return null;
 
 }
@@ -225,7 +224,7 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 @JsonSerializable()
 
 class _ExpenseInfo implements ExpenseInfo {
-  const _ExpenseInfo({required this.id, required this.payer, required final  Map<String, Map<String, String>> reimbursedBy, required this.expenseItem, required this.expense, @JsonKey(name: 'createdAt') this.createdAt, @JsonKey(name: 'updatedAt') this.updatedAt}): _reimbursedBy = reimbursedBy;
+  const _ExpenseInfo({required this.id, required this.payer, required final  Map<String, Map<String, String>> reimbursedBy, required this.expenseItem, required this.expense, @JsonKey(name: 'createdAt') this.createdAt}): _reimbursedBy = reimbursedBy;
   factory _ExpenseInfo.fromJson(Map<String, dynamic> json) => _$ExpenseInfoFromJson(json);
 
 @override final  String? id;
@@ -239,9 +238,8 @@ class _ExpenseInfo implements ExpenseInfo {
 
 @override final  String expenseItem;
 @override final  int expense;
+/* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
 @override@JsonKey(name: 'createdAt') final  int? createdAt;
-//一度決めたら変えない
-@override@JsonKey(name: 'updatedAt') final  int? updatedAt;
 
 /// Create a copy of ExpenseInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -256,16 +254,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExpenseInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.payer, payer) || other.payer == payer)&&const DeepCollectionEquality().equals(other._reimbursedBy, _reimbursedBy)&&(identical(other.expenseItem, expenseItem) || other.expenseItem == expenseItem)&&(identical(other.expense, expense) || other.expense == expense)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExpenseInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.payer, payer) || other.payer == payer)&&const DeepCollectionEquality().equals(other._reimbursedBy, _reimbursedBy)&&(identical(other.expenseItem, expenseItem) || other.expenseItem == expenseItem)&&(identical(other.expense, expense) || other.expense == expense)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,payer,const DeepCollectionEquality().hash(_reimbursedBy),expenseItem,expense,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,payer,const DeepCollectionEquality().hash(_reimbursedBy),expenseItem,expense,createdAt);
 
 @override
 String toString() {
-  return 'ExpenseInfo(id: $id, payer: $payer, reimbursedBy: $reimbursedBy, expenseItem: $expenseItem, expense: $expense, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'ExpenseInfo(id: $id, payer: $payer, reimbursedBy: $reimbursedBy, expenseItem: $expenseItem, expense: $expense, createdAt: $createdAt)';
 }
 
 
@@ -276,7 +274,7 @@ abstract mixin class _$ExpenseInfoCopyWith<$Res> implements $ExpenseInfoCopyWith
   factory _$ExpenseInfoCopyWith(_ExpenseInfo value, $Res Function(_ExpenseInfo) _then) = __$ExpenseInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, TravelerBasic payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt,@JsonKey(name: 'updatedAt') int? updatedAt
+ String? id, TravelerBasic payer, Map<String, Map<String, String>> reimbursedBy, String expenseItem, int expense,@JsonKey(name: 'createdAt') int? createdAt
 });
 
 
@@ -293,7 +291,7 @@ class __$ExpenseInfoCopyWithImpl<$Res>
 
 /// Create a copy of ExpenseInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? payer = null,Object? reimbursedBy = null,Object? expenseItem = null,Object? expense = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? payer = null,Object? reimbursedBy = null,Object? expenseItem = null,Object? expense = null,Object? createdAt = freezed,}) {
   return _then(_ExpenseInfo(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,payer: null == payer ? _self.payer : payer // ignore: cast_nullable_to_non_nullable
@@ -301,7 +299,6 @@ as TravelerBasic,reimbursedBy: null == reimbursedBy ? _self._reimbursedBy : reim
 as Map<String, Map<String, String>>,expenseItem: null == expenseItem ? _self.expenseItem : expenseItem // ignore: cast_nullable_to_non_nullable
 as String,expense: null == expense ? _self.expense : expense // ignore: cast_nullable_to_non_nullable
 as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as int?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }

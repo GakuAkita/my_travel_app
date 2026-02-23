@@ -10,7 +10,7 @@ part 'expense_info.g.dart';
 @freezed
 abstract class ExpenseInfo
     with _$ExpenseInfo
-    implements Identifiable, Creatable, Updatable {
+    implements Identifiable, Creatable {
   const factory ExpenseInfo({
     required String? id,
     required TravelerBasic payer,
@@ -19,7 +19,6 @@ abstract class ExpenseInfo
     required int expense,
     /* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
     @JsonKey(name: 'createdAt') int? createdAt, //一度決めたら変えない
-    @JsonKey(name: 'updatedAt') int? updatedAt,
   }) = _ExpenseInfo;
 
   factory ExpenseInfo.fromJson(Map<String, dynamic> json) =>

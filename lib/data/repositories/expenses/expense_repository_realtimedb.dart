@@ -13,24 +13,33 @@ class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
   ExpenseRepositoryRealtimeDb({
     required FirebaseDatabase firebaseDatabase,
     required String userId,
-  }) : _firebaseDatabase = firebaseDatabase,
-       _userId = userId {}
+  })
+      : _firebaseDatabase = firebaseDatabase,
+        _userId = userId {}
 
-  FirebaseDatabaseService<ExpenseInfo> _service(
-    String groupId,
-    String travelId,
-    String? expenseId /* ifを渡したときは単一ノード */,
-  ) {
+  FirebaseDatabaseService<ExpenseInfo> _service(String groupId,
+      String travelId,
+      {String? expenseId} /* ifを渡したときは単一ノード */,) {
     String _path = "";
     if (expenseId == null) {
       _path =
-          FirebaseDatabasePaths.group(
+          FirebaseDatabasePaths
+              .group(
             groupId,
-          ).travels.travel(travelId).expenses.data;
+          )
+              .travels
+              .travel(travelId)
+              .expenses
+              .data;
     } else {
-      _path = FirebaseDatabasePaths.group(
+      _path = FirebaseDatabasePaths
+          .group(
         groupId,
-      ).travels.travel(travelId).expenses.singleData(expenseId);
+      )
+          .travels
+          .travel(travelId)
+          .expenses
+          .singleData(expenseId);
     }
 
     return FirebaseDatabaseService<ExpenseInfo>(
@@ -42,41 +51,38 @@ class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
   }
 
   @override
-  Future<Map<String, ExpenseInfo>> getAllExpenses(
-    String groupId,
-    String travelId,
-  ) async {
+  Future<Map<String, ExpenseInfo>> getAllExpenses(String groupId,
+      String travelId,) async {
     final service = _service(groupId, travelId);
     final expenses = await service.getAll();
     return expenses;
   }
 
   @override
-  Future<ExpenseInfo> addExpense(
-    String groupId,
-    String travelId,
-    ExpenseInfo expense,
-  ) async {
+  Future<ExpenseInfo> addExpense(String groupId,
+      String travelId,
+      ExpenseInfo expense,) async {
     final service = _service(groupId, travelId);
     final added = await service.addAuto(expense);
     return added;
   }
 
   @override
-  Future<void> updateExpense(
-    String groupId,
-    String travelId,
-    ExpenseInfo expense,
-  ) async {
+  Future<void> updateExpense(String groupId,
+      String travelId,
+      ExpenseInfo expense,) async {
+    if (expense.id == null) {
+      throw AppException("Expense id is null. This is the coding error.");
+    }
+    final service = _service(groupId, travelId, expenseId: expense.id!);
+    final updated = await service.update(expense);
     throw AppException("Not implemented updateExpense");
   }
 
   @override
-  Future<void> deleteExpense(
-    String groupId,
-    String travelId,
-    String expenseId,
-  ) async {
+  Future<void> deleteExpense(String groupId,
+      String travelId,
+      String expenseId,) async {
     throw AppException("Not implemented deleteExpense");
   }
 }

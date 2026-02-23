@@ -81,4 +81,8 @@ extension FirebaseDatabaseServiceExtension<T extends Identifiable>
 
     return newItem;
   }
+
+  // Future<T> updateAuto(T item) async{
+  //
+  // }
 }

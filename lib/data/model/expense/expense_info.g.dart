@@ -15,7 +15,6 @@ _ExpenseInfo _$ExpenseInfoFromJson(Map<String, dynamic> json) => _ExpenseInfo(
   expenseItem: json['expenseItem'] as String,
   expense: (json['expense'] as num).toInt(),
   createdAt: (json['createdAt'] as num?)?.toInt(),
-  updatedAt: (json['updatedAt'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$ExpenseInfoToJson(_ExpenseInfo instance) =>
@@ -26,5 +25,4 @@ Map<String, dynamic> _$ExpenseInfoToJson(_ExpenseInfo instance) =>
       'expenseItem': instance.expenseItem,
       'expense': instance.expense,
       'createdAt': instance.createdAt,
-      'updatedAt': instance.updatedAt,
     };
