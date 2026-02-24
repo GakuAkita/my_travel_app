@@ -328,6 +328,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create:
           (innerContext) => ExpensesViewModel(
             expenseRepository: innerContext.read(),
+            groupMembersRepository: innerContext.read(),
             travel: null,
           ),
       update: (innerContext, session, previous) {
@@ -338,6 +339,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         }
         return ExpensesViewModel(
           expenseRepository: innerContext.read(),
+          groupMembersRepository: innerContext.read(),
           travel: travel,
         );
       },

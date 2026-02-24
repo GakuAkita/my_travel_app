@@ -3,13 +3,16 @@ import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
+import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
+import 'package:my_travel_app/ui/core/state/loaidng_controller.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
 import '../../../../../core/utils/CheckShownTravelBasic.dart';
 import '../../../../../data/model/expense/expense_info.dart';
 
-class ExpensesViewModel extends ChangeNotifier {
+class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   final ExpenseRepository _expenseRepository;
+  final GroupMembersRepository _groupMembersRepository;
 
   ShownTravelBasic? _travel;
 
@@ -45,9 +48,6 @@ class ExpensesViewModel extends ChangeNotifier {
 
   Map<String, TravelerBasic> get allGroupMembers => _allGroupMembers;
 
-  bool _isLoading = false;
-
-  bool get isLoading => _isLoading;
   bool _disposed = false;
 
   /**
@@ -55,8 +55,10 @@ class ExpensesViewModel extends ChangeNotifier {
    */
   ExpensesViewModel({
     required ExpenseRepository expenseRepository,
+    required GroupMembersRepository groupMembersRepository,
     required ShownTravelBasic? travel,
   }) : _expenseRepository = expenseRepository,
+       _groupMembersRepository = groupMembersRepository,
        _travel = travel {
     print(
       "ExpenseViewModel was created code=${hashCode} groupId=${_travel?.groupId} travelId=${_travel?.travelId}",
@@ -95,7 +97,6 @@ class ExpensesViewModel extends ChangeNotifier {
     final currentId = ++_requestId;
 
     if (isStateNotify) {
-      _isLoading = true;
       notifyListeners();
     }
 
@@ -124,7 +125,6 @@ class ExpensesViewModel extends ChangeNotifier {
       return ResultInfo.success();
     } finally {
       if (isStateNotify) {
-        _isLoading = false;
         notifyListeners();
       }
     }
@@ -135,8 +135,9 @@ class ExpensesViewModel extends ChangeNotifier {
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpensesForTravel(
-    ShownTravelBasic? argTravel,
-  ) async {
+    ShownTravelBasic? argTravel, {
+    bool inputInternal = true,
+  }) async {
     if (argTravel == null) {
       return ResultInfo.success(data: {});
     }
@@ -152,7 +153,17 @@ class ExpensesViewModel extends ChangeNotifier {
         argTravel.groupId!,
         argTravel.travelId!,
       );
-      print("getAllExpenses was calleD!!!!!");
+      return ResultInfo.success(data: data);
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembersForGroup(
+    String groupId,
+  ) async {
+    try {
+      final data = await _groupMembersRepository.getAllGroupMembers(groupId);
       return ResultInfo.success(data: data);
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
