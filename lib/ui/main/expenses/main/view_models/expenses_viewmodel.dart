@@ -78,9 +78,11 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
 
     try {
       runWithLoading(() async {
-        await Future.wait([getAllExpensesWithNotify(isStateNotify: false)]);
+        await Future.wait([
+          getAllExpensesWithNotify(isStateNotify: false),
+          getAllGroupMembersWithNotify(isStateNotify: false),
+        ]);
       });
-      await getAllExpensesWithNotify();
     } catch (e) {
       print(e.toString());
     }
@@ -96,10 +98,8 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   }) async {
     try {
       final result = await getAllExpenses();
-      print("ViewModel getAllExpenses done.");
 
       if (_disposed) {
-        print("diposed or requestId was changed.");
         /**
          * disposedされたあとにFutureが返ってくるとクラッシュ？
          * getAllExpensesWithNotifyが何度も呼ばれたときにおかしくなる可能性。
@@ -113,11 +113,12 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
         _allExpenses = result.data!;
       } else {
         print("ExpensesViewModel: ${result.error?.errorMessage}");
+        return result.toVoid();
       }
 
       return ResultInfo.success();
     } finally {
-      if (isStateNotify) {
+      if (!_disposed && isStateNotify) {
         notifyListeners();
       }
     }
@@ -152,7 +153,28 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
     }
   }
 
-  Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMemebers() async {
+  Future<ResultInfo<void>> getAllGroupMembersWithNotify({
+    bool isStateNotify = true,
+  }) async {
+    try {
+      final result = await getAllGroupMembers();
+      if (_disposed) {
+        return ResultInfo.success();
+      }
+      if (result.isSuccess) {
+        return ResultInfo.success();
+      } else {
+        print("ExpensesViewModel: ${result.error?.errorMessage}");
+        return result.toVoid();
+      }
+    } finally {
+      if (!_disposed && isStateNotify) {
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembers() async {
     return getAllGroupMembersForGroup(_travel);
   }
 
