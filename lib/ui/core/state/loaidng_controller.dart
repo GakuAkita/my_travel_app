@@ -9,6 +9,8 @@ mixin LoadableMixin on ChangeNotifier {
     final shouldNotifyStart = _loadingCount == 0;
     _loadingCount++;
 
+    /* notifyをなんどもやらないため。 */
+    /* 例えば、もうローディングしているのに、notifyしても無駄にrebuildするだけ。 */
     if (shouldNotifyStart) {
       notifyListeners();
     }

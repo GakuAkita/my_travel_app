@@ -77,6 +77,9 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
     }
 
     try {
+      runWithLoading(() async {
+        await Future.wait([getAllExpensesWithNotify(isStateNotify: false)]);
+      });
       await getAllExpensesWithNotify();
     } catch (e) {
       print(e.toString());
@@ -88,25 +91,15 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
    * 新しいリクエストを弾いてしまうと、選択した旅行と実際のExpensesが合っていないみたいな状況になりかねない。
    * したがって、requestIdを用いて最後のリクエストを正とする。
    */
-
-  int _requestId = 0;
-
   Future<ResultInfo<void>> getAllExpensesWithNotify({
     bool isStateNotify = true,
   }) async {
-    final currentId = ++_requestId;
-
-    if (isStateNotify) {
-      notifyListeners();
-    }
-
     try {
       final result = await getAllExpenses();
       print("ViewModel getAllExpenses done.");
 
-      if (_disposed || currentId != _requestId) {
+      if (_disposed) {
         print("diposed or requestId was changed.");
-        print("currentId=$currentId, _requestId=$_requestId");
         /**
          * disposedされたあとにFutureが返ってくるとクラッシュ？
          * getAllExpensesWithNotifyが何度も呼ばれたときにおかしくなる可能性。
@@ -135,9 +128,8 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpensesForTravel(
-    ShownTravelBasic? argTravel, {
-    bool inputInternal = true,
-  }) async {
+    ShownTravelBasic? argTravel,
+  ) async {
     if (argTravel == null) {
       return ResultInfo.success(data: {});
     }
@@ -153,17 +145,34 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
         argTravel.groupId!,
         argTravel.travelId!,
       );
+      _allExpenses = data;
       return ResultInfo.success(data: data);
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
 
+  Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMemebers() async {
+    return getAllGroupMembersForGroup(_travel);
+  }
+
   Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembersForGroup(
-    String groupId,
+    ShownTravelBasic? travel,
   ) async {
+    if (travel == null) {
+      return ResultInfo.success(data: {});
+    }
+
+    if (!checkIsShownTravelValid(travel).isSuccess) {
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "Invalid shown travel"),
+      );
+    }
+    final groupId = travel.groupId!;
+
     try {
       final data = await _groupMembersRepository.getAllGroupMembers(groupId);
+      _allGroupMembers = data;
       return ResultInfo.success(data: data);
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
