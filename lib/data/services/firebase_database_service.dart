@@ -21,7 +21,8 @@ class FirebaseDatabaseService<T> {
     await _database.ref(path).set(value);
   }
 
-  /// データをセット（上書き）
+  /// データをセット（上書き
+  /// ノードごと上書きするので注意!!）
   Future<void> set(T item) async {
     await _database.ref(path).set(toJson(item));
   }

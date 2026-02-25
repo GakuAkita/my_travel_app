@@ -61,6 +61,8 @@ class UserPath extends PathNode {
   UserPath(String userId) : super(FirebaseDatabasePaths.users.child(userId));
 
   static SettingsPath settings(path) => SettingsPath(path);
+
+  String get role => child("role");
 }
 
 /* last_loginとかは設定ではないから、将来的には移動したほうがいいかも */
@@ -70,6 +72,10 @@ class SettingsPath extends PathNode {
   String get shown_travel => child("shown_travel");
 
   String get joined_groups => child("joined_groups");
+
+  String get last_login_at => child("last_login_at");
+
+  String get profile_name => child("profile_name");
 }
 
 /// ===============================
