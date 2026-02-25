@@ -8,13 +8,9 @@ import '../../model/expense/expense_info.dart';
 
 class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
   final FirebaseDatabase _firebaseDatabase;
-  final String _userId;
 
-  ExpenseRepositoryRealtimeDb({
-    required FirebaseDatabase firebaseDatabase,
-    required String userId,
-  }) : _firebaseDatabase = firebaseDatabase,
-       _userId = userId {}
+  ExpenseRepositoryRealtimeDb({required FirebaseDatabase firebaseDatabase})
+    : _firebaseDatabase = firebaseDatabase;
 
   FirebaseDatabaseService<ExpenseInfo> _service(
     String groupId,

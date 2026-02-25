@@ -191,7 +191,6 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         print("ExpenseRepository was created");
         return ExpenseRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-          userId: userId,
         );
       },
       lazy: false,

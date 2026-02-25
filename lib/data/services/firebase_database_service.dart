@@ -16,6 +16,11 @@ class FirebaseDatabaseService<T> {
     required this.toJson,
   }) : _database = database;
 
+  //Mapじゃなくて単一の値を入れたいときだけ
+  Future<void> setValue<R>(R value) async {
+    await _database.ref(path).set(value);
+  }
+
   /// データをセット（上書き）
   Future<void> set(T item) async {
     await _database.ref(path).set(toJson(item));
@@ -24,6 +29,13 @@ class FirebaseDatabaseService<T> {
   /// データを更新（部分更新）
   Future<void> update(T item) async {
     await _database.ref(path).update(toJson(item));
+  }
+
+  // ノードの一個の値
+  Future<R?> getValue<R>() async {
+    final snapshot = await _database.ref(path).get();
+    if (!snapshot.exists) return null;
+    return snapshot.value as R;
   }
 
   /// データ取得 (単一ノード)

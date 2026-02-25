@@ -50,6 +50,8 @@ class FirebaseDatabasePaths {
   static const PathNode groupKeys = PathNode("group_keys");
 
   static GroupPath group(String groupId) => GroupPath(groups.child(groupId));
+
+  static UserPath user(String userId) => UserPath(users.child(userId));
 }
 
 /// ===============================
@@ -58,7 +60,16 @@ class FirebaseDatabasePaths {
 class UserPath extends PathNode {
   UserPath(String userId) : super(FirebaseDatabasePaths.users.child(userId));
 
-  // 必要ならここに user 配下のノード追加
+  static SettingsPath settings(path) => SettingsPath(path);
+}
+
+/* last_loginとかは設定ではないから、将来的には移動したほうがいいかも */
+class SettingsPath extends PathNode {
+  SettingsPath(String parentPath) : super("$parentPath/settings");
+
+  String get shown_travel => child("shown_travel");
+
+  String get joined_groups => child("joined_groups");
 }
 
 /// ===============================
