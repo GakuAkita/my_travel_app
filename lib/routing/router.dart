@@ -7,12 +7,11 @@ import 'package:my_travel_app/data/repositories/general_manager/general_manager_
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
-import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
-import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository_realtimedb.dart';
+import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
+import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository_realtimedb.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/state/session/user_session.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
@@ -161,40 +160,14 @@ GoRouter createRouter(AppSession session) {
 /* サインアウトで死ぬインスタンス */
 List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
   return [
-    Provider(
-      create: (innerContext) {
-        final appSession = innerContext.read<AppSession>();
-        return UserSession(appUser: appSession.currentUser!);
-      },
+    Provider<UserSettingsRepository>(
+      create:
+          (innerContext) =>
+              UserSettingsRepositoryRealtimeDb(database: innerContext.read()),
     ),
-    Provider<ShownTravelRepository>(
-      create: (innerContext) {
-        final appSession = innerContext.read<AppSession>();
-        final userId = appSession.currentUser?.uid;
-        if (userId == null) {
-          print("Warning!!! userId is null");
-          throw Exception("userId is null");
-        }
-        print("ShownTravelRepository was created");
-        return ShownTravelRepositoryRealtimeDb(
-          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-          userId: userId,
-        );
-      },
-      lazy: false,
-      dispose: (innerContext, repository) {
-        print("ShownTravelRepository was disposed");
-      },
-    ),
+
     Provider<ExpenseRepository>(
       create: (innerContext) {
-        final appSession = innerContext.read<AppSession>();
-        final userId = appSession.currentUser?.uid;
-        if (userId == null) {
-          print("Warning!!! userId is null");
-          throw Exception("userId is null");
-        }
-
         print("ExpenseRepository was created");
         return ExpenseRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
@@ -207,17 +180,9 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ),
     Provider<ItineraryRepository>(
       create: (innerContext) {
-        final appSession = innerContext.read<AppSession>();
-        final userId = appSession.currentUser?.uid;
-        if (userId == null) {
-          print("Warning!!! userId is null");
-          throw Exception("userId is null");
-        }
-
         print("ItineraryRepository was created");
         return ItineraryRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-          userId: userId,
         );
       },
       lazy: false,
@@ -288,10 +253,17 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ),
     ChangeNotifierProvider(
       create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        if (appSession.currentUser?.uid == null) {
+          throw Exception("userId is null");
+        }
         final session = ShownTravelSession();
         print("call initialize for ShownTravelSession");
         /* 最初はここでinitする必要がある */
-        session.initialize(innerContext.read<ShownTravelRepository>());
+        session.initialize(
+          appSession.currentUser!.uid,
+          innerContext.read<UserSettingsRepository>(),
+        );
         return session;
       },
       lazy: false,

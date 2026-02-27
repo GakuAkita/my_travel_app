@@ -5,13 +5,9 @@ import 'itinerary_repository.dart';
 
 class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
   final FirebaseDatabase _firebaseDatabase;
-  final String _userId;
 
-  ItineraryRepositoryRealtimeDb({
-    required FirebaseDatabase firebaseDatabase,
-    required String userId,
-  }) : _firebaseDatabase = firebaseDatabase,
-       _userId = userId;
+  ItineraryRepositoryRealtimeDb({required FirebaseDatabase firebaseDatabase})
+    : _firebaseDatabase = firebaseDatabase;
 
   @override
   Future<List<Map<String, dynamic>>> getItinerarySections(

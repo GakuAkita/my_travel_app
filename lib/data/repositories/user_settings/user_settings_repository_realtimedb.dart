@@ -7,13 +7,9 @@ import '../../model/travel/shown_travel_basic/shown_travel_basic.dart';
 
 class UserSettingsRepositoryRealtimeDb implements UserSettingsRepository {
   final FirebaseDatabase _database;
-  final String _userId;
 
-  UserSettingsRepositoryRealtimeDb({
-    required FirebaseDatabase database,
-    required String userId,
-  }) : _database = database,
-       _userId = userId;
+  UserSettingsRepositoryRealtimeDb({required FirebaseDatabase database})
+    : _database = database;
 
   FirebaseDatabaseService _serviceSingleValue(String path) {
     return FirebaseDatabaseService(
@@ -25,44 +21,44 @@ class UserSettingsRepositoryRealtimeDb implements UserSettingsRepository {
   }
 
   @override
-  Future<String?> getProfileName() async {
+  Future<String?> getProfileName(String uid) async {
     final service = _serviceSingleValue(
-      FirebaseDatabasePaths.user(_userId).settings.profile_name,
+      FirebaseDatabasePaths.user(uid).settings.profile_name,
     );
     final profileName = await service.getValue<String?>();
     return profileName;
   }
 
   @override
-  Future<void> setProfileName(String profileName) async {
+  Future<void> setProfileName(String uid, String profileName) async {
     final service = _serviceSingleValue(
-      FirebaseDatabasePaths.user(_userId).settings.profile_name,
+      FirebaseDatabasePaths.user(uid).settings.profile_name,
     );
     await service.setValue(profileName);
   }
 
   @override
-  Future<String?> getLastLogin() async {
+  Future<String?> getLastLogin(String uid) async {
     final service = _serviceSingleValue(
-      FirebaseDatabasePaths.user(_userId).settings.last_login_at,
+      FirebaseDatabasePaths.user(uid).settings.last_login_at,
     );
     final lastLogin = await service.getValue<String?>();
     return lastLogin;
   }
 
   @override
-  Future<void> setLastLogin(String lastLogin) async {
+  Future<void> setLastLogin(String uid, String lastLogin) async {
     final service = _serviceSingleValue(
-      FirebaseDatabasePaths.user(_userId).settings.last_login_at,
+      FirebaseDatabasePaths.user(uid).settings.last_login_at,
     );
     await service.setValue(lastLogin);
   }
 
   @override
-  Future<ShownTravelBasic?> getShownTravel() async {
+  Future<ShownTravelBasic?> getShownTravel(String uid) async {
     final service = FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.user(_userId).settings.shown_travel,
+      path: FirebaseDatabasePaths.user(uid).settings.shown_travel,
       fromJson: ShownTravelBasic.fromJson,
       toJson: (travel) => travel.toJson(),
     );
@@ -71,10 +67,10 @@ class UserSettingsRepositoryRealtimeDb implements UserSettingsRepository {
   }
 
   @override
-  Future<void> setShownTravel(ShownTravelBasic travel) async {
+  Future<void> setShownTravel(String uid, ShownTravelBasic travel) async {
     final service = FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.user(_userId).settings.shown_travel,
+      path: FirebaseDatabasePaths.user(uid).settings.shown_travel,
       fromJson: ShownTravelBasic.fromJson,
       toJson: (travel) => travel.toJson(),
     );

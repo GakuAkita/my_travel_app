@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
-import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
+import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 
 /**
  * General Manager、グループメンバー、
@@ -13,9 +13,9 @@ class ShownTravelSession extends ChangeNotifier {
     print("ShownTravelSession was created");
   }
 
-  void initialize(ShownTravelRepository repo) {
+  void initialize(String uid, UserSettingsRepository repo) {
     print("ShownTravelSession was initialized");
-    repo.getShownTravel().then((value) {
+    repo.getShownTravel(uid).then((value) {
       _shownTravel = value;
       notifyListeners();
     });
