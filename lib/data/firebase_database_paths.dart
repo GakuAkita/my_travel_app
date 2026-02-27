@@ -60,7 +60,7 @@ class FirebaseDatabasePaths {
 class UserPath extends PathNode {
   UserPath(String userId) : super(FirebaseDatabasePaths.users.child(userId));
 
-  static SettingsPath settings(path) => SettingsPath(path);
+  SettingsPath get settings => SettingsPath(path);
 
   String get role => child("role");
 }

@@ -5,15 +5,15 @@ import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_
  */
 
 abstract class UserSettingsRepository {
-  Future<String> getProfileName();
+  Future<String?> getProfileName();
 
-  Future<void> setProfileName();
+  Future<void> setProfileName(String profileName);
 
-  Future<ShownTravelBasic> getShownTravel();
+  Future<ShownTravelBasic?> getShownTravel();
 
   Future<void> setShownTravel(ShownTravelBasic travel);
 
-  Future<void> getLastLogin();
+  Future<String?> getLastLogin();
 
-  Future<void> setLastLogin();
+  Future<void> setLastLogin(String lastLogin);
 }
