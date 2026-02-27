@@ -2,14 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_repository.dart';
 
-enum TravelSessionStatus {
-  /// シーケンスっっぽくなっているので順番は変えない
-  idle,
-  loadingShownTravel,
-  ready,
-  error,
-}
-
 /**
  * General Manager、グループメンバー、
  * 参加者、など旅行に紐づく情報をすべて持っておく

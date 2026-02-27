@@ -12,14 +12,10 @@ List<SingleChildWidget> get providers {
   return [
     Provider<FirebaseDatabase>(create: (_) => FirebaseDatabase.instance),
     Provider<AuthRepository>(create: (_) => AuthRepositoryFirebase()),
-    ChangeNotifierProxyProvider(
+    ChangeNotifierProvider(
       create:
           (context) =>
               AppSession(authRepository: context.read<AuthRepository>()),
-      update: (context, auth, previous) {
-        /* AppSessionを作り直すのではなく、同じインスタンスを返す */
-        return previous!;
-      },
     ),
   ];
 }

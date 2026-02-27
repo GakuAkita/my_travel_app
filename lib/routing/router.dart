@@ -12,12 +12,13 @@ import 'package:my_travel_app/data/repositories/shown_travel/shown_travel_reposi
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
+import 'package:my_travel_app/state/session/user_session.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
-import 'package:my_travel_app/ui/main/itinerary/ItineraryScreen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
+import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
@@ -160,6 +161,12 @@ GoRouter createRouter(AppSession session) {
 /* サインアウトで死ぬインスタンス */
 List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
   return [
+    Provider(
+      create: (innerContext) {
+        final appSession = innerContext.read<AppSession>();
+        return UserSession(appUser: appSession.currentUser!);
+      },
+    ),
     Provider<ShownTravelRepository>(
       create: (innerContext) {
         final appSession = innerContext.read<AppSession>();
