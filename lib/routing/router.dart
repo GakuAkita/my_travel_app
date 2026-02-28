@@ -302,12 +302,12 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       update: (innerContext, session, previous) {
         if (session.initialized && !previous!.travelInitialized) {
           print(
-            "No matter which travelID is same as before, expensesViewModel must be updated",
+            "No matter which travelId is same as before, expensesViewModel must be updated",
           );
         } else {
           final travel = session.currentTravel;
           if (previous?.travel?.travelId == travel?.travelId) {
-            print("travel didn't change. don't generate ExpensesViewModel");
+            //print("travel didn't change. don't generate ExpensesViewModel");
             return previous!;
           }
         }

@@ -63,7 +63,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
        _groupMembersRepository = groupMembersRepository,
        _travelSession = travelSession {
     print(
-      "ExpenseViewModel was created code=${hashCode} groupId=${travel?.groupId} travelId=${travel?.travelId}",
+      "ExpenseViewModel was created code=${hashCode} groupId=${travel?.groupId} travelId=${travel?.travelId} travelInitialized=${travelSession.initialized}",
     );
 
     /**

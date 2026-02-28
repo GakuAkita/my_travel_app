@@ -20,6 +20,7 @@ class AppSession extends ChangeNotifier {
     _authStateSubscription = authRepository.authStateChanges.listen((user) {
       if (_currentUser != user) {
         _currentUser = user;
+        print("${currentUser?.uid}");
         notifyListeners();
       }
     });
