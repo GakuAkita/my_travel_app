@@ -105,22 +105,7 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.itinerary,
-                    builder: (context, state) {
-                      final travel =
-                          context.watch<ShownTravelSession>().currentTravel;
-                      final travelId = travel?.travelId;
-                      /* ValueKeyにtravelIdを渡して、travelIdが変わればViewModelとUIごと再生成。 */
-                      return ChangeNotifierProvider(
-                        key: ValueKey(travelId),
-                        create:
-                            (innerContext) => ItineraryViewModel(
-                              itineraryRepository: innerContext.read(),
-                              travel: travel,
-                            ),
-                        child: ItineraryScreen(),
-                        lazy: false,
-                      );
-                    },
+                    builder: (context, state) => ItineraryScreen(),
                   ),
                 ],
               ),
@@ -161,9 +146,11 @@ GoRouter createRouter(AppSession session) {
 List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
   return [
     Provider<UserSettingsRepository>(
-      create:
-          (innerContext) =>
-              UserSettingsRepositoryRealtimeDb(database: innerContext.read()),
+      create: (innerContext) {
+        print("UserSettingsRepository was created");
+        return UserSettingsRepositoryRealtimeDb(database: innerContext.read());
+      },
+      lazy: false,
     ),
 
     Provider<ExpenseRepository>(
@@ -286,39 +273,49 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create:
           (innerContext) => ItineraryViewModel(
             itineraryRepository: innerContext.read(),
-            travel: null,
+            travelSession: innerContext.read(),
           ),
       update: (innerContext, session, previous) {
         final travel = session.currentTravel;
-        if (previous?.travel?.travelId == travel?.travelId) {
+        if (previous?.travel?.travelId == travel?.travelId ||
+            session.initialized) {
           //print("travel didn't change. don't generate ItineraryViewModel");
           return previous!;
         }
 
         return ItineraryViewModel(
           itineraryRepository: innerContext.read(),
-          travel: travel,
+          travelSession: innerContext.read(),
         );
       },
       lazy: false,
     ),
     ChangeNotifierProxyProvider<ShownTravelSession, ExpensesViewModel>(
-      create:
-          (innerContext) => ExpensesViewModel(
-            expenseRepository: innerContext.read(),
-            groupMembersRepository: innerContext.read(),
-            travel: null,
-          ),
-      update: (innerContext, session, previous) {
-        final travel = session.currentTravel;
-        if (previous?.travel?.travelId == travel?.travelId) {
-          //print("travel didn't change. don't generate ExpensesViewModel");
-          return previous!;
-        }
+      create: (innerContext) {
+        print("ExpensesViewModel first created. Soon disposed.");
         return ExpensesViewModel(
           expenseRepository: innerContext.read(),
           groupMembersRepository: innerContext.read(),
-          travel: travel,
+          travelSession: innerContext.read(),
+        );
+      },
+      update: (innerContext, session, previous) {
+        if (session.initialized && !previous!.travelInitialized) {
+          print(
+            "No matter which travelID is same as before, expensesViewModel must be updated",
+          );
+        } else {
+          final travel = session.currentTravel;
+          if (previous?.travel?.travelId == travel?.travelId) {
+            print("travel didn't change. don't generate ExpensesViewModel");
+            return previous!;
+          }
+        }
+
+        return ExpensesViewModel(
+          expenseRepository: innerContext.read(),
+          groupMembersRepository: innerContext.read(),
+          travelSession: session,
         );
       },
       lazy: false,

@@ -9,16 +9,36 @@ import 'package:my_travel_app/data/repositories/user_settings/user_settings_repo
 class ShownTravelSession extends ChangeNotifier {
   ShownTravelBasic? _shownTravel;
 
+  bool _initialize = false;
+
+  bool get initialized => _initialize;
+
   ShownTravelSession() {
     print("ShownTravelSession was created");
   }
 
   void initialize(String uid, UserSettingsRepository repo) {
     print("ShownTravelSession was initialized");
-    repo.getShownTravel(uid).then((value) {
-      _shownTravel = value;
-      notifyListeners();
-    });
+    repo
+        .getShownTravel(uid)
+        .then((value) {
+          /**
+       *  仮に失敗してもいい。失敗してもnullが入るだけ。
+       *  またユーザーに作り直してもらえば良い。
+       *  */
+          print(
+            "ShownTravelSession was successfully initialized. value=${value?.groupId} ${value?.travelId}",
+          );
+          _initialize = true;
+          _shownTravel = value;
+          notifyListeners();
+        })
+        .catchError((error) {
+          print("ShownTravelSession was failed to initialize. $error");
+          _initialize = true;
+          _shownTravel = null;
+          notifyListeners();
+        });
   }
 
   /**

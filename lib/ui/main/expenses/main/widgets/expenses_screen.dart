@@ -26,7 +26,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ExpensesViewModel>();
     return LoadingOverlay(
-      isLoading: viewModel.isLoading,
+      isLoading: viewModel.isLoading && !viewModel.travelInitialized,
       child:
           viewModel.isLoading
               ? Center(child: Text("loading..."))

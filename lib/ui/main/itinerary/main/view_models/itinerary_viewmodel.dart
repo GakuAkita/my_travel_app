@@ -2,12 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
+import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
 import '../../../../../data/repositories/itinerary/itinerary_repository.dart';
 
 class ItineraryViewModel extends ChangeNotifier {
   final ItineraryRepository _itineraryRepository;
+  final ShownTravelSession _travelSession;
 
   List<ItinerarySection> _itinerarySections = [];
 
@@ -17,16 +19,16 @@ class ItineraryViewModel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  final ShownTravelBasic? travel;
+  ShownTravelBasic? get travel => _travelSession.currentTravel;
 
   /**
    * Travelが変わったときは
    */
   ItineraryViewModel({
     required ItineraryRepository itineraryRepository,
-    required ShownTravelBasic? travel,
+    required ShownTravelSession travelSession,
   }) : _itineraryRepository = itineraryRepository,
-       travel = travel {
+       _travelSession = travelSession {
     print("ItineraryViewModel was created. code=${hashCode}");
   }
 

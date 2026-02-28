@@ -4,6 +4,7 @@ import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
+import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/state/loaidng_controller.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
@@ -13,10 +14,11 @@ import '../../../../../data/model/expense/expense_info.dart';
 class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   final ExpenseRepository _expenseRepository;
   final GroupMembersRepository _groupMembersRepository;
+  final ShownTravelSession _travelSession;
 
-  ShownTravelBasic? _travel;
+  ShownTravelBasic? get travel => _travelSession.currentTravel;
 
-  ShownTravelBasic? get travel => _travel;
+  bool get travelInitialized => _travelSession.initialized;
 
   Map<String, ExpenseInfo>? _allExpenses;
 
@@ -56,12 +58,12 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   ExpensesViewModel({
     required ExpenseRepository expenseRepository,
     required GroupMembersRepository groupMembersRepository,
-    required ShownTravelBasic? travel,
+    required ShownTravelSession travelSession,
   }) : _expenseRepository = expenseRepository,
        _groupMembersRepository = groupMembersRepository,
-       _travel = travel {
+       _travelSession = travelSession {
     print(
-      "ExpenseViewModel was created code=${hashCode} groupId=${_travel?.groupId} travelId=${_travel?.travelId}",
+      "ExpenseViewModel was created code=${hashCode} groupId=${travel?.groupId} travelId=${travel?.travelId}",
     );
 
     /**
@@ -125,7 +127,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpenses() async {
-    return getAllExpensesForTravel(_travel);
+    return getAllExpensesForTravel(travel);
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpensesForTravel(
@@ -175,7 +177,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   }
 
   Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembers() async {
-    return getAllGroupMembersForGroup(_travel);
+    return getAllGroupMembersForGroup(travel);
   }
 
   Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembersForGroup(
