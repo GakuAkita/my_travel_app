@@ -133,6 +133,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
           getAllExpensesWithNotify(isStateNotify: false),
           getAllGroupMembersWithNotify(isStateNotify: false),
         ]);
+        print("sync ended.${_allGroupMembers}");
       });
     } catch (e) {
       print(e.toString());
@@ -215,10 +216,11 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
       }
       if (result.isSuccess) {
         /* エラーハンドルしていないけど、いいか、 */
-        Future.wait([
-          for (final uid in result.data!.keys)
-            if (isGetProfileName) getPutMembersProfileNames(uid),
-        ]);
+        if (isGetProfileName) {
+          Future.wait([
+            for (final uid in result.data!.keys) getPutMembersProfileNames(uid),
+          ]);
+        }
 
         return ResultInfo.success();
       } else {

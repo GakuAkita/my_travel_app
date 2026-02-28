@@ -28,7 +28,7 @@ class ExpenseTile extends StatelessWidget {
         UidColorHelper.getUidColorIndexMap(members);
 
     return uids.map((uid) {
-      String head = ""; //TravelerBasic.getProfileNameFromUid(uid, members);
+      String head = getProfileNameFromUid(uid);
       if (head.length >= 2) {
         head = head.substring(0, 2);
       }

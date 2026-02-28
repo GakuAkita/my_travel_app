@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../../../../components/BasicText.dart';
 import '../../../../../components/Expenses/ExpenseTile.dart';
 import '../../../../../components/RoundedButton.dart';
-import '../../estimated/EstimatedExpenseScreen.dart';
 import '../../result/ExpensesResultScreen.dart';
 
 class ExpensesScreen extends StatefulWidget {
@@ -65,11 +64,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                             RoundedButton(
                               title: "費用概算",
                               onPressed: () {
-                                print("init?=${viewModel.travelInitialized}");
-                                Navigator.pushNamed(
-                                  context,
-                                  EstimatedExpenseScreen.id,
-                                );
+                                for (final i
+                                    in viewModel.allGroupMembers.entries) {
+                                  print("${i.value.profile_name}");
+                                }
+                                // Navigator.pushNamed(
+                                //   context,
+                                //   EstimatedExpenseScreen.id,
+                                // );
                               },
                             ),
                           ],

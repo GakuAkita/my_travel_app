@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 
 /// UIDに基づいて色を割り当てるためのユーティリティクラス
 /// 同じUIDには常に同じ色が割り当てられるようにする
@@ -29,7 +30,7 @@ class UidColorHelper {
   /// members全体をソートして、各UIDのインデックス（順序）を取得
   /// 同じUIDには常に同じ順序が割り当てられる
   static Map<String, int> getUidColorIndexMap(
-    Map<String, dynamic> participants,
+    Map<String, TravelerBasic> participants,
   ) {
     // members全体のUIDをハッシュ値でソート
     final List<String> sortedUids = participants.keys.toList();
