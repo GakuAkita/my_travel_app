@@ -26,11 +26,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ExpensesViewModel>();
     return LoadingOverlay(
-      isLoading: viewModel.isLoading && !viewModel.travelInitialized,
+      isLoading: viewModel.isLoading,
       child:
           viewModel.isLoading
               ? Center(child: Text("loading..."))
-              : viewModel.travel != null
+              : viewModel.currentTravel != null
               ? RefreshIndicator(
                 onRefresh: () async {
                   print("^^^^^ExpensesScreen: onRefresh called^^^^^^^");
@@ -42,7 +42,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 child: Column(
                   children: [
                     Text(
-                      "groupId=${viewModel.travel?.groupId} travelId=${viewModel.travel?.travelId} hash=${viewModel.hashCode}",
+                      "groupId=${viewModel.currentTravel?.groupId} travelId=${viewModel.currentTravel?.travelId} hash=${viewModel.hashCode}",
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),

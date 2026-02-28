@@ -16,9 +16,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   final GroupMembersRepository _groupMembersRepository;
   final ShownTravelSession _travelSession;
 
-  ShownTravelBasic? get travel => _travelSession.currentTravel;
-
-  bool get travelInitialized => _travelSession.initialized;
+  ShownTravelBasic? currentTravel;
 
   Map<String, ExpenseInfo>? _allExpenses;
 
@@ -62,19 +60,33 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   }) : _expenseRepository = expenseRepository,
        _groupMembersRepository = groupMembersRepository,
        _travelSession = travelSession {
-    print(
-      "ExpenseViewModel was created code=${hashCode} groupId=${travel?.groupId} travelId=${travel?.travelId} travelInitialized=${travelSession.initialized}",
-    );
+    /**
+     * UI側でviewModel.travelSession.currentTravelと書いてしまうと、
+     * UIがTravelSessionに直接依存することになる。それはよくない。
+     * コピーして、addListenersでsyncする。
+     *  */
+    currentTravel = travelSession.currentTravel;
 
+    print(
+      "ExpenseViewModel was created code=${hashCode} groupId=${currentTravel?.groupId} travelId=${currentTravel?.travelId} travelInitialized=${travelSession.initialized}",
+    );
     /**
      * Expensesをロードする
      */
-    initialize();
+    travelSession.addListener(_sync);
+  }
+
+  void _sync() {
+    final newTravel = _travelSession.currentTravel;
+    if (newTravel != currentTravel) {
+      currentTravel = newTravel;
+      notifyListeners();
+    }
   }
 
   /* 最初はロードする必要がある */
   void initialize() async {
-    if (travel == null) {
+    if (currentTravel == null) {
       return;
     }
 
@@ -127,7 +139,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpenses() async {
-    return getAllExpensesForTravel(travel);
+    return getAllExpensesForTravel(currentTravel);
   }
 
   Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpensesForTravel(
@@ -177,7 +189,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   }
 
   Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembers() async {
-    return getAllGroupMembersForGroup(travel);
+    return getAllGroupMembersForGroup(currentTravel);
   }
 
   Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembersForGroup(
@@ -206,6 +218,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   @override
   void dispose() {
     _disposed = true;
+    _travelSession.removeListener(_sync);
     print("ExpenseViewModel was disposed. code=${hashCode}");
     // TODO: implement dispose
     super.dispose();

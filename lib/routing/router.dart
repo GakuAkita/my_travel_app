@@ -290,47 +290,13 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
       lazy: false,
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession, ExpensesViewModel>(
-      create: (innerContext) {
-        print("ExpensesViewModel first created. Soon disposed.");
-        return ExpensesViewModel(
-          expenseRepository: innerContext.read(),
-          groupMembersRepository: innerContext.read(),
-          travelSession: innerContext.read(),
-        );
-      },
-      update: (innerContext, session, previous) {
-        print(
-          "Only test :session=>${session.initialized} previous session=>${previous?.travelInitialized}",
-        );
-        return previous!;
-        // if (previous?.travelInitialized == null) {
-        //   print("What happened???");
-        // }
-        // if (session.initialized && !previous!.travelInitialized) {
-        //   print(
-        //     "No matter which travelId is same as before, expensesViewModel must be updated",
-        //   );
-        // } else {
-        //   print("Is this?");
-        //   final travel = session.currentTravel;
-        //   if (previous?.travel?.travelId == travel?.travelId) {
-        //     print("travel didn't change. don't generate ExpensesViewModel");
-        //     return previous!;
-        //   }
-        // }
-
-        // final travel = session.currentTravel;
-        // if (previous?.travel?.travelId == travel?.travelId) {
-        //   print("travel didn't change. don't generate ExpensesViewModel");
-        //   return previous!;
-        // }
-        // return ExpensesViewModel(
-        //   expenseRepository: innerContext.read(),
-        //   groupMembersRepository: innerContext.read(),
-        //   travelSession: session,
-        // );
-      },
+    ChangeNotifierProvider(
+      create:
+          (innerContext) => ExpensesViewModel(
+            expenseRepository: innerContext.read(),
+            groupMembersRepository: innerContext.read(),
+            travelSession: innerContext.read(),
+          ),
       lazy: false,
     ),
   ];
