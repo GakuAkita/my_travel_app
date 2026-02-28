@@ -30,7 +30,12 @@ class ShownTravelSession extends ChangeNotifier {
             "ShownTravelSession was successfully initialized. value=${value?.groupId} ${value?.travelId}",
           );
           _initialize = true;
-          _shownTravel = value;
+
+          //_shownTravel = value;
+          _shownTravel = ShownTravelBasic(
+            groupId: "groupId",
+            travelId: "travelId",
+          );
           notifyListeners();
         })
         .catchError((error) {

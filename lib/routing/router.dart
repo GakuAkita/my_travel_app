@@ -300,23 +300,36 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         );
       },
       update: (innerContext, session, previous) {
-        if (session.initialized && !previous!.travelInitialized) {
-          print(
-            "No matter which travelId is same as before, expensesViewModel must be updated",
-          );
-        } else {
-          final travel = session.currentTravel;
-          if (previous?.travel?.travelId == travel?.travelId) {
-            //print("travel didn't change. don't generate ExpensesViewModel");
-            return previous!;
-          }
-        }
-
-        return ExpensesViewModel(
-          expenseRepository: innerContext.read(),
-          groupMembersRepository: innerContext.read(),
-          travelSession: session,
+        print(
+          "Only test :session=>${session.initialized} previous session=>${previous?.travelInitialized}",
         );
+        return previous!;
+        // if (previous?.travelInitialized == null) {
+        //   print("What happened???");
+        // }
+        // if (session.initialized && !previous!.travelInitialized) {
+        //   print(
+        //     "No matter which travelId is same as before, expensesViewModel must be updated",
+        //   );
+        // } else {
+        //   print("Is this?");
+        //   final travel = session.currentTravel;
+        //   if (previous?.travel?.travelId == travel?.travelId) {
+        //     print("travel didn't change. don't generate ExpensesViewModel");
+        //     return previous!;
+        //   }
+        // }
+
+        // final travel = session.currentTravel;
+        // if (previous?.travel?.travelId == travel?.travelId) {
+        //   print("travel didn't change. don't generate ExpensesViewModel");
+        //   return previous!;
+        // }
+        // return ExpensesViewModel(
+        //   expenseRepository: innerContext.read(),
+        //   groupMembersRepository: innerContext.read(),
+        //   travelSession: session,
+        // );
       },
       lazy: false,
     ),
