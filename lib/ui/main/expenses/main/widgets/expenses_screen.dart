@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +30,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       isLoading: viewModel.isLoading || !viewModel.travelInitialized,
       child: Scaffold(
         floatingActionButton:
-            viewModel.isLoading ? null : FloatingActionButton(onPressed: () {}),
+            viewModel.isLoading
+                ? null
+                : FloatingActionButton(
+                  onPressed: () {
+                    context.push(Routes.expenses_add_edit);
+                  },
+                ),
         body:
             viewModel.isLoading
                 ? Center(child: Text("loading..."))
@@ -40,6 +48,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                       isStateNotify: false,
                     );
                     /* 失敗したらSnackBarを出す */
+                    if (result.isFailed) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("${result.error?.errorMessage}"),
+                        ),
+                      );
+                    }
+                    viewModel.getAllGroupMembersWithNotify(
+                      isStateNotify: false,
+                      isGetProfileName: true,
+                    );
                   },
                   child: Column(
                     children: [

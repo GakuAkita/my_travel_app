@@ -6,6 +6,8 @@ abstract final class Routes {
   static const expenses = "/expenses";
   static const settings = "/settings";
 
+  static const expenses_add_edit = "/expenses_add_edit";
+
   //認証不要なルートのリスト
   static const publicRoutes = [start, signIn, signUp];
 }

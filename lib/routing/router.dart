@@ -16,6 +16,7 @@ import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmod
 import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart';
 import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expenses_screen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
@@ -136,6 +137,10 @@ GoRouter createRouter(AppSession session) {
               ),
             ],
           ),
+          GoRoute(
+            path: Routes.expenses_add_edit,
+            builder: (context, state) => AddEditExpenseScreen(),
+          ),
         ],
       ),
     ],
@@ -150,6 +155,9 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         print("UserSettingsRepository was created");
         return UserSettingsRepositoryRealtimeDb(database: innerContext.read());
       },
+      dispose: (innerContext, repository) {
+        print("UserSettingsRepository was disposed");
+      },
       lazy: false,
     ),
 
@@ -162,19 +170,19 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
       lazy: false,
       dispose: (innerContext, repository) {
-        print("ExpenseRepository was disposed");
+        //print("ExpenseRepository was disposed");
       },
     ),
     Provider<ItineraryRepository>(
       create: (innerContext) {
-        print("ItineraryRepository was created");
+        //print("ItineraryRepository was created");
         return ItineraryRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
         );
       },
       lazy: false,
       dispose: (innerContext, repo) {
-        print("ItineraryRepository was disposed");
+        // print("ItineraryRepository was disposed");
       },
     ),
     Provider<GeneralManagerRepository>(
@@ -186,7 +194,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           throw Exception("userId is null");
         }
 
-        print("GeneralManagerRepository was created");
+        // print("GeneralManagerRepository was created");
         return GeneralManagerRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
           userId: userId,
@@ -194,7 +202,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
       lazy: false,
       dispose: (innerContext, repo) {
-        print("GeneralManagerRepository was disposed");
+        // print("GeneralManagerRepository was disposed");
       },
     ),
     Provider<ParticipantsRepository>(
@@ -206,7 +214,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           throw Exception("userId is null");
         }
 
-        print("ParticipantsRepository was created");
+        // print("ParticipantsRepository was created");
         return ParticipantsRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
           userId: userId,
@@ -214,7 +222,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
       lazy: false,
       dispose: (innerContext, repo) {
-        print("ParticipantsRepository was disposed");
+        // print("ParticipantsRepository was disposed");
       },
     ),
     Provider<GroupMembersRepository>(
@@ -227,14 +235,14 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           throw Exception("userId is null");
         }
 
-        print("GroupMembersRepository was created");
+        // print("GroupMembersRepository was created");
         return GroupMembersRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
         );
       },
       lazy: false,
       dispose: (innerContext, repo) {
-        print("GroupMembersRepository was disposed");
+        // print("GroupMembersRepository was disposed");
       },
     ),
     ChangeNotifierProvider(
@@ -244,7 +252,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           throw Exception("userId is null");
         }
         final session = ShownTravelSession();
-        print("call initialize for ShownTravelSession");
+        // print("call initialize for ShownTravelSession");
         /* 最初はここでinitする必要がある */
         session.initialize(
           appSession.currentUser!.uid,
@@ -254,39 +262,21 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
       lazy: false,
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeViewModel>(
+    ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeStore>(
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
-          (_) => TravelScopeViewModel(travel: null),
+          (innerContext) => TravelScopeStore(
+            session: innerContext.read<ShownTravelSession>(),
+          ),
       update: (innerContext, session, previous) {
-        /* 旅行が切り替わったらTravelScopeViewModelが再生成される */
-        final travel = session.currentTravel;
-        if (previous?.travel?.travelId == travel?.travelId) {
-          //print("travel didn't change. Don't generate TravelScopeViewModel");
-          return previous!;
-        }
-        previous?.dispose();
-        return TravelScopeViewModel(travel: travel);
+        return TravelScopeStore(session: session);
       },
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession, ItineraryViewModel>(
+    ChangeNotifierProvider(
       create:
           (innerContext) => ItineraryViewModel(
             itineraryRepository: innerContext.read(),
             travelSession: innerContext.read(),
           ),
-      update: (innerContext, session, previous) {
-        final travel = session.currentTravel;
-        if (previous?.travel?.travelId == travel?.travelId ||
-            session.initialized) {
-          //print("travel didn't change. don't generate ItineraryViewModel");
-          return previous!;
-        }
-
-        return ItineraryViewModel(
-          itineraryRepository: innerContext.read(),
-          travelSession: innerContext.read(),
-        );
-      },
       lazy: false,
     ),
     ChangeNotifierProvider(

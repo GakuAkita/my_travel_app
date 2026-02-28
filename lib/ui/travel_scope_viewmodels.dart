@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/Loadable.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
+import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
 import '../data/model/traveler/traveler_basic.dart';
 
-/**
- * 更新がほとんどされないもの。
- * 旅行ごとに決まっているもの。
- */
-class TravelScopeViewModel extends ChangeNotifier {
-  TravelScopeViewModel({required ShownTravelBasic? travel}) : travel = travel {
-    print("TravelScopeViewModel was created");
+/// 画面に関わらず、旅行ごとに持っているもの。
+class TravelScopeStore extends ChangeNotifier {
+  final ShownTravelSession _session;
+
+  TravelScopeStore({required ShownTravelSession session}) : _session = session {
+    print("TravelScopeViewModel was created. hashCode=${hashCode}");
   }
 
   /**
@@ -47,5 +47,12 @@ class TravelScopeViewModel extends ChangeNotifier {
     _participants.value = participants;
     _participants.isLoaded = true;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    print("TravelScopeStore was disposed: hashcode=${hashCode}");
+    // TODO: implement dispose
+    super.dispose();
   }
 }

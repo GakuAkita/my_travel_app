@@ -209,6 +209,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
     bool isStateNotify = true,
     bool isGetProfileName = true,
   }) async {
+    print("getAllGroupMembersWithNotify called");
     try {
       final result = await getAllGroupMembers();
       if (_disposed) {
