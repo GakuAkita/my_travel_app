@@ -40,9 +40,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 },
                 child: Column(
                   children: [
-                    Text(
-                      "groupId=${viewModel.currentTravel?.groupId} travelId=${viewModel.currentTravel?.travelId} hash=${viewModel.hashCode}",
-                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
