@@ -58,7 +58,7 @@ class FirebaseDatabasePaths {
 /// Users
 /// ===============================
 class UserPath extends PathNode {
-  UserPath(String userId) : super(FirebaseDatabasePaths.users.child(userId));
+  UserPath(String userId) : super(userId);
 
   SettingsPath get settings => SettingsPath(path);
 

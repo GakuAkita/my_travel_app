@@ -16,7 +16,13 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   final GroupMembersRepository _groupMembersRepository;
   final ShownTravelSession _travelSession;
 
-  ShownTravelBasic? currentTravel;
+  ShownTravelBasic? _currentTravel;
+
+  ShownTravelBasic? get currentTravel => _currentTravel;
+
+  bool _travelSessionInitialized = false;
+
+  bool get travelInitialized => _travelSessionInitialized;
 
   Map<String, ExpenseInfo>? _allExpenses;
 
@@ -65,28 +71,28 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
      * UIがTravelSessionに直接依存することになる。それはよくない。
      * コピーして、addListenersでsyncする。
      *  */
-    currentTravel = travelSession.currentTravel;
-
+    _currentTravel = travelSession.currentTravel;
+    _travelSessionInitialized = travelSession.initialized;
     print(
       "ExpenseViewModel was created code=${hashCode} groupId=${currentTravel?.groupId} travelId=${currentTravel?.travelId} travelInitialized=${travelSession.initialized}",
     );
-    /**
-     * Expensesをロードする
-     */
+
     travelSession.addListener(_sync);
   }
 
   void _sync() {
+    /// travelが切り替わるのはそこまで頻繁ではないので、
+    /// 現在持っているtravelと同じであっても、更新してしまって良い。
     final newTravel = _travelSession.currentTravel;
-    if (newTravel != currentTravel) {
-      currentTravel = newTravel;
-      notifyListeners();
-    }
+    final initialized = _travelSession.initialized;
+    _currentTravel = newTravel;
+    _travelSessionInitialized = initialized;
+    notifyListeners();
   }
 
   /* 最初はロードする必要がある */
   void initialize() async {
-    if (currentTravel == null) {
+    if (_currentTravel == null) {
       return;
     }
 

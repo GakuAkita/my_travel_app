@@ -62,6 +62,7 @@ class UserSettingsRepositoryRealtimeDb implements UserSettingsRepository {
       fromJson: ShownTravelBasic.fromJson,
       toJson: (travel) => travel.toJson(),
     );
+    print("${service.path}");
     final travel = await service.get();
     return travel;
   }

@@ -65,6 +65,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                             RoundedButton(
                               title: "費用概算",
                               onPressed: () {
+                                print("init?=${viewModel.travelInitialized}");
                                 Navigator.pushNamed(
                                   context,
                                   EstimatedExpenseScreen.id,
