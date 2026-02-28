@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
+import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
+import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/state/loaidng_controller.dart';
 
@@ -14,6 +16,7 @@ import '../../../../../data/model/expense/expense_info.dart';
 class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   final ExpenseRepository _expenseRepository;
   final GroupMembersRepository _groupMembersRepository;
+  final UserSettingsRepository _userSettingsRepository;
   final ShownTravelSession _travelSession;
 
   ShownTravelBasic? _currentTravel;
@@ -56,15 +59,22 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
 
   bool _disposed = false;
 
+  void clearData() {
+    _allExpenses = null;
+    _allGroupMembers = {};
+  }
+
   /**
    * 旅行がスイッチされるたびにViewModelが再生成される。
    */
   ExpensesViewModel({
     required ExpenseRepository expenseRepository,
     required GroupMembersRepository groupMembersRepository,
+    required UserSettingsRepository userSettingsRepository,
     required ShownTravelSession travelSession,
   }) : _expenseRepository = expenseRepository,
        _groupMembersRepository = groupMembersRepository,
+       _userSettingsRepository = userSettingsRepository,
        _travelSession = travelSession {
     /**
      * UI側でviewModel.travelSession.currentTravelと書いてしまうと、
@@ -87,6 +97,27 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
     final initialized = _travelSession.initialized;
     _currentTravel = newTravel;
     _travelSessionInitialized = initialized;
+
+    try {
+      if (!_travelSessionInitialized) {
+        return;
+      }
+
+      if (_currentTravel == null) {
+        clearData();
+        return;
+      }
+      runWithLoading(() async {
+        ///ExpensesとMembersは同じタイミングで走り出して良い。
+        ///ただ、Membersが終わった後、すぐ各メンバーのプロフィール名を取りに行く。
+        await Future.wait([
+          getAllExpensesWithNotify(isStateNotify: false),
+          getAllGroupMembersWithNotify(isStateNotify: false),
+        ]);
+      });
+    } catch (e) {
+      print(e.toString());
+    }
     notifyListeners();
   }
 
@@ -175,6 +206,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
 
   Future<ResultInfo<void>> getAllGroupMembersWithNotify({
     bool isStateNotify = true,
+    bool isGetProfileName = true,
   }) async {
     try {
       final result = await getAllGroupMembers();
@@ -182,6 +214,12 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
         return ResultInfo.success();
       }
       if (result.isSuccess) {
+        /* エラーハンドルしていないけど、いいか、 */
+        Future.wait([
+          for (final uid in result.data!.keys)
+            if (isGetProfileName) getPutMembersProfileNames(uid),
+        ]);
+
         return ResultInfo.success();
       } else {
         print("ExpensesViewModel: ${result.error?.errorMessage}");
@@ -214,8 +252,34 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
 
     try {
       final data = await _groupMembersRepository.getAllGroupMembers(groupId);
-      _allGroupMembers = data;
-      return ResultInfo.success(data: data);
+      _allGroupMembers = data.toTravelerBasicMap();
+      return ResultInfo.success(data: data.toTravelerBasicMap());
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  /* 引数にMap<String,TravelerBasic>をもったほうがいい気がするが、、今は必要ないからこれでいいや。 */
+  Future<ResultInfo> getPutMembersProfileNames(String uid) async {
+    if (_allGroupMembers.isEmpty) {
+      return ResultInfo.success();
+    }
+    try {
+      final profileName = await _userSettingsRepository.getProfileName(uid);
+      if (_disposed) {
+        return ResultInfo.success();
+      }
+      if (_allGroupMembers[uid] != null) {
+        _allGroupMembers[uid] = _allGroupMembers[uid]!.copyWith(
+          profile_name: profileName,
+        );
+      } else {
+        throw AppException(
+          "uid:${uid} doesn't exist in group members. This is probably coding error.",
+        );
+      }
+
+      return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }

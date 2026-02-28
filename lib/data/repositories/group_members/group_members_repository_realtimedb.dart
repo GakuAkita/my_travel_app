@@ -1,23 +1,31 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:my_travel_app/data/firebase_database_paths.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
+import 'package:my_travel_app/data/services/firebase_database_service.dart';
 
 import '../../../core/exceptions/app_exception.dart';
-import '../../model/traveler/traveler_basic.dart';
 
 class GroupMembersRepositoryRealtimeDb implements GroupMembersRepository {
   final FirebaseDatabase _firebaseDatabase;
-  final String _userId;
 
-  GroupMembersRepositoryRealtimeDb({
-    required FirebaseDatabase firebaseDatabase,
-    required String userId,
-  }) : _firebaseDatabase = firebaseDatabase,
-       _userId = userId;
+  GroupMembersRepositoryRealtimeDb({required FirebaseDatabase firebaseDatabase})
+    : _firebaseDatabase = firebaseDatabase;
+
+  FirebaseDatabaseService<TravelerCore> _service(String groupId) {
+    return FirebaseDatabaseService(
+      database: _firebaseDatabase,
+      path: FirebaseDatabasePaths.group(groupId).members,
+      fromJson: TravelerCore.fromJson,
+      toJson: (value) => value.toJson(),
+    );
+  }
 
   @override
-  Future<Map<String, TravelerBasic>> getAllGroupMembers(String groupId) async {
-    // TODO: implement getAllGroupMembers
-    throw AppException("Not implemented getAllGroupMembers");
+  Future<Map<String, TravelerCore>> getAllGroupMembers(String groupId) async {
+    final service = _service(groupId);
+    final members = await service.getAll();
+    return members;
   }
 
   @override

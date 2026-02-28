@@ -230,7 +230,6 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         print("GroupMembersRepository was created");
         return GroupMembersRepositoryRealtimeDb(
           firebaseDatabase: innerContext.read<FirebaseDatabase>(),
-          userId: userId,
         );
       },
       lazy: false,
@@ -295,6 +294,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           (innerContext) => ExpensesViewModel(
             expenseRepository: innerContext.read(),
             groupMembersRepository: innerContext.read(),
+            userSettingsRepository: innerContext.read(),
             travelSession: innerContext.read(),
           ),
       lazy: false,
