@@ -1,28 +1,63 @@
 import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
+import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
 
 class GetUserTravelsUseCase {
   final GroupKeysRepository _groupKeysRepository;
   final JoinedGroupsRepository _joinedGroupsRepository;
+  final TravelRepository _travelRepository;
 
   GetUserTravelsUseCase({
     required GroupKeysRepository groupKeysRepository,
     required JoinedGroupsRepository joinedGroupsRepository,
+    required TravelRepository travelRepository,
   }) : _groupKeysRepository = groupKeysRepository,
-       _joinedGroupsRepository = joinedGroupsRepository;
+       _joinedGroupsRepository = joinedGroupsRepository,
+       _travelRepository = travelRepository;
 
-  /// グループIDがキーで、キーの値が旅行IDのリスト
+  /// グループIDがキーで、キーは旅行
   Future<Map<String, List<String>>> getUserTravels(String uid) async {
     final joinedGroupsIds = await _joinedGroupsRepository.getJoinedGroupIds(
       uid,
     );
-    Map<String, List<String>> travelsMap = {};
-    Future.wait(
+
+    final entries = await Future.wait(
       joinedGroupsIds.map((groupId) async {
         final travelIds = await _groupKeysRepository.getGroupTravelIds(groupId);
-        travelsMap[groupId] = travelIds;
+        return MapEntry(groupId, travelIds);
       }),
     );
-    return travelsMap;
+
+    return Map.fromEntries(entries);
+  }
+
+  /// 旅行名も取りたいときはこっち
+  /// シンプルにgetUserTravelsを実行後にそれぞれ名前を取りに行ってもいいが、
+  /// 名前も並列で取ったほうが早い
+  Future<Map<String, Map<String, String>>> getUserTravelsWithNames(
+    String uid,
+  ) async {
+    final joinedGroupIds = await _joinedGroupsRepository.getJoinedGroupIds(uid);
+
+    final groupEntries = await Future.wait(
+      joinedGroupIds.map((groupId) async {
+        final travelIds = await _groupKeysRepository.getGroupTravelIds(groupId);
+
+        final travelEntries = await Future.wait(
+          travelIds.map((travelId) async {
+            final travelName = await _travelRepository.getTravelName(
+              groupId: groupId,
+              travelId: travelId,
+            );
+
+            return MapEntry(travelId, travelName);
+          }),
+        );
+
+        return MapEntry(groupId, Map.fromEntries(travelEntries));
+      }),
+    );
+
+    return Map.fromEntries(groupEntries);
   }
 }

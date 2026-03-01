@@ -10,6 +10,8 @@ import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.d
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
+import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
+import 'package:my_travel_app/data/repositories/travel/travel_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository_realtimedb.dart';
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
@@ -153,7 +155,7 @@ GoRouter createRouter(AppSession session) {
                 (context, state) => ChangeNotifierProvider(
                   create:
                       (innerContext) => TravelSelectViewModel(
-                        //userSettingsRepository: innerContext.read(),
+                        appSession: innerContext.read(),
                         getUserTravelsUseCase: innerContext.read(),
                       ),
                   child: TravelSelectScreen(),
@@ -273,11 +275,19 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           (innerContext) =>
               GroupKeysRepositoryRealtimeDb(database: innerContext.read()),
     ),
+    Provider<TravelRepository>(
+      create:
+          (innerContext) =>
+              TravelRepositoryRealtimeDb(database: innerContext.read()),
+    ),
+
+    /// UserCases
     Provider<GetUserTravelsUseCase>(
       create:
           (innerContext) => GetUserTravelsUseCase(
             groupKeysRepository: innerContext.read(),
             joinedGroupsRepository: innerContext.read(),
+            travelRepository: innerContext.read(),
           ),
     ),
     ChangeNotifierProvider(
