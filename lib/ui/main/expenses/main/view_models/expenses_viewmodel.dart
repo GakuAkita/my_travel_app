@@ -148,6 +148,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   Future<ResultInfo<void>> getAllExpensesWithNotify({
     bool isStateNotify = true,
   }) async {
+    print("getAllExpensesWithNotify called");
     try {
       final result = await getAllExpenses();
 

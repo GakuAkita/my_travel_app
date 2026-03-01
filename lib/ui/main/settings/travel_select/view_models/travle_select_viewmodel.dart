@@ -71,6 +71,8 @@ class TravelSelectViewModel extends ChangeNotifier {
 
     final newTravel = ShownTravelBasic(groupId: groupId, travelId: travelId);
     _travelSession.setShownTravel(newTravel);
+
+    /* ShownTravelを設定する */
     return ResultInfo.success();
   }
 }
