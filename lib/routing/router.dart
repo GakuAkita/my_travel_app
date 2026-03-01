@@ -3,11 +3,16 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
+import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository.dart';
+import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
+import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
+import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository_realtimedb.dart';
+import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
@@ -148,7 +153,8 @@ GoRouter createRouter(AppSession session) {
                 (context, state) => ChangeNotifierProvider(
                   create:
                       (innerContext) => TravelSelectViewModel(
-                        userSettingsRepository: innerContext.read(),
+                        //userSettingsRepository: innerContext.read(),
+                        getUserTravelsUseCase: innerContext.read(),
                       ),
                   child: TravelSelectScreen(),
                 ),
@@ -256,6 +262,23 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       dispose: (innerContext, repo) {
         // print("GroupMembersRepository was disposed");
       },
+    ),
+    Provider<JoinedGroupsRepository>(
+      create:
+          (innerContext) =>
+              JoinedGroupsRepositoryRealtimeDb(database: innerContext.read()),
+    ),
+    Provider<GroupKeysRepository>(
+      create:
+          (innerContext) =>
+              GroupKeysRepositoryRealtimeDb(database: innerContext.read()),
+    ),
+    Provider<GetUserTravelsUseCase>(
+      create:
+          (innerContext) => GetUserTravelsUseCase(
+            groupKeysRepository: innerContext.read(),
+            joinedGroupsRepository: innerContext.read(),
+          ),
     ),
     ChangeNotifierProvider(
       create: (innerContext) {

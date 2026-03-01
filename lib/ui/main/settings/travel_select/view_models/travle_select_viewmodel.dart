@@ -1,10 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
+import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 
 class TravelSelectViewModel extends ChangeNotifier {
-  final UserSettingsRepository _userSettingsRepository;
+  final GetUserTravelsUseCase _getUserTravelsUseCase;
 
-  TravelSelectViewModel({
-    required UserSettingsRepository userSettingsRepository,
-  }) : _userSettingsRepository = userSettingsRepository;
+  TravelSelectViewModel({required GetUserTravelsUseCase getUserTravelsUseCase})
+    : _getUserTravelsUseCase = getUserTravelsUseCase;
 }
