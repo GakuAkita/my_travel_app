@@ -1,20 +1,19 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/data/firebase_database_paths.dart';
-import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
+import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository.dart';
 import 'package:my_travel_app/data/services/firebase_database_service.dart';
 
-/// Realtime Databaseではなくなる場合も想定して作らないといけない。
-class JoinedGroupsRepositoryRealtimeDb implements JoinedGroupsRepository {
+class GroupKeysRepositoryRealtimeDb implements GroupKeysRepository {
   final FirebaseDatabase _database;
 
-  JoinedGroupsRepositoryRealtimeDb({required FirebaseDatabase database})
+  GroupKeysRepositoryRealtimeDb({required FirebaseDatabase database})
     : _database = database;
 
   @override
-  Future<List<String>> getJoinedGroupIds(String uid) async {
+  Future<List<String>> getGroupTravelIds(String groupId) async {
     final service = FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.user(uid).settings.joined_groups,
+      path: FirebaseDatabasePaths.groupKey(groupId).path,
       fromJson: (val) => val.keys.toList(),
       toJson: (list) {
         Map<String, bool> raw = {};
@@ -33,10 +32,10 @@ class JoinedGroupsRepositoryRealtimeDb implements JoinedGroupsRepository {
   }
 
   @override
-  Future<void> addJoinedGroup(String uid, String groupId) async {
+  Future<void> addGroupTravelId(String groupId, String travelId) async {
     final service = FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.user(uid).settings.joined_group(groupId),
+      path: FirebaseDatabasePaths.groupKey(groupId).travel(travelId),
       fromJson: (val) => val,
       toJson: (val) => val,
     );
@@ -44,14 +43,13 @@ class JoinedGroupsRepositoryRealtimeDb implements JoinedGroupsRepository {
   }
 
   @override
-  Future<void> removeJoinedGroup(String uid, String groupId) async {
+  Future<void> removeGroupTravelId(String groupId, String travelId) async {
     final service = FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.user(uid).settings.joined_group(groupId),
+      path: FirebaseDatabasePaths.groupKey(groupId).travel(travelId),
       fromJson: (val) => val,
       toJson: (val) => val,
     );
-
     await service.delete();
   }
 }

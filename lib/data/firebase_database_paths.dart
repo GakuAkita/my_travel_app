@@ -26,7 +26,14 @@ class FirebaseDatabasePaths {
 
   static UserPath user(String userId) => UserPath(users.child(userId));
 
-  static String groupKey(String groupId) => groupKeys.child(groupId);
+  static GroupKey groupKey(String groupId) =>
+      GroupKey(groupKeys.child(groupId));
+}
+
+class GroupKey extends PathNode {
+  GroupKey(String parentPath) : super(parentPath);
+
+  String travel(String travelId) => child(travelId);
 }
 
 /// ===============================
@@ -35,14 +42,14 @@ class FirebaseDatabasePaths {
 class UserPath extends PathNode {
   UserPath(String userId) : super(userId);
 
-  SettingsPath get settings => SettingsPath(path);
+  SettingsPath get settings => SettingsPath(child("settings"));
 
   String get role => child("role");
 }
 
 /* last_loginとかは設定ではないから、将来的には移動したほうがいいかも */
 class SettingsPath extends PathNode {
-  SettingsPath(String parentPath) : super("$parentPath/settings");
+  SettingsPath(String parentPath) : super(parentPath);
 
   String get shown_travel => child("shown_travel");
 
