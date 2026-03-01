@@ -17,12 +17,17 @@ void main() async {
   /* https://zenn.dev/tsukatsuka1783/articles/64c9e06d516a3e */
   await dotenv.load(fileName: "env");
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   if (kDebugMode) {
     /* デバッグモードだったらエミュレータに接続する */
-    FirebaseDatabase.instance.useDatabaseEmulator('localhost', 9000);
+    try {
+      FirebaseDatabase.instance.useDatabaseEmulator("10.0.2.2", 9000);
+    } catch (e) {
+      print("Firebase Emulator connection failed: $e");
+    }
   }
+  
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MultiProvider(providers: providers, child: MyApp()));
 }
 
