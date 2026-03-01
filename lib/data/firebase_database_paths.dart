@@ -1,30 +1,3 @@
-// class FirebaseDatabasePaths {
-//   static String users() => "users";
-//
-//   static String groups() => "groups";
-//
-//   static String members(String groupId, String travelId) =>
-//       "${travelers(groupId, travelId)}/members";
-//
-//   static String groupKeys() => "group_keys";
-//
-//   static String user(String userId) => "${users()}/$userId";
-//
-//   static String travels(String groupId) => "${groups()}/$groupId/travels";
-//
-//   static String travel(String groupId, String travelId) =>
-//       "${travels(groupId)}/$travelId";
-//
-//   static String expenses(String groupId, String travelId) =>
-//       "${travel(groupId, travelId)}/expenses";
-//
-//   static String itinerary(String groupId, String travelId) =>
-//       "${travel(groupId, travelId)}/itinerary";
-//
-//   static String travelers(String groupId, String travelId) =>
-//       "${travel(groupId, travelId)}/travelers";
-// }
-
 /// ===============================
 /// Base
 /// ===============================
@@ -52,6 +25,8 @@ class FirebaseDatabasePaths {
   static GroupPath group(String groupId) => GroupPath(groups.child(groupId));
 
   static UserPath user(String userId) => UserPath(users.child(userId));
+
+  static String groupKey(String groupId) => groupKeys.child(groupId);
 }
 
 /// ===============================

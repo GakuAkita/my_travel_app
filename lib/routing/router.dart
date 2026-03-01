@@ -146,7 +146,10 @@ GoRouter createRouter(AppSession session) {
             path: Routes.settings_travel_select,
             builder:
                 (context, state) => ChangeNotifierProvider(
-                  create: (innerContext) => TravelSelectViewModel(),
+                  create:
+                      (innerContext) => TravelSelectViewModel(
+                        userSettingsRepository: innerContext.read(),
+                      ),
                   child: TravelSelectScreen(),
                 ),
           ),
