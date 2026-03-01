@@ -13,11 +13,11 @@ import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart';
-import 'package:my_travel_app/ui/main/Settings/SettingScreen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expenses_screen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.dart';
+import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_select_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +28,7 @@ import '../data/repositories/general_manager/general_manager_repository_realtime
 import '../data/repositories/group_members/group_members_repository_realtimedb.dart';
 import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
+import '../ui/main/Settings/SettingScreen.dart';
 import '../ui/main/app_navigation_bar.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
@@ -139,6 +140,14 @@ GoRouter createRouter(AppSession session) {
           GoRoute(
             path: Routes.expenses_add_edit,
             builder: (context, state) => AddEditExpenseScreen(),
+          ),
+          GoRoute(
+            path: Routes.settings_travel_select,
+            builder:
+                (context, state) => ChangeNotifierProvider(
+                  create: (innerContext) => TravelSelectViewModel(),
+                  child: SettingScreen(),
+                ),
           ),
         ],
       ),

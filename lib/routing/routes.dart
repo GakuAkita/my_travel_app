@@ -7,6 +7,7 @@ abstract final class Routes {
   static const settings = "/settings";
 
   static const expenses_add_edit = "/expenses_add_edit";
+  static const settings_travel_select = "/settings_travel_select";
 
   //認証不要なルートのリスト
   static const publicRoutes = [start, signIn, signUp];

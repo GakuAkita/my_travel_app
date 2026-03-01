@@ -27,23 +27,23 @@ class _SettingScreenState extends State<SettingScreen> {
               },
               menuName: "プロフィール",
             ),
-            // SettingMenubar(
-            //   onPressed: () {
-            //     userStore.userRole != ''
-            //         ? Navigator.pushNamed(
-            //           context,
-            //           TravelManageScreen.id,
-            //           arguments: {
-            //             'userRole': userStore.userRole,
-            //           }, //これ危ないな。すぐクラッシュしそう。
-            //         )
-            //         : null;
-            //   },
-            //   menuName:
-            //       userStore.userRole == UserRole.admin
-            //           ? "表示旅行選択  (旅行新規作成)"
-            //           : "表示旅行選択",
-            // ),
+            SettingMenubar(
+              onPressed: () {
+                // userStore.userRole != ''
+                //     ? Navigator.pushNamed(
+                //       context,
+                //       TravelManageScreen.id,
+                //       arguments: {
+                //         'userRole': userStore.userRole,
+                //       }, //これ危ないな。すぐクラッシュしそう。
+                //     )
+                //     : null;
+              },
+              menuName: "aa",
+              // userStore.userRole == UserRole.admin
+              //     ? "表示旅行選択  (旅行新規作成)"
+              //     : "表示旅行選択",
+            ),
             // if (userStore.userRole == UserRole.admin) ...[
             //   SizedBox(height: 50),
             //   SettingMenubar(
