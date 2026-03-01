@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/SettingMenuBar.dart';
+import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class SettingScreen extends StatefulWidget {
-  const SettingScreen({super.key});
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
 
   @override
-  State<SettingScreen> createState() => _SettingScreenState();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen> {
+class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     /* ログインをしたときに切り替える */
@@ -29,6 +31,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             SettingMenubar(
               onPressed: () {
+                context.push(Routes.settings_travel_select);
                 // userStore.userRole != ''
                 //     ? Navigator.pushNamed(
                 //       context,
