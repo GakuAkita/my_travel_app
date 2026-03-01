@@ -153,7 +153,9 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     Provider<UserSettingsRepository>(
       create: (innerContext) {
         print("UserSettingsRepository was created");
-        return UserSettingsRepositoryRealtimeDb(database: innerContext.read());
+        return UserSettingsRepositoryRealtimeDb(
+          database: FirebaseDatabase.instance,
+        );
       },
       dispose: (innerContext, repository) {
         print("UserSettingsRepository was disposed");
@@ -165,7 +167,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create: (innerContext) {
         print("ExpenseRepository was created");
         return ExpenseRepositoryRealtimeDb(
-          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          firebaseDatabase: FirebaseDatabase.instance,
         );
       },
       lazy: false,
@@ -177,7 +179,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create: (innerContext) {
         //print("ItineraryRepository was created");
         return ItineraryRepositoryRealtimeDb(
-          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          firebaseDatabase: FirebaseDatabase.instance,
         );
       },
       lazy: false,
@@ -196,7 +198,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
 
         // print("GeneralManagerRepository was created");
         return GeneralManagerRepositoryRealtimeDb(
-          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          firebaseDatabase: FirebaseDatabase.instance,
           userId: userId,
         );
       },
@@ -216,7 +218,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
 
         // print("ParticipantsRepository was created");
         return ParticipantsRepositoryRealtimeDb(
-          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          firebaseDatabase: FirebaseDatabase.instance,
           userId: userId,
         );
       },
@@ -237,7 +239,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
 
         // print("GroupMembersRepository was created");
         return GroupMembersRepositoryRealtimeDb(
-          firebaseDatabase: innerContext.read<FirebaseDatabase>(),
+          firebaseDatabase: FirebaseDatabase.instance,
         );
       },
       lazy: false,
