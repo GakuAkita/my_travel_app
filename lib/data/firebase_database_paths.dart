@@ -51,6 +51,8 @@ class SettingsPath extends PathNode {
   String get last_login_at => child("last_login_at");
 
   String get profile_name => child("profile_name");
+
+  String joined_group(String groupId) => child("$joined_groups/$groupId");
 }
 
 /// ===============================

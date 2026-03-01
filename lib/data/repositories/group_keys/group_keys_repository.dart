@@ -1,1 +1,10 @@
-class GroupKeysRepository {}
+/**
+ * あるグループの所持しているtravelIdを全部取ってくる。
+ */
+abstract class GroupKeysRepository {
+  Future<List<String>> getGroupTravelIds(String groupId);
+
+  Future<void> addGroupTravelId(String groupId, String travelId);
+
+  Future<void> removeGroupTravelId(String groupId, String travelId);
+}
