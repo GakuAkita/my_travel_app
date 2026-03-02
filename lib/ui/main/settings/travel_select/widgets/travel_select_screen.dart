@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_select_viewmodel.dart';
@@ -37,7 +38,12 @@ class TravelSelectScreen extends StatelessWidget {
                           RoundedButton(
                             title: "表示旅行選択",
                             onPressed: () {
-                              viewModel.switchToSelectedTravel();
+                              final ret = viewModel.switchToSelectedTravel();
+                              if (ret.isSuccess) {
+                                context.pop();
+                              } else {
+                                /* Scaffold */
+                              }
                             },
                           ),
                         ],

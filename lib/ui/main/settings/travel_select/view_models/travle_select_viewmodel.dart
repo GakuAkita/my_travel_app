@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
@@ -11,14 +12,17 @@ class TravelSelectViewModel extends ChangeNotifier {
   final GetUserTravelsUseCase _getUserTravelsUseCase;
   final AppSession _appSession;
   final ShownTravelSession _travelSession;
+  final UserSettingsRepository _userSettingsRepository;
 
   TravelSelectViewModel({
     required AppSession appSession,
     required ShownTravelSession travelSession,
     required GetUserTravelsUseCase getUserTravelsUseCase,
+    required UserSettingsRepository userSettingsRepository,
   }) : _getUserTravelsUseCase = getUserTravelsUseCase,
        _appSession = appSession,
-       _travelSession = travelSession {
+       _travelSession = travelSession,
+       _userSettingsRepository = userSettingsRepository {
     initialize();
   }
 
@@ -72,6 +76,11 @@ class TravelSelectViewModel extends ChangeNotifier {
     final newTravel = ShownTravelBasic(groupId: groupId, travelId: travelId);
     _travelSession.setShownTravel(newTravel);
 
+    /// awaitはしない
+    _userSettingsRepository.setShownTravel(
+      _appSession.currentUser!.uid,
+      newTravel,
+    );
     /* ShownTravelを設定する */
     return ResultInfo.success();
   }
