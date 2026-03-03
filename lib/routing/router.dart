@@ -19,6 +19,8 @@ import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
+import 'package:my_travel_app/ui/core/store/expense_store.dart';
+import 'package:my_travel_app/ui/core/store/itinerary_store.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart';
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
@@ -38,10 +40,10 @@ import '../data/repositories/general_manager/general_manager_repository_realtime
 import '../data/repositories/group_members/group_members_repository_realtimedb.dart';
 import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
+import '../ui/core/store/travel_scope_store.dart';
 import '../ui/main/app_navigation_bar.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
-import '../ui/travel_scope_viewmodels.dart';
 
 final rootNavigationKey = GlobalKey<NavigatorState>();
 final itineraryNavigatorKey = GlobalKey<NavigatorState>();
@@ -320,8 +322,26 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             session: innerContext.read<ShownTravelSession>(),
           ),
       update: (innerContext, session, previous) {
-        return TravelScopeStore(session: session);
+        return previous!;
       },
+      lazy: false,
+    ),
+    ChangeNotifierProxyProvider<ShownTravelSession, ExpenseStore>(
+      create:
+          (innerContext) =>
+              ExpenseStore(expenseRepository: innerContext.read()),
+      update: (innerContext, session, previous) {
+        /* travelがswitchしたときはインスタンス再生成するようにする */
+        return previous!;
+      },
+      lazy: false,
+    ),
+    ChangeNotifierProxyProvider<ShownTravelSession, ItineraryStore>(
+      create: (innerContext) => ItineraryStore(),
+      update: (innerContext, session, previous) {
+        return previous!;
+      },
+      lazy: false,
     ),
     ChangeNotifierProvider(
       create:

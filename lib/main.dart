@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -19,12 +18,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final database = FirebaseDatabase.instance;
   if (kDebugMode) {
     /* デバッグモードだったらエミュレータに接続する */
     try {
-      print("UseEmulators!!");
-      database.useDatabaseEmulator("10.0.2.2", 9000);
+      /// まじで意味わからないが、
+      /// java.lang.IllegalStateException: Cannot call useEmulator() after instance has already been initialized.
+      /// こういうエラーが出る。
+      //FirebaseDatabase.instance.useDatabaseEmulator("10.0.2.2", 9000);
     } catch (e) {
       print("Firebase Emulator connection failed: $e");
     }
