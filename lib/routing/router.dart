@@ -326,14 +326,13 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
       lazy: false,
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession, ExpenseStore>(
+    ChangeNotifierProvider<ExpenseStore>(
       create:
-          (innerContext) =>
-              ExpenseStore(expenseRepository: innerContext.read()),
-      update: (innerContext, session, previous) {
-        /* travelがswitchしたときはインスタンス再生成するようにする */
-        return previous!;
-      },
+          /// 参照渡しっぽいので、Store内でtravelSessionを参照すれば最新のtravelSessionになる
+          (innerContext) => ExpenseStore(
+            expenseRepository: innerContext.read(),
+            travelSession: innerContext.read(),
+          ),
       lazy: false,
     ),
     ChangeNotifierProxyProvider<ShownTravelSession, ItineraryStore>(
@@ -354,7 +353,6 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ChangeNotifierProvider(
       create:
           (innerContext) => ExpensesViewModel(
-            expenseRepository: innerContext.read(),
             groupMembersRepository: innerContext.read(),
             userSettingsRepository: innerContext.read(),
             travelSession: innerContext.read(),

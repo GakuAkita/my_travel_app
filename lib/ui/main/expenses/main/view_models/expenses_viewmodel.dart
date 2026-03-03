@@ -8,13 +8,14 @@ import 'package:my_travel_app/data/repositories/group_members/group_members_repo
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/state/loaidng_controller.dart';
+import 'package:my_travel_app/ui/core/store/expense_store.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
 import '../../../../../core/utils/CheckShownTravelBasic.dart';
 import '../../../../../data/model/expense/expense_info.dart';
 
 class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
-  final ExpenseRepository _expenseRepository;
+  final ExpenseStore _expenseStore;
   final GroupMembersRepository _groupMembersRepository;
   final UserSettingsRepository _userSettingsRepository;
   final ShownTravelSession _travelSession;
@@ -68,11 +69,11 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
    * 旅行がスイッチされるたびにViewModelが再生成される。
    */
   ExpensesViewModel({
-    required ExpenseRepository expenseRepository,
+    required ExpenseStore expenseStore,
     required GroupMembersRepository groupMembersRepository,
     required UserSettingsRepository userSettingsRepository,
     required ShownTravelSession travelSession,
-  }) : _expenseRepository = expenseRepository,
+  }) : _expenseStore = expenseStore,
        _groupMembersRepository = groupMembersRepository,
        _userSettingsRepository = userSettingsRepository,
        _travelSession = travelSession {
