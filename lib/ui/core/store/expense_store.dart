@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
+import 'package:my_travel_app/core/utils/CheckShownTravelBasic.dart';
+import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
@@ -44,15 +47,72 @@ class ExpenseStore extends ChangeNotifier {
 
     try {
       /* travelSessionは初期化されている */
-      if (_travelSession.currentTravel == null) {
-        _allExpenses = const DataState(data: {}, isLoading: false, error: null);
-        return;
-      }
+      await _refreshExpenses(_travelSession.currentTravel!, isNotify: false);
     } finally {
       if (!_initialized) {
         _initialized = true;
       }
       notifyListeners();
+    }
+  }
+
+  Future<void> refreshExpenses({
+    bool isNotify = true,
+    bool isLoadingNotify = true,
+  }) async {
+    if (!_initialized) {
+      print("Not initalized!!");
+      notifyListeners();
+      return;
+    }
+
+    if (_travelSession.currentTravel == null) {
+      _allExpenses = const DataState(data: {}, isLoading: false, error: null);
+      notifyListeners();
+      return;
+    }
+    await _refreshExpenses(
+      _travelSession.currentTravel!,
+      isNotify: isNotify,
+      isLoadingNotify: isLoadingNotify,
+    );
+  }
+
+  Future<void> _refreshExpenses(
+    ShownTravelBasic travel, {
+    bool isLoadingNotify = true,
+    bool isNotify = true,
+  }) async {
+    try {
+      if (!checkIsShownTravelValid(travel).isSuccess) {
+        _allExpenses = DataState(
+          isLoading: false,
+          error: ErrorInfo(errorMessage: "Invalid shown travel"),
+        );
+        return;
+      }
+
+      _allExpenses = const DataState(isLoading: true, error: null);
+      if (isLoadingNotify && isNotify) {
+        notifyListeners();
+      }
+
+      final data = await _expenseRepository.getAllExpenses(
+        _travelSession.currentTravel!.groupId!,
+        _travelSession.currentTravel!.travelId!,
+      );
+      _allExpenses = DataState(data: data, isLoading: false, error: null);
+      return;
+    } catch (e) {
+      _allExpenses = DataState(
+        data: null,
+        isLoading: false,
+        error: ErrorInfo(errorMessage: e.toString()),
+      );
+    } finally {
+      if (isNotify) {
+        notifyListeners();
+      }
     }
   }
 

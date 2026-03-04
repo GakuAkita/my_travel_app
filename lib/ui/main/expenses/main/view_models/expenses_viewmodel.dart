@@ -3,30 +3,23 @@ import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
-import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/ui/core/state/loaidng_controller.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
 import '../../../../../core/utils/CheckShownTravelBasic.dart';
 import '../../../../../data/model/expense/expense_info.dart';
 
-class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
+class ExpensesViewModel extends ChangeNotifier {
   final ExpenseStore _expenseStore;
   final GroupMembersRepository _groupMembersRepository;
   final UserSettingsRepository _userSettingsRepository;
-  final ShownTravelSession _travelSession;
 
-  ShownTravelBasic? _currentTravel;
+  bool _isLoading = false;
 
-  ShownTravelBasic? get currentTravel => _currentTravel;
-
-  bool _travelSessionInitialized = false;
-
-  bool get travelInitialized => _travelSessionInitialized;
+  bool get isLoading => _isLoading;
 
   Map<String, ExpenseInfo>? _allExpenses;
 
@@ -75,135 +68,34 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
     required ShownTravelSession travelSession,
   }) : _expenseStore = expenseStore,
        _groupMembersRepository = groupMembersRepository,
-       _userSettingsRepository = userSettingsRepository,
-       _travelSession = travelSession {
+       _userSettingsRepository = userSettingsRepository {
     /**
      * UI側でviewModel.travelSession.currentTravelと書いてしまうと、
      * UIがTravelSessionに直接依存することになる。それはよくない。
      * コピーして、addListenersでsyncする。
      *  */
-    _currentTravel = travelSession.currentTravel;
-    _travelSessionInitialized = travelSession.initialized;
-    print(
-      "ExpenseViewModel was created code=${hashCode} groupId=${currentTravel?.groupId} travelId=${currentTravel?.travelId} travelInitialized=${travelSession.initialized}",
-    );
+    print("ExpenseViewModel was created code=${hashCode}");
 
-    travelSession.addListener(_sync);
+    _expenseStore.addListener(_sync);
   }
 
   void _sync() {
-    /// travelが切り替わるのはそこまで頻繁ではないので、
-    /// 現在持っているtravelと同じであっても、更新してしまって良い。
-    final newTravel = _travelSession.currentTravel;
-    final initialized = _travelSession.initialized;
-    _currentTravel = newTravel;
-    _travelSessionInitialized = initialized;
-
     try {
-      if (!_travelSessionInitialized) {
-        return;
-      }
-
-      if (_currentTravel == null) {
-        clearData();
-        return;
-      }
-      runWithLoading(() async {
-        ///ExpensesとMembersは同じタイミングで走り出して良い。
-        ///ただ、Membersが終わった後、すぐ各メンバーのプロフィール名を取りに行く。
-        await Future.wait([
-          getAllExpensesWithNotify(isStateNotify: false),
-          getAllGroupMembersWithNotify(isStateNotify: false),
-        ]);
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-    notifyListeners();
-  }
-
-  /* 最初はロードする必要がある */
-  void initialize() async {
-    if (_currentTravel == null) {
-      return;
-    }
-
-    try {
-      runWithLoading(() async {
-        await Future.wait([
-          getAllExpensesWithNotify(isStateNotify: false),
-          getAllGroupMembersWithNotify(isStateNotify: false),
-        ]);
-        print("sync ended.${_allGroupMembers}");
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-  /**
-   * あまりないが、_onTravelChangedが何回も呼ばれたときに
-   * 新しいリクエストを弾いてしまうと、選択した旅行と実際のExpensesが合っていないみたいな状況になりかねない。
-   * したがって、requestIdを用いて最後のリクエストを正とする。
-   */
-  Future<ResultInfo<void>> getAllExpensesWithNotify({
-    bool isStateNotify = true,
-  }) async {
-    print("getAllExpensesWithNotify called");
-    try {
-      final result = await getAllExpenses();
-
-      if (_disposed) {
-        /**
-         * disposedされたあとにFutureが返ってくるとクラッシュ？
-         * getAllExpensesWithNotifyが何度も呼ばれたときにおかしくなる可能性。
-         * その対処。一番最近のリクエストじゃない限りはUIを更新しない
-         * */
-        return ResultInfo.success();
-      }
-
-      if (result.isSuccess) {
-        /* @TODO createdAtで並び替える */
-        _allExpenses = result.data!;
+      final expensesDataState = _expenseStore.allExpenses;
+      if (expensesDataState.isLoading) {
+        _isLoading = true;
+      } else if (expensesDataState.hasError) {
+        _isLoading = false;
+        /* エラー内容をUI側に伝えたい。 */
+        print("expenseStore error=${expensesDataState.error?.errorMessage}");
+      } else if (expensesDataState.hasData) {
+        _allExpenses = _expenseStore.allExpenses.data;
       } else {
-        print("ExpensesViewModel: ${result.error?.errorMessage}");
-        return result.toVoid();
+        /* エラーでもないけどdataがnull?? */
+        print("this might be the coding error???");
       }
-
-      return ResultInfo.success();
     } finally {
-      if (!_disposed && isStateNotify) {
-        notifyListeners();
-      }
-    }
-  }
-
-  Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpenses() async {
-    return getAllExpensesForTravel(currentTravel);
-  }
-
-  Future<ResultInfo<Map<String, ExpenseInfo>>> getAllExpensesForTravel(
-    ShownTravelBasic? argTravel,
-  ) async {
-    if (argTravel == null) {
-      return ResultInfo.success(data: {});
-    }
-
-    final isTravelValid = checkIsShownTravelValid(argTravel);
-    if (!isTravelValid.isSuccess) {
-      /* ここに来るのはそうそうない。 */
-      return ResultInfo.failed(error: isTravelValid.error, extraData: {});
-    }
-
-    try {
-      final data = await _expenseRepository.getAllExpenses(
-        argTravel.groupId!,
-        argTravel.travelId!,
-      );
-      _allExpenses = data;
-      return ResultInfo.success(data: data);
-    } catch (e) {
-      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+      notifyListeners();
     }
   }
 
@@ -235,10 +127,6 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
         notifyListeners();
       }
     }
-  }
-
-  Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembers() async {
-    return getAllGroupMembersForGroup(currentTravel);
   }
 
   Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembersForGroup(
@@ -293,7 +181,7 @@ class ExpensesViewModel extends ChangeNotifier with LoadableMixin {
   @override
   void dispose() {
     _disposed = true;
-    _travelSession.removeListener(_sync);
+    _expenseStore.removeListener(_sync);
     print("ExpenseViewModel was disposed. code=${hashCode}");
     // TODO: implement dispose
     super.dispose();
