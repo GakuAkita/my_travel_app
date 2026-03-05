@@ -47,7 +47,7 @@ class ExpenseStore extends ChangeNotifier {
 
     try {
       /* travelSessionは初期化されている */
-      await _refreshExpenses(_travelSession.currentTravel!, isNotify: false);
+      await refreshExpenses(isLastNotify: false, isLoadingNotify: true);
     } finally {
       if (!_initialized) {
         _initialized = true;
@@ -57,7 +57,7 @@ class ExpenseStore extends ChangeNotifier {
   }
 
   Future<void> refreshExpenses({
-    bool isNotify = true,
+    bool isLastNotify = true,
     bool isLoadingNotify = true,
   }) async {
     if (!_initialized) {
@@ -73,7 +73,7 @@ class ExpenseStore extends ChangeNotifier {
     }
     await _refreshExpenses(
       _travelSession.currentTravel!,
-      isNotify: isNotify,
+      isLastNotify: isLastNotify,
       isLoadingNotify: isLoadingNotify,
     );
   }
@@ -81,7 +81,7 @@ class ExpenseStore extends ChangeNotifier {
   Future<void> _refreshExpenses(
     ShownTravelBasic travel, {
     bool isLoadingNotify = true,
-    bool isNotify = true,
+    bool isLastNotify = true,
   }) async {
     try {
       if (!checkIsShownTravelValid(travel).isSuccess) {
@@ -93,7 +93,7 @@ class ExpenseStore extends ChangeNotifier {
       }
 
       _allExpenses = const DataState(isLoading: true, error: null);
-      if (isLoadingNotify && isNotify) {
+      if (isLoadingNotify) {
         notifyListeners();
       }
 
@@ -110,7 +110,7 @@ class ExpenseStore extends ChangeNotifier {
         error: ErrorInfo(errorMessage: e.toString()),
       );
     } finally {
-      if (isNotify) {
+      if (isLastNotify) {
         notifyListeners();
       }
     }
