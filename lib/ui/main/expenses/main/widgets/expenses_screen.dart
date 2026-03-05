@@ -27,7 +27,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ExpensesViewModel>();
     return LoadingOverlay(
-      isLoading: viewModel.isLoading || !viewModel.travelInitialized,
+      isLoading: viewModel.isLoading || !viewModel.storeInitialized,
       child: Scaffold(
         floatingActionButton:
             viewModel.isLoading
@@ -44,21 +44,21 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ? RefreshIndicator(
                   onRefresh: () async {
                     print("^^^^^ExpensesScreen: onRefresh called^^^^^^^");
-                    final result = await viewModel.getAllExpensesWithNotify(
-                      isStateNotify: false,
-                    );
-                    /* 失敗したらSnackBarを出す */
-                    if (result.isFailed) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("${result.error?.errorMessage}"),
-                        ),
-                      );
-                    }
-                    viewModel.getAllGroupMembersWithNotify(
-                      isStateNotify: false,
-                      isGetProfileName: true,
-                    );
+                    // final result = await viewModel.getAllExpensesWithNotify(
+                    //   isStateNotify: false,
+                    // );
+                    // /* 失敗したらSnackBarを出す */
+                    // if (result.isFailed) {
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //     SnackBar(
+                    //       content: Text("${result.error?.errorMessage}"),
+                    //     ),
+                    //   );
+                    // }
+                    // viewModel.getAllGroupMembersWithNotify(
+                    //   isStateNotify: false,
+                    //   isGetProfileName: true,
+                    // );
                   },
                   child: Column(
                     children: [
@@ -83,10 +83,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               RoundedButton(
                                 title: "費用概算",
                                 onPressed: () {
-                                  for (final i
-                                      in viewModel.allGroupMembers.entries) {
-                                    print("${i.value.profile_name}");
-                                  }
+                                  // for (final i
+                                  //     in viewModel.allGroupMembers.entries) {
+                                  //   print("${i.value.profile_name}");
+                                  // }
                                   // Navigator.pushNamed(
                                   //   context,
                                   //   EstimatedExpenseScreen.id,

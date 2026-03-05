@@ -353,8 +353,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ChangeNotifierProvider(
       create:
           (innerContext) => ExpensesViewModel(
-            groupMembersRepository: innerContext.read(),
-            userSettingsRepository: innerContext.read(),
+            expenseStore: innerContext.read(),
             travelSession: innerContext.read(),
           ),
       lazy: false,

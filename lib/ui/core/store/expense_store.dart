@@ -34,24 +34,31 @@ class ExpenseStore extends ChangeNotifier {
     _travelSession.addListener(_refresh);
   }
 
-  void _refresh() async {
-    print("ExpenseStore: travel switched detected.");
-    if (!_travelSession.initialized) {
-      /**
-       * travelSessionはログアウトしない限りは作り直されることはないので、
-       * 一度trueになればそれ以降ずっとtrue
-       */
-      print("travelSession not initialized!!");
-      return;
-    }
+  int _refreshId = 0;
 
+  void _refresh() async {
+    final id = ++_refreshId;
+    print("ExpenseStore: travel switched detected. id=${_refreshId}");
     try {
+      print(
+        "travel value=${_travelSession.currentTravel.toString()} init=${_travelSession.initialized}",
+      );
+      final init = _travelSession.initialized;
+      if (!init) {
+        /**
+         * travelSessionはログアウトしない限りは作り直されることはないので、
+         * 一度trueになればそれ以降ずっとtrue
+         */
+        print("travelSession not initialized!! id=${_refreshId}");
+        return;
+      }
       /* travelSessionは初期化されている */
       await refreshExpenses(isLastNotify: false, isLoadingNotify: true);
     } finally {
       if (!_initialized) {
         _initialized = true;
       }
+      print("expenseStore _refresh has ended.");
       notifyListeners();
     }
   }
