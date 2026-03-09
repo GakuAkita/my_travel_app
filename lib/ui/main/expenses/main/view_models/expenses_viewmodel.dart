@@ -16,9 +16,7 @@ class ExpensesViewModel extends ChangeNotifier {
 
   Map<String, ExpenseInfo>? _allExpenses;
 
-  bool _storeInitialized = false;
-
-  bool get storeInitialized => _storeInitialized;
+  bool get storeInitialized => _expenseStore.storeInitialized;
 
   List<ExpenseInfo> allExpensesList({bool sort = true}) {
     if (_allExpenses == null) {
@@ -77,9 +75,12 @@ class ExpensesViewModel extends ChangeNotifier {
         /* エラー内容をUI側に伝えたい。 */
         print("expenseStore error=${expensesDataState.error?.errorMessage}");
       } else if (expensesDataState.hasData) {
+        print("There are expenses");
+        _isLoading = false;
         _allExpenses = _expenseStore.allExpenses.data;
       } else {
         /* エラーでもないけどdataがnull?? */
+        _isLoading = false;
         print("this might be the coding error???");
       }
     } finally {

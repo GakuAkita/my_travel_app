@@ -20,9 +20,9 @@ class ExpenseStore extends ChangeNotifier {
 
   DataState<Map<String, ExpenseInfo>> get allExpenses => _allExpenses;
 
-  bool _initialized = false;
+  bool _storeInitialized = false;
 
-  bool get initialized => _initialized;
+  bool get storeInitialized => _storeInitialized;
 
   ExpenseStore({
     required ExpenseRepository expenseRepository,
@@ -34,29 +34,22 @@ class ExpenseStore extends ChangeNotifier {
     _travelSession.addListener(_refresh);
   }
 
-  int _refreshId = 0;
-
   void _refresh() async {
-    final id = ++_refreshId;
-    print("ExpenseStore: travel switched detected. id=${_refreshId}");
     try {
-      print(
-        "travel value=${_travelSession.currentTravel.toString()} init=${_travelSession.initialized}",
-      );
-      final init = _travelSession.initialized;
-      if (!init) {
+      if (!_travelSession.initialized) {
         /**
          * travelSessionはログアウトしない限りは作り直されることはないので、
          * 一度trueになればそれ以降ずっとtrue
          */
-        print("travelSession not initialized!! id=${_refreshId}");
+        print("travelSession not initialized!!");
         return;
       }
       /* travelSessionは初期化されている */
       await refreshExpenses(isLastNotify: false, isLoadingNotify: true);
     } finally {
-      if (!_initialized) {
-        _initialized = true;
+      if (!_storeInitialized) {
+        print("ExpenseStore was initialized.");
+        _storeInitialized = true;
       }
       print("expenseStore _refresh has ended.");
       notifyListeners();
@@ -67,11 +60,12 @@ class ExpenseStore extends ChangeNotifier {
     bool isLastNotify = true,
     bool isLoadingNotify = true,
   }) async {
-    if (!_initialized) {
-      print("Not initalized!!");
-      notifyListeners();
-      return;
-    }
+    /// 画面起動後、すぐ呼ばれたらまずいと思って、initializedを設けてたが、UI側でブロックすればいいや。
+    // if (!_storeInitialized) {
+    //   print("store ot initialized!!");
+    //   notifyListeners();
+    //   return;
+    // }
 
     if (_travelSession.currentTravel == null) {
       _allExpenses = const DataState(data: {}, isLoading: false, error: null);

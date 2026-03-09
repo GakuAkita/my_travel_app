@@ -44,6 +44,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ? RefreshIndicator(
                   onRefresh: () async {
                     print("^^^^^ExpensesScreen: onRefresh called^^^^^^^");
+                    /* storeがinitされていないときは実行させない */
+
                     // final result = await viewModel.getAllExpensesWithNotify(
                     //   isStateNotify: false,
                     // );
