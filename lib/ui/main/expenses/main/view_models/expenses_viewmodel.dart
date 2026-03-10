@@ -88,6 +88,13 @@ class ExpensesViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshExpenses({bool isLoadingNotify = true}) async {
+    await _expenseStore.refreshExpenses(
+      isLoadingNotify: isLoadingNotify,
+      isLastNotify: true,
+    );
+  }
+
   // Future<ResultInfo<void>> getAllGroupMembersWithNotify({
   //   bool isStateNotify = true,
   //   bool isGetProfileName = true,

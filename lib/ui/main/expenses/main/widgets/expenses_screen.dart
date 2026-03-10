@@ -44,23 +44,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ? RefreshIndicator(
                   onRefresh: () async {
                     print("^^^^^ExpensesScreen: onRefresh called^^^^^^^");
-                    /* storeがinitされていないときは実行させない */
-
-                    // final result = await viewModel.getAllExpensesWithNotify(
-                    //   isStateNotify: false,
-                    // );
-                    // /* 失敗したらSnackBarを出す */
-                    // if (result.isFailed) {
-                    //   ScaffoldMessenger.of(context).showSnackBar(
-                    //     SnackBar(
-                    //       content: Text("${result.error?.errorMessage}"),
-                    //     ),
-                    //   );
-                    // }
-                    // viewModel.getAllGroupMembersWithNotify(
-                    //   isStateNotify: false,
-                    //   isGetProfileName: true,
-                    // );
+                    await viewModel.refreshExpenses(isLoadingNotify: false);
                   },
                   child: Column(
                     children: [
@@ -79,7 +63,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                 );
                               },
                             ),
-                            /* 総監督とAdminだけは見れる */
+                            /* プランナーとAdminだけは見れる */
                             ...[
                               SizedBox(width: 10),
                               RoundedButton(

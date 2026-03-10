@@ -316,14 +316,11 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
       lazy: false,
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession, TravelScopeStore>(
+    ChangeNotifierProvider<TravelScopeStore>(
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
           (innerContext) => TravelScopeStore(
             session: innerContext.read<ShownTravelSession>(),
           ),
-      update: (innerContext, session, previous) {
-        return previous!;
-      },
       lazy: false,
     ),
     ChangeNotifierProvider<ExpenseStore>(
