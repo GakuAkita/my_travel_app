@@ -4,7 +4,6 @@ gradle-wrapper.jar
 /gradlew
 /gradlew.bat
 /local.properties
-/android/local.properties
 GeneratedPluginRegistrant.java
 .cxx/
 
@@ -15,3 +14,4 @@ key.properties
 **/*.jks
 
 /app/google-services.json
+/app/local.properties
