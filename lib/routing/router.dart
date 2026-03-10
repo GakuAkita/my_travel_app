@@ -320,6 +320,8 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create: /* createはほとんど機能しない。すぐ生成しだすから。 */
           (innerContext) => TravelScopeStore(
             session: innerContext.read<ShownTravelSession>(),
+            groupMembersRepository: innerContext.read(),
+            userSettingsRepository: innerContext.read(),
           ),
       lazy: false,
     ),
