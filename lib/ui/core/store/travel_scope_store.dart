@@ -60,23 +60,49 @@ class TravelScopeStore extends ChangeNotifier {
   DataState<Map<String, TravelerBasic>> get participants => _participants;
 
   /* sessionに紐づいているから他の旅行の取る場面はないと想定。 */
-  Future<void> _refreshAllGroupMembers() async {
-    if (_session.currentTravel == null) {
-      _allGroupMembers = const DataState(
-        data: {},
-        isLoading: false,
-        error: null,
+  Future<void> _refreshAllGroupMembers({
+    bool isLoadingNotify = true,
+    bool isLastNotify = true,
+  }) async {
+    try {
+      if (_session.currentTravel == null) {
+        _allGroupMembers = const DataState(
+          data: {},
+          isLoading: false,
+          error: null,
+        );
+        return;
+      }
+      if (!checkIsShownTravelValid(_session.currentTravel!).isSuccess) {
+        _allGroupMembers = DataState(
+          isLoading: false,
+          error: ErrorInfo(
+            errorMessage: "Invalid shown travel. Probably Coding error.",
+          ),
+        );
+        return;
+      }
+      _allGroupMembers = const DataState(isLoading: true, error: null);
+      if (isLoadingNotify) {
+        notifyListeners();
+      }
+
+      final _data = await _groupMembersRepository.getAllGroupMembers(
+        _session.currentTravel!.groupId!,
       );
+      final data = _data.toTravelerBasicMap();
+      _allGroupMembers = DataState(data: data, isLoading: false, error: null);
       return;
-    }
-    if (!checkIsShownTravelValid(_session.currentTravel!).isSuccess) {
+    } catch (e) {
       _allGroupMembers = DataState(
+        data: null,
         isLoading: false,
-        error: ErrorInfo(
-          errorMessage: "Invalid shown travel. Probably Coding error.",
-        ),
+        error: ErrorInfo(errorMessage: e.toString()),
       );
-      return;
+    } finally {
+      if (isLastNotify) {
+        notifyListeners();
+      }
     }
 
     /* 旅行はnullでもなく値がちゃんと入っている */
