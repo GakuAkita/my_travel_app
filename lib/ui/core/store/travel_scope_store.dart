@@ -2,24 +2,33 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/core/utils/CheckShownTravelBasic.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
+import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/date_state.dart';
 
+import '../../../CommonClass/ResultInfo.dart';
 import '../../../data/model/traveler/traveler_basic.dart';
 
 /// 画面に関わらず、旅行ごとに持っているもの。
 class TravelScopeStore extends ChangeNotifier {
   final ShownTravelSession _session;
   final GroupMembersRepository _groupMembersRepository;
+  final ParticipantsRepository _participantsRepository;
   final UserSettingsRepository _userSettingsRepository;
+
+  bool _storeInitialized = false;
+
+  bool get storeInitialized => _storeInitialized;
 
   TravelScopeStore({
     required ShownTravelSession session,
     required GroupMembersRepository groupMembersRepository,
+    required ParticipantsRepository participantsRepository,
     required UserSettingsRepository userSettingsRepository,
   }) : _session = session,
        _groupMembersRepository = groupMembersRepository,
+       _participantsRepository = participantsRepository,
        _userSettingsRepository = userSettingsRepository {
     print("TravelScopeViewModel was created. hashCode=${hashCode}");
 
@@ -39,6 +48,13 @@ class TravelScopeStore extends ChangeNotifier {
 
     try {
       /* ここに来た時点でTravelSessionは初期化されている */
+      await Future.wait([
+        _refreshAllGroupMembers(
+          isLastNotify: false,
+          isLoadingNotify: true,
+          isGetProfileName: true,
+        ),
+      ]);
     } finally {}
   }
 
@@ -63,6 +79,7 @@ class TravelScopeStore extends ChangeNotifier {
   Future<void> _refreshAllGroupMembers({
     bool isLoadingNotify = true,
     bool isLastNotify = true,
+    bool isGetProfileName = true,
   }) async {
     try {
       if (_session.currentTravel == null) {
@@ -90,7 +107,16 @@ class TravelScopeStore extends ChangeNotifier {
       final _data = await _groupMembersRepository.getAllGroupMembers(
         _session.currentTravel!.groupId!,
       );
-      final data = _data.toTravelerBasicMap();
+
+      Map<String, TravelerBasic> data = _data.toTravelerBasicMap();
+      if (isGetProfileName) {
+        await Future.wait([
+          /* getPutMembersProfileNAmesにawaitしたら並行処理の意味ない */
+          for (final uid in data.keys)
+            getPutMembersProfileName(uid, isLastNotify: false),
+        ]);
+      }
+
       _allGroupMembers = DataState(data: data, isLoading: false, error: null);
       return;
     } catch (e) {
@@ -104,8 +130,61 @@ class TravelScopeStore extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
 
-    /* 旅行はnullでもなく値がちゃんと入っている */
+  /* グループメンバーを変えずにメンバーのプロフィール名だけ更新したいとき */
+  Future<ResultInfo> getPutMembersProfileName(
+    String uid, {
+    bool isLastNotify = true,
+  }) async {
+    if (_allGroupMembers.hasError) {
+      return ResultInfo.failed(error: _allGroupMembers.error!);
+    }
+
+    try {
+      if (_allGroupMembers.hasData) {
+        final profileName = await _userSettingsRepository.getProfileName(uid);
+        if (_allGroupMembers.data![uid] != null) {
+          _allGroupMembers.data![uid] = _allGroupMembers.data![uid]!.copyWith(
+            profile_name: profileName,
+          );
+        }
+      }
+      return ResultInfo.success();
+    } finally {
+      if (isLastNotify) {
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> _refreshParticipants({bool isLastNotify = true}) async {
+    try {
+      if (_session.currentTravel == null) {
+        _participants = const DataState(
+          data: {},
+          isLoading: false,
+          error: null,
+        );
+        return;
+      }
+
+      if (!checkIsShownTravelValid(_session.currentTravel!).isSuccess) {
+        _participants = DataState(
+          isLoading: false,
+          error: ErrorInfo(
+            errorMessage: "Invalid Travel. Probably coding error",
+          ),
+        );
+        return;
+      }
+
+      _participants = const DataState(isLoading: true, error: null);
+    } finally {
+      if (isLastNotify) {
+        notifyListeners();
+      }
+    }
   }
 
   @override

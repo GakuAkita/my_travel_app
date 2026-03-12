@@ -45,6 +45,7 @@ class ExpenseStore extends ChangeNotifier {
         return;
       }
       /* travelSessionは初期化されている */
+      /* finallyでnotifyListenersをするのでこの関数内では必要ない */
       await refreshExpenses(isLastNotify: false, isLoadingNotify: true);
     } finally {
       if (!_storeInitialized) {

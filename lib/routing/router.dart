@@ -321,6 +321,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           (innerContext) => TravelScopeStore(
             session: innerContext.read<ShownTravelSession>(),
             groupMembersRepository: innerContext.read(),
+            participantsRepository: innerContext.read(),
             userSettingsRepository: innerContext.read(),
           ),
       lazy: false,
