@@ -1,9 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
+import 'package:my_travel_app/data/firebase_database_paths.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
-
-import '../../../CommonClass/ResultInfo.dart';
-import '../../model/traveler/traveler_basic.dart';
+import 'package:my_travel_app/data/services/firebase_database_service.dart';
 
 class ParticipantsRepositoryRealtimeDb implements ParticipantsRepository {
   final FirebaseDatabase _firebaseDatabase;
@@ -15,22 +15,37 @@ class ParticipantsRepositoryRealtimeDb implements ParticipantsRepository {
   }) : _firebaseDatabase = firebaseDatabase,
        _userId = userId;
 
-  @override
-  Future<ResultInfo<Map<String, TravelerBasic>>> getAllTravelers(
+  FirebaseDatabaseService<TravelerCore> _service(
     String groupId,
     String travelId,
-  ) async {
-    // TODO: implement getAllTravelers
-    throw AppException("Not implemented getAllTravelers");
+  ) {
+    return FirebaseDatabaseService(
+      database: _firebaseDatabase,
+      path:
+          FirebaseDatabasePaths.group(
+            groupId,
+          ).travels.travel(travelId).travelers,
+      fromJson: TravelerCore.fromJson,
+      toJson: (val) => val.toJson(),
+    );
   }
 
   @override
-  Future<ResultInfo<void>> saveAllTravelers(
+  Future<Map<String, TravelerCore>> getAllTravelers(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> travelers,
   ) async {
-    // TODO: implement saveAllTravelers
-    throw AppException("Not implemented saveAllTravelers");
+    final service = _service(groupId, travelId);
+    final travelers = await service.getAll();
+    return travelers;
+  }
+
+  @override
+  Future<void> saveAllTravelers(
+    String groupId,
+    String travelId,
+    Map<String, TravelerCore> travelers,
+  ) async {
+    throw AppException("Not implemented:${saveAllTravelers.toString()}");
   }
 }

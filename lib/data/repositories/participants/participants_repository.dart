@@ -1,20 +1,18 @@
-import 'package:my_travel_app/CommonClass/ResultInfo.dart';
-
-import '../../model/traveler/traveler_basic.dart';
+import '../../model/traveler/traveler_core/traveler_core.dart';
 
 /**
  * 旅行の参加者の情報
  * 各travelごとに違う
  */
 abstract class ParticipantsRepository {
-  Future<ResultInfo<Map<String, TravelerBasic>>> getAllTravelers(
+  Future<Map<String, TravelerCore>> getAllTravelers(
     String groupId,
     String travelId,
   );
 
-  Future<ResultInfo<void>> saveAllTravelers(
+  Future<void> saveAllTravelers(
     String groupId,
     String travelId,
-    Map<String, TravelerBasic> travelers,
+    Map<String, TravelerCore> travelers,
   );
 }

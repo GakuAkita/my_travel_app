@@ -158,7 +158,10 @@ class TravelScopeStore extends ChangeNotifier {
     }
   }
 
-  Future<void> _refreshParticipants({bool isLastNotify = true}) async {
+  Future<void> _refreshParticipants({
+    bool isLastNotify = true,
+    bool isLoadingNotify = true,
+  }) async {
     try {
       if (_session.currentTravel == null) {
         _participants = const DataState(
@@ -180,6 +183,17 @@ class TravelScopeStore extends ChangeNotifier {
       }
 
       _participants = const DataState(isLoading: true, error: null);
+      if (isLoadingNotify) {
+        notifyListeners();
+      }
+
+      final groupId = _session.currentTravel!.groupId!;
+      final travelId = _session.currentTravel!.travelId!;
+      final data = await _participantsRepository.getAllTravelers(
+        groupId,
+        travelId,
+      );
+      _participants = DataState(data: data, isLoading: false, error: null);
     } finally {
       if (isLastNotify) {
         notifyListeners();
