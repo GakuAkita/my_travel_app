@@ -9,6 +9,7 @@ import 'package:my_travel_app/ui/core/store/date_state.dart';
 
 import '../../../CommonClass/ResultInfo.dart';
 import '../../../data/model/traveler/traveler_basic.dart';
+import '../../../data/model/traveler/traveler_core/traveler_core.dart';
 
 /// 画面に関わらず、旅行ごとに持っているもの。
 class TravelScopeStore extends ChangeNotifier {
@@ -54,8 +55,15 @@ class TravelScopeStore extends ChangeNotifier {
           isLoadingNotify: true,
           isGetProfileName: true,
         ),
+        _refreshParticipants(isLastNotify: false, isLoadingNotify: true),
       ]);
-    } finally {}
+    } finally {
+      if (!_storeInitialized) {
+        print("TravelScopeStore was initialized");
+        _storeInitialized = true;
+      }
+      notifyListeners();
+    }
   }
 
   /**
@@ -71,9 +79,9 @@ class TravelScopeStore extends ChangeNotifier {
 
   DataState<String?> get generalManager => _generalManager;
 
-  DataState<Map<String, TravelerBasic>> _participants = const DataState();
+  DataState<Map<String, TravelerCore>> _participants = const DataState();
 
-  DataState<Map<String, TravelerBasic>> get participants => _participants;
+  DataState<Map<String, TravelerCore>> get participants => _participants;
 
   /* sessionに紐づいているから他の旅行の取る場面はないと想定。 */
   Future<void> _refreshAllGroupMembers({
