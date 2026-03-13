@@ -3,6 +3,7 @@ import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/core/utils/CheckShownTravelBasic.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
+import 'package:my_travel_app/data/repositories/planners/planners_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/data_state.dart';
@@ -17,6 +18,7 @@ class TravelScopeStore extends ChangeNotifier {
   final GroupMembersRepository _groupMembersRepository;
   final ParticipantsRepository _participantsRepository;
   final UserSettingsRepository _userSettingsRepository;
+  final PlannersRepository _plannersRepository;
 
   bool _storeInitialized = false;
 
@@ -27,10 +29,12 @@ class TravelScopeStore extends ChangeNotifier {
     required GroupMembersRepository groupMembersRepository,
     required ParticipantsRepository participantsRepository,
     required UserSettingsRepository userSettingsRepository,
+    required PlannersRepository plannersRepository,
   }) : _session = session,
        _groupMembersRepository = groupMembersRepository,
        _participantsRepository = participantsRepository,
-       _userSettingsRepository = userSettingsRepository {
+       _userSettingsRepository = userSettingsRepository,
+       _plannersRepository = plannersRepository {
     print("TravelScopeViewModel was created. hashCode=${hashCode}");
 
     _session.addListener(_refresh);
@@ -56,6 +60,7 @@ class TravelScopeStore extends ChangeNotifier {
           isGetProfileName: true,
         ),
         _refreshParticipants(isLastNotify: false, isLoadingNotify: true),
+        _refreshPlanners(isLastNotify: false, isLoadingNotify: true),
       ]);
     } finally {
       if (!_storeInitialized) {
@@ -75,9 +80,9 @@ class TravelScopeStore extends ChangeNotifier {
 
   DataState<Map<String, TravelerBasic>> get allGroupMembers => _allGroupMembers;
 
-  DataState<Map<String,TravelerCore>> _planners = const DataState();
+  DataState<Map<String, TravelerCore>> _planners = const DataState();
 
-  DataState<Map<String,TravelerCore>> get planners => _planners;
+  DataState<Map<String, TravelerCore>> get planners => _planners;
 
   DataState<Map<String, TravelerCore>> _participants = const DataState();
 
@@ -157,8 +162,11 @@ class TravelScopeStore extends ChangeNotifier {
             profile_name: profileName,
           );
         }
+        return ResultInfo.success();
       }
-      return ResultInfo.success();
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "No data to update"),
+      );
     } finally {
       if (isLastNotify) {
         notifyListeners();
@@ -209,7 +217,40 @@ class TravelScopeStore extends ChangeNotifier {
     }
   }
 
-  Future<void> _refresh
+  Future<void> _refreshPlanners({
+    bool isLoadingNotify = true,
+    bool isLastNotify = true,
+  }) async {
+    try {
+      if (_session.currentTravel == null) {
+        _planners = const DataState(data: {}, isLoading: false, error: null);
+        return;
+      }
+
+      if (!checkIsShownTravelValid(_session.currentTravel!).isSuccess) {
+        _planners = DataState(
+          isLoading: false,
+          error: ErrorInfo(errorMessage: "Invalid Travel"),
+        );
+        return;
+      }
+
+      _planners = const DataState(isLoading: true);
+      if (isLoadingNotify) {
+        notifyListeners();
+      }
+
+      final groupId = _session.currentTravel!.groupId!;
+      final travelId = _session.currentTravel!.travelId!;
+
+      final data = await _plannersRepository.getAllPlanners(groupId, travelId);
+      _planners = DataState(data: data, isLoading: false);
+    } finally {
+      if (isLastNotify) {
+        notifyListeners();
+      }
+    }
+  }
 
   @override
   void dispose() {

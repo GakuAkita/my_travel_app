@@ -11,6 +11,8 @@ import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.d
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
+import 'package:my_travel_app/data/repositories/planners/planners_repository.dart';
+import 'package:my_travel_app/data/repositories/planners/planners_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
 import 'package:my_travel_app/data/repositories/travel/travel_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
@@ -289,6 +291,9 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           (innerContext) =>
               TravelRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
+    Provider<PlannersRepository>(
+      create: (innerContext) => PlannersRepositoryRealtimeDb(),
+    ),
 
     /// UserCases
     Provider<GetUserTravelsUseCase>(
@@ -323,6 +328,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             groupMembersRepository: innerContext.read(),
             participantsRepository: innerContext.read(),
             userSettingsRepository: innerContext.read(),
+            plannersRepository: innerContext.read(),
           ),
       lazy: false,
     ),
