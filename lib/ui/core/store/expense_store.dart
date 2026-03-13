@@ -6,7 +6,7 @@ import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
 import '../../../data/model/expense/expense_info.dart';
-import 'date_state.dart';
+import 'data_state.dart';
 
 /**
  * Travelをswitchしたらインスタンスごと捨てようかと思ったが、

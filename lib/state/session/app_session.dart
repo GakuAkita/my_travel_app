@@ -17,7 +17,7 @@ class AppSession extends ChangeNotifier {
 
   AppSession({required AuthRepository authRepository})
     : _authRepository = authRepository {
-    _authStateSubscription = authRepository.authStateChanges.listen((user) {
+    _authStateSubscription = _authRepository.authStateChanges.listen((user) {
       if (_currentUser != user) {
         _currentUser = user;
         print("${currentUser?.uid}");

@@ -5,7 +5,7 @@ import 'package:my_travel_app/data/repositories/group_members/group_members_repo
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
-import 'package:my_travel_app/ui/core/store/date_state.dart';
+import 'package:my_travel_app/ui/core/store/data_state.dart';
 
 import '../../../CommonClass/ResultInfo.dart';
 import '../../../data/model/traveler/traveler_basic.dart';
@@ -75,9 +75,9 @@ class TravelScopeStore extends ChangeNotifier {
 
   DataState<Map<String, TravelerBasic>> get allGroupMembers => _allGroupMembers;
 
-  DataState<String?> _generalManager = const DataState();
+  DataState<Map<String,TravelerCore>> _planners = const DataState();
 
-  DataState<String?> get generalManager => _generalManager;
+  DataState<Map<String,TravelerCore>> get planners => _planners;
 
   DataState<Map<String, TravelerCore>> _participants = const DataState();
 
@@ -208,6 +208,8 @@ class TravelScopeStore extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> _refresh
 
   @override
   void dispose() {
