@@ -360,6 +360,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create:
           (innerContext) => ExpensesViewModel(
             expenseStore: innerContext.read(),
+            travelScopeStore: innerContext.read(),
             travelSession: innerContext.read(),
           ),
       lazy: false,

@@ -2,17 +2,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
+import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
 
 import '../../../../../data/model/expense/expense_info.dart';
 import '../../../../../state/session/shown_travel_session.dart';
 
 class ExpensesViewModel extends ChangeNotifier {
   final ExpenseStore _expenseStore;
+  final TravelScopeStore _travelScopeStore;
   final ShownTravelSession _travelSession;
 
-  bool _isLoading = false;
+  bool _isExpensesLoading = false;
 
-  bool get isLoading => _isLoading;
+  bool get isExpensesLoading => _isExpensesLoading;
+
+  /* いらないか、、 */
+  bool isTravelScopeLoading() {
+    return _travelScopeStore.participants.isLoading ||
+        _travelScopeStore.planners.isLoading ||
+        _travelScopeStore.allGroupMembers.isLoading;
+  }
+
+  bool get isGroupMembersLoading => _travelScopeStore.allGroupMembers.isLoading;
 
   Map<String, ExpenseInfo>? _allExpenses;
 
@@ -51,8 +62,10 @@ class ExpensesViewModel extends ChangeNotifier {
    */
   ExpensesViewModel({
     required ExpenseStore expenseStore,
+    required TravelScopeStore travelScopeStore,
     required ShownTravelSession travelSession,
   }) : _expenseStore = expenseStore,
+       _travelScopeStore = travelScopeStore,
        _travelSession = travelSession {
     /**
      * UI側でviewModel.travelSession.currentTravelと書いてしまうと、
@@ -61,28 +74,40 @@ class ExpensesViewModel extends ChangeNotifier {
      *  */
     print("ExpenseViewModel was created code=${hashCode}");
 
-    _expenseStore.addListener(_sync);
+    _expenseStore.addListener(_expenseSync);
+    _travelScopeStore.addListener(_travelsSync);
   }
 
-  void _sync() {
+  void _expenseSync() {
     try {
       final expensesDataState = _expenseStore.allExpenses;
       if (expensesDataState.isLoading) {
         /* ずっとローディング状態になるのはちょっと怖いな。どこかでタイムアウトできないかな */
-        _isLoading = true;
+        _isExpensesLoading = true;
       } else if (expensesDataState.hasError) {
-        _isLoading = false;
+        _isExpensesLoading = false;
         /* エラー内容をUI側に伝えたい。 */
         print("expenseStore error=${expensesDataState.error?.errorMessage}");
       } else if (expensesDataState.hasData) {
         print("There are expenses");
-        _isLoading = false;
+        _isExpensesLoading = false;
         _allExpenses = _expenseStore.allExpenses.data;
       } else {
         /* エラーでもないけどdataがnull?? */
-        _isLoading = false;
+        _isExpensesLoading = false;
         print("this might be the coding error???");
       }
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  /* 旅行で必要なデータのsync */
+  void _travelsSync() {
+    try {
+      final groupMembersDataState = _travelScopeStore.allGroupMembers;
+      final plannersDataState = _travelScopeStore.planners;
+      final participantsDataState = _travelScopeStore.participants;
     } finally {
       notifyListeners();
     }
@@ -95,88 +120,10 @@ class ExpensesViewModel extends ChangeNotifier {
     );
   }
 
-  // Future<ResultInfo<void>> getAllGroupMembersWithNotify({
-  //   bool isStateNotify = true,
-  //   bool isGetProfileName = true,
-  // }) async {
-  //   print("getAllGroupMembersWithNotify called");
-  //   try {
-  //     final result = await getAllGroupMembers();
-  //     if (_disposed) {
-  //       return ResultInfo.success();
-  //     }
-  //     if (result.isSuccess) {
-  //       /* エラーハンドルしていないけど、いいか、 */
-  //       if (isGetProfileName) {
-  //         Future.wait([
-  //           for (final uid in result.data!.keys) getPutMembersProfileNames(uid),
-  //         ]);
-  //       }
-  //
-  //       return ResultInfo.success();
-  //     } else {
-  //       print("ExpensesViewModel: ${result.error?.errorMessage}");
-  //       return result.toVoid();
-  //     }
-  //   } finally {
-  //     if (!_disposed && isStateNotify) {
-  //       notifyListeners();
-  //     }
-  //   }
-  // }
-  //
-  // Future<ResultInfo<Map<String, TravelerBasic>>> getAllGroupMembersForGroup(
-  //   ShownTravelBasic? travel,
-  // ) async {
-  //   if (travel == null) {
-  //     return ResultInfo.success(data: {});
-  //   }
-  //
-  //   if (!checkIsShownTravelValid(travel).isSuccess) {
-  //     return ResultInfo.failed(
-  //       error: ErrorInfo(errorMessage: "Invalid shown travel"),
-  //     );
-  //   }
-  //   final groupId = travel.groupId!;
-  //
-  //   try {
-  //     final data = await _groupMembersRepository.getAllGroupMembers(groupId);
-  //     _allGroupMembers = data.toTravelerBasicMap();
-  //     return ResultInfo.success(data: data.toTravelerBasicMap());
-  //   } catch (e) {
-  //     return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
-  //   }
-  // }
-  //
-  // /* 引数にMap<String,TravelerBasic>をもったほうがいい気がするが、、今は必要ないからこれでいいや。 */
-  // Future<ResultInfo> getPutMembersProfileNames(String uid) async {
-  //   if (_allGroupMembers.isEmpty) {
-  //     return ResultInfo.success();
-  //   }
-  //   try {
-  //     final profileName = await _userSettingsRepository.getProfileName(uid);
-  //     if (_disposed) {
-  //       return ResultInfo.success();
-  //     }
-  //     if (_allGroupMembers[uid] != null) {
-  //       _allGroupMembers[uid] = _allGroupMembers[uid]!.copyWith(
-  //         profile_name: profileName,
-  //       );
-  //     } else {
-  //       throw AppException(
-  //         "uid:${uid} doesn't exist in group members. This is probably coding error.",
-  //       );
-  //     }
-  //
-  //     return ResultInfo.success();
-  //   } catch (e) {
-  //     return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
-  //   }
-  // }
-
   @override
   void dispose() {
-    _expenseStore.removeListener(_sync);
+    _expenseStore.removeListener(_expenseSync);
+    _travelScopeStore.removeListener(_travelsSync);
     print("ExpenseViewModel was disposed. code=${hashCode}");
     // TODO: implement dispose
     super.dispose();
