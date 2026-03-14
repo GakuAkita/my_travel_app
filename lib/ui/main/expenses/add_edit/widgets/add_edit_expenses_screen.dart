@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_travel_app/components/BasicText.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
 import 'package:my_travel_app/ui/start/start/widgets/start_screen.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicTextField.dart';
 import '../../../../../components/RoundedButton.dart';
@@ -10,12 +12,6 @@ import '../../../../../data/model/expense/expense_info.dart';
 import '../../../../../data/model/traveler/traveler_basic.dart';
 
 class AddEditExpenseScreen extends StatefulWidget {
-  static const String id = "add_expense_screen";
-
-  final String? expenseId;
-
-  AddEditExpenseScreen({this.expenseId, super.key});
-
   @override
   State<AddEditExpenseScreen> createState() => _AddEditExpenseScreenState();
 }
@@ -23,14 +19,6 @@ class AddEditExpenseScreen extends StatefulWidget {
 class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   String? _shownTravelId;
   String? _shownGroupId;
-
-  ExpenseInfo? _initialExpense;
-
-  /* 参加者 */
-  List<TravelerBasic> _allParticipants = [];
-
-  /* グループメンバー(参加者をすべて含む) */
-  List<TravelerBasic> _allGroupMembers = [];
 
   /* isCheckedも含んでいる */
   //List<TravelerInfo> _travelersOptions = [];
@@ -66,23 +54,6 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   void initState() {
     super.initState();
 
-    //final expenseStore = context.read<ExpenseStore>();
-
-    // _shownGroupId = expenseStore.shownTravelBasic?.groupId;
-    // _shownTravelId = expenseStore.shownTravelBasic?.travelId;
-
-    // /* プロファイル名は入ってないはず、、 */
-    // _allParticipants =
-    //     expenseStore.allParticipants.entries.map((entry) {
-    //       final value = entry.value;
-    //       return value;
-    //     }).toList();
-    //
-    // _allGroupMembers =
-    //     expenseStore.allGroupMembers.entries.map((entry) {
-    //       final value = entry.value;
-    //       return value;
-    //     }).toList();
     //
     // /**
     //  * 全員参加ではない
@@ -166,6 +137,8 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<AddEditExpenseViewModel>();
+
     return Scaffold(
       appBar: TopAppBar(
         automaticallyImplyLeading: true,
@@ -189,7 +162,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                           value: _payer,
                           hint: Text("支払った人"),
                           items:
-                              _allGroupMembers.map((traveler) {
+                              allGroupMembers.map((traveler) {
                                 final displayName =
                                     traveler.profile_name ??
                                     traveler.core.email;

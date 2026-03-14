@@ -59,7 +59,7 @@ class TravelScopeStore extends ChangeNotifier {
           isLoadingNotify: true,
           isGetProfileName: true,
         ),
-        _refreshParticipants(isLastNotify: false, isLoadingNotify: true),
+        refreshParticipants(isLastNotify: false, isLoadingNotify: true),
         _refreshPlanners(isLastNotify: false, isLoadingNotify: true),
       ]);
     } finally {
@@ -87,6 +87,19 @@ class TravelScopeStore extends ChangeNotifier {
   DataState<Map<String, TravelerCore>> _participants = const DataState();
 
   DataState<Map<String, TravelerCore>> get participants => _participants;
+
+  Future<void> refreshAllGroupMembers({
+    bool isLoadingNotify = true,
+    bool isLastNotify = true,
+    //bool isGetProfileName = true,
+  }) async {
+    /* 一応全部引数つけておくが、外部からはProfile名取得を強制にするとかもできる。 */
+    await _refreshAllGroupMembers(
+      isLoadingNotify: isLoadingNotify,
+      isLastNotify: isLastNotify,
+      isGetProfileName: true,
+    );
+  }
 
   /* sessionに紐づいているから他の旅行の取る場面はないと想定。 */
   Future<void> _refreshAllGroupMembers({
@@ -178,7 +191,7 @@ class TravelScopeStore extends ChangeNotifier {
     }
   }
 
-  Future<void> _refreshParticipants({
+  Future<void> refreshParticipants({
     bool isLastNotify = true,
     bool isLoadingNotify = true,
   }) async {

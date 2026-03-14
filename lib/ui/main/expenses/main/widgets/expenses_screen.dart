@@ -35,10 +35,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         floatingActionButton:
             viewModel.isExpensesLoading ||
                     !viewModel.expenseStoreInitialized ||
-                    !viewModel.travelScopeStoreInitialized
+                    !viewModel.travelScopeStoreInitialized ||
+                    viewModel.isGroupMembersLoading ||
+                    viewModel.isParticipantsLoading
                 ? null
                 : FloatingActionButton(
                   onPressed: () {
+                    /* 新規作成 */
                     context.push(Routes.expenses_add_edit);
                   },
                 ),
@@ -49,7 +52,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ? RefreshIndicator(
                   onRefresh: () async {
                     print("^^^^^ExpensesScreen: onRefresh called^^^^^^^");
-                    await viewModel.refreshExpenses(isLoadingNotify: false);
+                    viewModel.refreshExpenses(isLoadingNotify: false);
+                    viewModel.refreshParticipants(isLoadingNotify: false);
                   },
                   child: Column(
                     children: [
@@ -94,11 +98,19 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               itemCount: viewModel.allExpensesList().length,
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
+                                final expense =
+                                    viewModel.allExpensesList()[index];
                                 return ExpenseTile(
-                                  expense: viewModel.allExpensesList()[index],
+                                  expense: expense,
                                   members:
-                                      viewModel
-                                          .allGroupMembers /* viewModel内でStateを監視して取る */,
+                                      viewModel.allGroupMembers ??
+                                      {} /* viewModel内でStateを監視して取る */,
+                                  onTap: () {
+                                    context.push(
+                                      Routes.expenses_add_edit,
+                                      extra: expense.id,
+                                    );
+                                  },
                                 );
                               },
                             ),

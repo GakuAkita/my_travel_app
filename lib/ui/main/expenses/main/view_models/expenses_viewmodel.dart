@@ -151,6 +151,13 @@ class ExpensesViewModel extends ChangeNotifier {
     );
   }
 
+  Future<void> refreshParticipants({bool isLoadingNotify = true}) async {
+    await _travelScopeStore.refreshParticipants(
+      isLoadingNotify: isLoadingNotify,
+      isLastNotify: true,
+    );
+  }
+
   @override
   void dispose() {
     _expenseStore.removeListener(_expenseSync);

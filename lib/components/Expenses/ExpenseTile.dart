@@ -7,8 +7,14 @@ import '../../data/model/traveler/traveler_basic.dart';
 class ExpenseTile extends StatelessWidget {
   final ExpenseInfo expense;
   final Map<String, TravelerBasic> members;
+  final VoidCallback? onTap;
 
-  ExpenseTile({required this.expense, required this.members, super.key});
+  ExpenseTile({
+    required this.expense,
+    required this.members,
+    this.onTap,
+    super.key,
+  });
 
   String getProfileNameFromUid(String uid) {
     if (members[uid] == null) {
@@ -67,13 +73,7 @@ class ExpenseTile extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () {
-          // Navigator.pushNamed(
-          //   context,
-          //   AddEditExpenseScreen.id,
-          //   arguments: {"expenseId": expense.id},
-          // );
-        },
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
