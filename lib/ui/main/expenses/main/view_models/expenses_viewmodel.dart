@@ -27,7 +27,9 @@ class ExpensesViewModel extends ChangeNotifier {
 
   Map<String, ExpenseInfo>? _allExpenses;
 
-  bool get storeInitialized => _expenseStore.storeInitialized;
+  bool get expenseStoreInitialized => _expenseStore.storeInitialized;
+
+  bool get travelScopeStoreInitialized => _travelScopeStore.storeInitialized;
 
   List<ExpenseInfo> allExpensesList({bool sort = true}) {
     if (_allExpenses == null) {

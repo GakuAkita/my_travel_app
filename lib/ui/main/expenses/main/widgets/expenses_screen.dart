@@ -27,10 +27,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ExpensesViewModel>();
     return LoadingOverlay(
-      isLoading: viewModel.isLoading || !viewModel.storeInitialized,
+      isLoading:
+          viewModel.isExpensesLoading ||
+          !viewModel.expenseStoreInitialized ||
+          !viewModel.travelScopeStoreInitialized,
       child: Scaffold(
         floatingActionButton:
-            viewModel.isLoading
+            viewModel.isExpensesLoading ||
+                    !viewModel.expenseStoreInitialized ||
+                    viewModel.travelScopeStoreInitialized
                 ? null
                 : FloatingActionButton(
                   onPressed: () {
@@ -38,7 +43,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   },
                 ),
         body:
-            viewModel.isLoading
+            viewModel.isExpensesLoading
                 ? Center(child: Text("loading..."))
                 : viewModel.currentTravel != null
                 ? RefreshIndicator(
