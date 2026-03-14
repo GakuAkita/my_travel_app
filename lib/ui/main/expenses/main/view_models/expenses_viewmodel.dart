@@ -110,6 +110,10 @@ class ExpensesViewModel extends ChangeNotifier {
       final groupMembersDataState = _travelScopeStore.allGroupMembers;
       final plannersDataState = _travelScopeStore.planners;
       final participantsDataState = _travelScopeStore.participants;
+
+      if (groupMembersDataState.hasData) {
+        _allGroupMembers = groupMembersDataState.data!;
+      }
     } finally {
       notifyListeners();
     }

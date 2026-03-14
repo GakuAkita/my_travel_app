@@ -162,12 +162,15 @@ class TravelScopeStore extends ChangeNotifier {
 
     try {
       final profileName = await _userSettingsRepository.getProfileName(uid);
-      if (_allGroupMembers.data![uid] != null) {
+      if (_allGroupMembers.data != null &&
+          _allGroupMembers.data![uid] != null) {
         _allGroupMembers.data![uid] = _allGroupMembers.data![uid]!.copyWith(
           profile_name: profileName,
         );
       }
       return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     } finally {
       if (isLastNotify) {
         notifyListeners();
