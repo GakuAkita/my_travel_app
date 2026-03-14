@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
 import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
 
@@ -12,18 +13,13 @@ class ExpensesViewModel extends ChangeNotifier {
   final TravelScopeStore _travelScopeStore;
   final ShownTravelSession _travelSession;
 
-  bool _isExpensesLoading = false;
-
-  bool get isExpensesLoading => _isExpensesLoading;
-
-  /* いらないか、、 */
-  bool isTravelScopeLoading() {
-    return _travelScopeStore.participants.isLoading ||
-        _travelScopeStore.planners.isLoading ||
-        _travelScopeStore.allGroupMembers.isLoading;
-  }
+  bool get isExpensesLoading => _expenseStore.allExpenses.isLoading;
 
   bool get isGroupMembersLoading => _travelScopeStore.allGroupMembers.isLoading;
+
+  bool get isParticipantsLoading => _travelScopeStore.participants.isLoading;
+
+  bool get isPlannerLoading => _travelScopeStore.planners.isLoading;
 
   Map<String, ExpenseInfo>? _allExpenses;
 
@@ -53,9 +49,17 @@ class ExpensesViewModel extends ChangeNotifier {
     return listedExpenses;
   }
 
-  Map<String, TravelerBasic> _allGroupMembers = {};
+  Map<String, TravelerBasic>? _allGroupMembers;
 
-  Map<String, TravelerBasic> get allGroupMembers => _allGroupMembers;
+  Map<String, TravelerBasic>? get allGroupMembers => _allGroupMembers;
+
+  Map<String, TravelerCore>? _allPlanners;
+
+  Map<String, TravelerCore>? get allPlanners => _allPlanners;
+
+  Map<String, TravelerCore>? _allParticipants;
+
+  Map<String, TravelerCore>? get allParticipants => _allParticipants;
 
   ShownTravelBasic? get currentTravel => _travelSession.currentTravel;
 
@@ -83,20 +87,14 @@ class ExpensesViewModel extends ChangeNotifier {
   void _expenseSync() {
     try {
       final expensesDataState = _expenseStore.allExpenses;
-      if (expensesDataState.isLoading) {
-        /* ずっとローディング状態になるのはちょっと怖いな。どこかでタイムアウトできないかな */
-        _isExpensesLoading = true;
-      } else if (expensesDataState.hasError) {
-        _isExpensesLoading = false;
+      if (expensesDataState.hasError) {
         /* エラー内容をUI側に伝えたい。 */
         print("expenseStore error=${expensesDataState.error?.errorMessage}");
       } else if (expensesDataState.hasData) {
         print("There are expenses");
-        _isExpensesLoading = false;
-        _allExpenses = _expenseStore.allExpenses.data;
+        _allExpenses = _expenseStore.allExpenses.data!;
       } else {
         /* エラーでもないけどdataがnull?? */
-        _isExpensesLoading = false;
         print("this might be the coding error???");
       }
     } finally {
@@ -111,8 +109,35 @@ class ExpensesViewModel extends ChangeNotifier {
       final plannersDataState = _travelScopeStore.planners;
       final participantsDataState = _travelScopeStore.participants;
 
-      if (groupMembersDataState.hasData) {
-        _allGroupMembers = groupMembersDataState.data!;
+      if (groupMembersDataState.hasError) {
+        print(
+          "groupMembers error=${groupMembersDataState.error?.errorMessage}",
+        );
+      } else if (groupMembersDataState.hasData) {
+        print("There are group members!");
+        _allGroupMembers = groupMembersDataState.data;
+      } else {
+        print("This might be coding error?? group members");
+      }
+
+      if (plannersDataState.hasError) {
+        print("planners error=${plannersDataState.error?.errorMessage}");
+      } else if (plannersDataState.hasData) {
+        print("There are planners!");
+        _allPlanners = plannersDataState.data;
+      } else {
+        print("This might be coding error?? planners");
+      }
+
+      if (participantsDataState.hasError) {
+        print(
+          "participants error=${participantsDataState.error?.errorMessage}",
+        );
+      } else if (participantsDataState.hasData) {
+        print("There are participants");
+        _allParticipants = participantsDataState.data;
+      } else {
+        print("This might be coding error??? participants");
       }
     } finally {
       notifyListeners();
