@@ -35,7 +35,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         floatingActionButton:
             viewModel.isExpensesLoading ||
                     !viewModel.expenseStoreInitialized ||
-                    viewModel.travelScopeStoreInitialized
+                    !viewModel.travelScopeStoreInitialized
                 ? null
                 : FloatingActionButton(
                   onPressed: () {

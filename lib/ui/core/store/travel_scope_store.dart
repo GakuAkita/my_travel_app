@@ -122,6 +122,8 @@ class TravelScopeStore extends ChangeNotifier {
       );
 
       Map<String, TravelerBasic> data = _data.toTravelerBasicMap();
+      /* getPutMembersProfileNameでは_allGroupMembersを見るのでここで一度入れておかないとだめ */
+      _allGroupMembers = DataState(data: data);
       if (isGetProfileName) {
         await Future.wait([
           /* getPutMembersProfileNAmesにawaitしたら並行処理の意味ない */
@@ -130,6 +132,10 @@ class TravelScopeStore extends ChangeNotifier {
         ]);
       }
 
+      /* デバッグ */
+      // data.entries.forEach((entry) {
+      //   print("${entry.key} : ${data[entry.key]?.profile_name} ");
+      // });
       _allGroupMembers = DataState(data: data, isLoading: false, error: null);
       return;
     } catch (e) {
@@ -155,18 +161,13 @@ class TravelScopeStore extends ChangeNotifier {
     }
 
     try {
-      if (_allGroupMembers.hasData) {
-        final profileName = await _userSettingsRepository.getProfileName(uid);
-        if (_allGroupMembers.data![uid] != null) {
-          _allGroupMembers.data![uid] = _allGroupMembers.data![uid]!.copyWith(
-            profile_name: profileName,
-          );
-        }
-        return ResultInfo.success();
+      final profileName = await _userSettingsRepository.getProfileName(uid);
+      if (_allGroupMembers.data![uid] != null) {
+        _allGroupMembers.data![uid] = _allGroupMembers.data![uid]!.copyWith(
+          profile_name: profileName,
+        );
       }
-      return ResultInfo.failed(
-        error: ErrorInfo(errorMessage: "No data to update"),
-      );
+      return ResultInfo.success();
     } finally {
       if (isLastNotify) {
         notifyListeners();

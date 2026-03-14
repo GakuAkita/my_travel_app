@@ -7,9 +7,9 @@ class PlannersRepositoryRealtimeDb implements PlannersRepository {
   Future<Map<String, TravelerCore>> getAllPlanners(
     String groupId,
     String travelId,
-  ) {
+  ) async {
     // TODO: implement getAllPlanners
-    throw UnimplementedError();
+    return {};
   }
 
   @override
