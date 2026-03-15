@@ -151,41 +151,42 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                   Wrap(
                     spacing: 2, // 横の隙間
                     runSpacing: 8.0, // 縦の隙間
-                    // children:
-                    //     _travelersOptions.asMap().entries.map((entry) {
-                    //       final index = entry.key;
-                    //       final traveler = entry.value;
-                    //       final displayName =
-                    //           traveler.profile_name ?? traveler.core.email;
-                    //
-                    //       return SizedBox(
-                    //         width:
-                    //             MediaQuery.of(context).size.width / 2 -
-                    //             24, // 2列になるよう幅を調整
-                    //         child: Row(
-                    //           mainAxisSize: MainAxisSize.min,
-                    //           children: [
-                    //             Checkbox(
-                    //               value: traveler.isChecked,
-                    //               onChanged: (bool? newValue) {
-                    //                 setState(() {
-                    //                   _travelersOptions[index] = traveler
-                    //                       .copyWith(
-                    //                         isChecked: newValue ?? false,
-                    //                       );
-                    //                 });
-                    //               },
-                    //             ),
-                    //             Flexible(
-                    //               child: Text(
-                    //                 displayName,
-                    //                 overflow: TextOverflow.ellipsis,
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       );
-                    //     }).toList(),
+                    children:
+                        _travelersOptions.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final traveler = entry.value;
+                          final displayName =
+                              traveler.traveler.profile_name ??
+                              traveler.traveler.core.email;
+
+                          return SizedBox(
+                            width:
+                                MediaQuery.of(context).size.width / 2 -
+                                24, // 2列になるよう幅を調整
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Checkbox(
+                                  value: traveler.isChecked,
+                                  onChanged: (bool? newValue) {
+                                    setState(() {
+                                      _travelersOptions[index] = traveler
+                                          .copyWith(
+                                            isChecked: newValue ?? false,
+                                          );
+                                    });
+                                  },
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    displayName,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -263,11 +264,11 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
 
                       /* isCheckedの人数をカウントして何もチェックされていなかったら弾く */
                       int cnt = 0;
-                      // for (final traveler in _travelersOptions) {
-                      //   if (traveler.isChecked) {
-                      //     cnt++;
-                      //   }
-                      // }
+                      for (final traveler in _travelersOptions) {
+                        if (traveler.isChecked) {
+                          cnt++;
+                        }
+                      }
                       if (cnt == 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -285,7 +286,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                         print("_expenseが0以下になっている");
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("金額が再入力してください:$_expense"),
+                            content: Text("金額を再入力してください:$_expense"),
                             backgroundColor:
                                 Theme.of(context).colorScheme.onError,
                           ),
@@ -331,7 +332,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       }
                       /* ここでセットするデータを作っていく */
                       //今払ってもらった人側は配列なのでdicに変換していく
-                      Map<String, Map<String, String>> reimbursedBy = {};
+                      // Map<String, Map<String, String>> reimbursedBy = {};
                       // _travelersOptions.forEach((traveler) {
                       //   if (traveler.isChecked == true) {
                       //     reimbursedBy[traveler.core.uid] = {
