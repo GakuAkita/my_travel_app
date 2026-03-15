@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_travel_app/components/BasicText.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_traveler.dart';
 import 'package:my_travel_app/ui/start/start/widgets/start_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -21,9 +23,14 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   String? _shownGroupId;
 
   /* isCheckedも含んでいる */
-  //List<TravelerInfo> _travelersOptions = [];
+
+  /// _travelersをそのままドロップダウンのリストにすると、
+  /// その後で支払者のチェックボックスを切り替えた時、ドロップダウンの方にも影響が行ってしまい
+  /// クラッシュする
+  List<SelectedTraveler> _travelersOptions = [];
 
   /* チェックされた人(支払われた人) */
+  TravelerBasic? _payer;
 
   /**
    * 支払い用の選択肢と誰の支払いか(チェック付き)の配列を
@@ -31,14 +38,11 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
    * インスタンスを別にしないといけないからだと思う。
    */
 
+  /// グループメンバーをいれる
+  List<TravelerBasic> _payerOption = [];
+
   int _expense = 0;
   String _expenseItem = "";
-
-  /// _travelersをそのままドロップダウンのリストにすると、
-  /// その後で支払者のチェックボックスを切り替えた時、ドロップダウンの方にも影響が行ってしまい
-  /// クラッシュする
-
-  TravelerBasic? _payer;
 
   final TextEditingController _expenseController = TextEditingController();
   final TextEditingController _expenseItemController = TextEditingController();
@@ -50,9 +54,57 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
     super.dispose();
   }
 
+  void initTravelerOptions() {
+    final viewModel = context.read<AddEditExpenseViewModel>();
+    /* エラーが出ているときは弾いた方が良い？ */
+
+    /// 本当はViewModel内にOptionsらも格納したかったが、無理そう、、
+    if (viewModel.expenseId == null) {
+      ///新規追加のとき
+
+      _travelersOptions =
+          viewModel.groupMembers.map((member) {
+            /* デフォルトの選択肢はグループメンバーの中の参加者 */
+            final bool isParticipant = viewModel.participants.any(
+              (p) => p.uid == member.core.uid,
+            );
+            return SelectedTraveler(
+              traveler: member.core,
+              isChecked: isParticipant,
+            );
+          }).toList();
+    } else {
+      final reimbursedBy = viewModel.initialExpense?.reimbursedBy;
+      if (reimbursedBy != null) {
+        // 最初にreimbursedBYになっているユーザーだけチェック
+        _travelersOptions =
+            viewModel.groupMembers.map((member) {
+              final bool isChecked = reimbursedBy.containsKey(member.core.uid);
+              return SelectedTraveler(
+                traveler: member.core,
+                isChecked: isChecked,
+              );
+            }).toList();
+      }
+    }
+  }
+
+  void initPayer() {
+    final viewModel = context.read<AddEditExpenseViewModel>();
+    _payerOption = viewModel.groupMembers;
+    _payerOption.forEach((member) {
+      if (member.core.uid == viewModel.uid) {
+        _payer = member;
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+
+    initTravelerOptions();
+    initPayer();
 
     //
     // /**
