@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_travel_app/components/BasicText.dart';
-import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_traveler.dart';
@@ -10,7 +9,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicTextField.dart';
 import '../../../../../components/RoundedButton.dart';
-import '../../../../../data/model/expense/expense_info.dart';
 import '../../../../../data/model/traveler/traveler_basic.dart';
 
 class AddEditExpenseScreen extends StatefulWidget {
@@ -68,10 +66,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
             final bool isParticipant = viewModel.participants.any(
               (p) => p.uid == member.core.uid,
             );
-            return SelectedTraveler(
-              traveler: member.core,
-              isChecked: isParticipant,
-            );
+            return SelectedTraveler(traveler: member, isChecked: isParticipant);
           }).toList();
     } else {
       final reimbursedBy = viewModel.initialExpense?.reimbursedBy;
@@ -80,10 +75,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
         _travelersOptions =
             viewModel.groupMembers.map((member) {
               final bool isChecked = reimbursedBy.containsKey(member.core.uid);
-              return SelectedTraveler(
-                traveler: member.core,
-                isChecked: isChecked,
-              );
+              return SelectedTraveler(traveler: member, isChecked: isChecked);
             }).toList();
       }
     }
@@ -106,84 +98,6 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
     initTravelerOptions();
     initPayer();
 
-    //
-    // /**
-    //  * 全員参加ではない
-    //  */
-    // if (widget.expenseId == null) {
-    //   /* 新規作成時は全メンバーの中で参加している人だけチェック入れる */
-    //   _travelersOptions =
-    //       expenseStore.allGroupMembers.entries.map((entry) {
-    //         final member = entry.value;
-    //         final bool isParticipate = _allParticipants.any(
-    //           (participant) => participant.core.uid == member.core.uid,
-    //         );
-    //
-    //         return TravelerInfo(
-    //           uid: member.core.uid,
-    //           email: member.core.email,
-    //           profile_name: member.profile_name,
-    //           isChecked: isParticipate,
-    //         );
-    //       }).toList();
-    //
-    //   if (_allGroupMembers.isNotEmpty) {
-    //     for (final traveler in _allGroupMembers) {
-    //       if (traveler.core.uid == expenseStore.currentUserId) {
-    //         _payer = traveler;
-    //         break;
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   /**
-    //    * expenseIdだけ渡されて、ここで初期値を設定していく
-    //    */
-    //   int initialExpenseIndex = -1;
-    //   for (int i = 0; i < expenseStore.allExpenses.length; i++) {
-    //     if (expenseStore.allExpenses[i].id == widget.expenseId) {
-    //       initialExpenseIndex = i;
-    //       break;
-    //     }
-    //   }
-    //   if (initialExpenseIndex == -1) {
-    //     print(
-    //       "Unable to find expense with id ${widget.expenseId}!! Something went wrong!!!",
-    //     );
-    //     /* 入力不可にしたい、、、 */
-    //     return;
-    //   }
-    //   final initialExpense = expenseStore.allExpenses[initialExpenseIndex];
-    //   _initialExpense = initialExpense;
-
-    // final TravelerBasic payerBasic = initialExpense.payer;
-    // for (final traveler in _allGroupMembers) {
-    //   if (traveler.uid == payerBasic.uid) {
-    //     _payer = traveler;
-    //     break;
-    //   }
-    // }
-
-    //   _travelersOptions =
-    //       expenseStore.allGroupMembers.entries.map((entry) {
-    //         final value = entry.value;
-    //         /* isCheckedを */
-    //         return TravelerInfo(
-    //           uid: value.core.uid,
-    //           email: value.core.email,
-    //           profile_name: value.profile_name,
-    //           isChecked: initialExpense.reimbursedBy.containsKey(
-    //             value.core.uid,
-    //           ),
-    //         );
-    //       }).toList();
-    //
-    //   _expenseController.text = initialExpense.expense.toString();
-    //   _expense = initialExpense.expense;
-    //
-    //   _expenseItemController.text = initialExpense.expenseItem;
-    //   _expenseItem = initialExpense.expenseItem;
-    // }
     setState(() {});
   }
 
@@ -194,7 +108,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
     return Scaffold(
       appBar: TopAppBar(
         automaticallyImplyLeading: true,
-        title: widget.expenseId == null ? "費用を追加" : "費用を編集",
+        title: viewModel.expenseId == null ? "費用を追加" : "費用を編集",
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -214,13 +128,13 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                           value: _payer,
                           hint: Text("支払った人"),
                           items:
-                              allGroupMembers.map((traveler) {
+                              _travelersOptions.map((traveler) {
                                 final displayName =
-                                    traveler.profile_name ??
-                                    traveler.core.email;
+                                    traveler.traveler.profile_name ??
+                                    traveler.traveler.core.email;
                                 return DropdownMenuItem<TravelerBasic>(
-                                  value: traveler,
-                                  child: Text(displayName),
+                                  value: traveler.traveler,
+                                  child: Text(displayName, maxLines: 1),
                                 );
                               }).toList(),
                           onChanged: (TravelerBasic? newTraveler) {
@@ -332,7 +246,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                     ),
                   ),
                   RoundedButton(
-                    title: widget.expenseId == null ? "費用を保存" : "費用を更新",
+                    title: viewModel.expenseId == null ? "費用を保存" : "費用を更新",
                     onPressed: () async {
                       /* ここで値をチェックする */
                       if (_payer == null) {
@@ -489,7 +403,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                     },
                   ),
                   SizedBox(height: 80),
-                  if (widget.expenseId != null)
+                  if (viewModel.expenseId != null)
                     RoundedButton(
                       title: "費用を削除",
                       buttonStyle: ElevatedButton.styleFrom(
