@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/model/expense/expense_info.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
@@ -98,14 +99,67 @@ class AddEditExpenseViewModel extends ChangeNotifier {
     String expenseItem,
     int expense,
   ) {
-    final payerCore = payer.core;
-    final Map<String, Map<String, TravelerCore>> reimbursedBy = {};
+    if (payer == null) {
+      print("_payer is empty!!");
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "支払った人が選択されていません"),
+      );
+    }
+
+    /* isCheckedの人数をカウントして何もチェックされていなかったら弾く */
+    int cnt = 0;
+    for (final traveler in options) {
+      if (traveler.isChecked) {
+        cnt++;
+      }
+    }
+    if (cnt == 0) {
+      print("No one is checked!!!");
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "No one is checked"),
+      );
+    }
+
+    /* 金額をチェックする */
+    if (expense <= 0) {
+      print("_expenseが0以下になっている");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "金額が0以下になっています"));
+    }
+
+    /* 文字列をカウントしたい。 */
+    if (expenseItem.length > 100) {
+      print("100文字を超えているのでだめです。");
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "何に使ったが100文字を超えています"),
+      );
+    }
+
+    if (expenseItem.isEmpty) {
+      print("何に使ったが入力されていません");
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "何に使ったが入力されていません"),
+      );
+    }
+
+    final TravelerCore payerCore = payer.core;
+    final Map<String, TravelerCore> reimbursedBy = {};
 
     for (final option in options) {
-      reimbursedBy[option.traveler.uid] = {
-        option.traveler.uid: option.traveler,
-      };
+      if (option.isChecked) {
+        reimbursedBy[option.traveler.core.uid] = option.traveler.core;
+      }
     }
+
+    final expenseInfo = ExpenseInfo(
+      id: _expenseId,
+      payer: payer.core,
+      reimbursedBy: reimbursedBy,
+      expenseItem: expenseItem,
+      expense: expense,
+      createdAt: _initialExpense?.createdAt,
+    );
+
+    return ResultInfo.success(data: expenseInfo);
   }
 
   @override
