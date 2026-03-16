@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/model/expense/expense_info.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
 import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_traveler.dart';
 
 import '../../../../../data/model/traveler/traveler_core/traveler_core.dart';
 
@@ -83,6 +85,26 @@ class AddEditExpenseViewModel extends ChangeNotifier {
         /// initialExpenseで値を持っておく
         _initialExpense = _expenseStore.allExpenses.data![_expenseId];
       }
+    }
+
+    print("AddEditViewModel was created");
+  }
+
+  /* Validationを終えてからこれを実行する */
+  /* 失敗した場合はUI側でSnackBar */
+  ResultInfo<ExpenseInfo> createExpenseFromInput(
+    TravelerBasic? payer,
+    List<SelectedTraveler> options,
+    String expenseItem,
+    int expense,
+  ) {
+    final payerCore = payer.core;
+    final Map<String, Map<String, TravelerCore>> reimbursedBy = {};
+
+    for (final option in options) {
+      reimbursedBy[option.traveler.uid] = {
+        option.traveler.uid: option.traveler,
+      };
     }
   }
 

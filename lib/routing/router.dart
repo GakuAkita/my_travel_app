@@ -153,7 +153,20 @@ GoRouter createRouter(AppSession session) {
           ),
           GoRoute(
             path: Routes.expenses_add_edit,
-            builder: (context, state) => AddEditExpenseScreen(),
+            builder: (context, state) {
+              final expenseId = state.extra as String?;
+              return ChangeNotifierProvider(
+                create:
+                    (innerContext) => AddEditExpenseViewModel(
+                      expenseId: expenseId,
+                      expenseRepository: innerContext.read(),
+                      expenseStore: innerContext.read(),
+                      travelScopeStore: innerContext.read(),
+                      appSession: innerContext.read(),
+                    ),
+                child: AddEditExpenseScreen(),
+              );
+            },
           ),
           GoRoute(
             path: Routes.settings_travel_select,
@@ -170,22 +183,6 @@ GoRouter createRouter(AppSession session) {
                 ),
           ),
         ],
-      ),
-      GoRoute(
-        path: Routes.expenses_add_edit,
-        builder: (context, state) {
-          final expenseId = state.extra as String?;
-          return ChangeNotifierProvider(
-            create:
-                (innerContext) => AddEditExpenseViewModel(
-                  expenseId: expenseId,
-                  expenseRepository: innerContext.read(),
-                  expenseStore: innerContext.read(),
-                  travelScopeStore: innerContext.read(),
-                ),
-            child: AddEditExpenseScreen(),
-          );
-        },
       ),
     ],
   );

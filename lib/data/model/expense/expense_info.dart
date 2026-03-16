@@ -14,7 +14,7 @@ abstract class ExpenseInfo
   const factory ExpenseInfo({
     required String? id,
     required TravelerCore payer,
-    required Map<String, Map<String, String>> reimbursedBy,
+    required Map<String, TravelerCore> reimbursedBy,
     required String expenseItem,
     required int expense,
     /* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */

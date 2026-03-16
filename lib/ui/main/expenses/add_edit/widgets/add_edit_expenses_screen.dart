@@ -17,11 +17,6 @@ class AddEditExpenseScreen extends StatefulWidget {
 }
 
 class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
-  String? _shownTravelId;
-  String? _shownGroupId;
-
-  /* isCheckedも含んでいる */
-
   /// _travelersをそのままドロップダウンのリストにすると、
   /// その後で支払者のチェックボックスを切り替えた時、ドロップダウンの方にも影響が行ってしまい
   /// クラッシュする
@@ -59,10 +54,9 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
     /// 本当はViewModel内にOptionsらも格納したかったが、無理そう、、
     if (viewModel.expenseId == null) {
       ///新規追加のとき
-
+      ///参加者のみチェック
       _travelersOptions =
           viewModel.groupMembers.map((member) {
-            /* デフォルトの選択肢はグループメンバーの中の参加者 */
             final bool isParticipant = viewModel.participants.any(
               (p) => p.uid == member.core.uid,
             );
@@ -84,11 +78,11 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   void initPayer() {
     final viewModel = context.read<AddEditExpenseViewModel>();
     _payerOption = viewModel.groupMembers;
-    _payerOption.forEach((member) {
+    for (var member in _payerOption) {
       if (member.core.uid == viewModel.uid) {
         _payer = member;
       }
-    });
+    }
   }
 
   @override
@@ -319,18 +313,9 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                         return;
                       }
 
-                      if (_shownGroupId == null || _shownTravelId == null) {
-                        print("groupId and travelId is null!!");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("旅行の情報が取得できませんでした"),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.onError,
-                          ),
-                        );
-                        return;
-                      }
                       /* ここでセットするデータを作っていく */
+                      /* viewModel側でExpenseを作る */
+
                       //今払ってもらった人側は配列なのでdicに変換していく
                       // Map<String, Map<String, String>> reimbursedBy = {};
                       // _travelersOptions.forEach((traveler) {
@@ -417,18 +402,6 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                         textStyle: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onPressed: () async {
-                        if (_shownGroupId == null || _shownTravelId == null) {
-                          print("groupId and travelId is null!!");
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("旅行の情報が取得できませんでした"),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.onError,
-                            ),
-                          );
-                          return;
-                        }
-
                         // final ref =
                         //     FirebaseDatabaseService.singleTravelExpenseIdRef(
                         //       _shownGroupId!,
