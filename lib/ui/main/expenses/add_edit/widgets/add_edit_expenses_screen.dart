@@ -243,72 +243,47 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                   RoundedButton(
                     title: viewModel.expenseId == null ? "費用を保存" : "費用を更新",
                     onPressed: () async {
-                      /* ここでセットするデータを作っていく */
-                      /* viewModel側でExpenseを作る */
+                      final expenseResult = viewModel.createExpenseFromInput(
+                        _payer,
+                        _travelersOptions,
+                        _expenseItem,
+                        _expense,
+                      );
 
-                      //今払ってもらった人側は配列なのでdicに変換していく
-                      // Map<String, Map<String, String>> reimbursedBy = {};
-                      // _travelersOptions.forEach((traveler) {
-                      //   if (traveler.isChecked == true) {
-                      //     reimbursedBy[traveler.core.uid] = {
-                      //       "uid": traveler.core.uid,
-                      //       "email": traveler.core.email,
-                      //     };
-                      //   }
-                      // });
+                      if (expenseResult.isFailed) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "${expenseResult.error?.errorMessage}",
+                            ),
+                          ),
+                        );
+                      } else if (!expenseResult.isSuccess) {
+                        /* Unknown state */
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Unknown Error. It seems to be a coding error.",
+                            ),
+                          ),
+                        );
+                      }
 
-                      // if (widget.expenseId == null) {
-                      //   /* ここでRealtime Databaseに保存 */
-                      //   final ref =
-                      //       FirebaseDatabaseService.singleTravelExpensesDataRef(
-                      //         _shownGroupId!,
-                      //         _shownTravelId!,
-                      //       );
-                      //   var newRef = ref.push();
-                      //   final generatedId = newRef.key as String;
-                      //   final expenseInfo = ExpenseInfo(
-                      //     id: generatedId,
-                      //     payer: TravelerBasic(
-                      //       uid: _payer?.uid as String,
-                      //       email: _payer?.email as String,
-                      //     ),
-                      //     reimbursedBy: reimbursedBy,
-                      //     expenseItem: _expenseItem,
-                      //     expense: _expense,
-                      //     createdAt: DateTime.now().toIso8601String(),
-                      //   );
-                      //
-                      //   final dataset = expenseInfo.toMap();
-                      //   print(dataset);
-                      //   /* 最後に追加する */
-                      //   newRef.set(dataset);
-                      // } else {
-                      //   /* なんかもっと良い方法あるきがする */
-                      //   final expenseInfo = ExpenseInfo(
-                      //     id: widget.expenseId!,
-                      //     //ここに来るときにはnullでなくなっている
-                      //     payer: TravelerBasic(
-                      //       uid: _payer?.uid as String,
-                      //       email: _payer?.email as String,
-                      //     ),
-                      //     reimbursedBy: reimbursedBy,
-                      //     expenseItem: _expenseItem,
-                      //     expense: _expense,
-                      //     createdAt:
-                      //         _initialExpense!.createdAt, //null Pointが起こるかも。
-                      //   );
-                      //
-                      //   final dataset = expenseInfo.toMap();
-                      //
-                      //   final ref =
-                      //       FirebaseDatabaseService.singleTravelExpenseIdRef(
-                      //         _shownGroupId!,
-                      //         _shownTravelId!,
-                      //         widget.expenseId!,
-                      //       );
-                      //   ref.set(dataset);
-                      //   // ref.update()
-                      // }
+                      final expense = expenseResult.data;
+                      if (expense == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Expense is null.　Coding error."),
+                          ),
+                        );
+                        return;
+                      }
+
+                      if (expense.id == null) {
+                        /* 新規追加 */
+                      } else {
+                        /* update */
+                      }
 
                       //popだとExpensesScreenに戻ったときに更新されない。
                       Navigator.pushNamed(
