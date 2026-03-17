@@ -162,6 +162,7 @@ GoRouter createRouter(AppSession session) {
                       expenseRepository: innerContext.read(),
                       expenseStore: innerContext.read(),
                       travelScopeStore: innerContext.read(),
+                      travelSession: innerContext.read(),
                       appSession: innerContext.read(),
                     ),
                 child: AddEditExpenseScreen(),
