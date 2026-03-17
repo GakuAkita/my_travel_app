@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/BasicText.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_traveler.dart';
-import 'package:my_travel_app/ui/start/start/widgets/start_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicTextField.dart';
@@ -279,18 +279,26 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                         return;
                       }
 
-                      if (expense.id == null) {
-                        /* 新規追加 */
+                      final ret = await viewModel.addUpdateExpense(expense);
+                      if (ret.isSuccess) {
+                        /* リスナー経由で更新されるはず */
+                        context.pop();
                       } else {
-                        /* update */
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              ret.error?.errorMessage ?? "保存に失敗しました",
+                            ),
+                          ),
+                        );
                       }
 
                       //popだとExpensesScreenに戻ったときに更新されない。
-                      Navigator.pushNamed(
-                        context,
-                        StartScreen.id,
-                        arguments: {"index": 1},
-                      );
+                      // Navigator.pushNamed(
+                      //   context,
+                      //   StartScreen.id,
+                      //   arguments: {"index": 1},
+                      // );
                     },
                   ),
                   SizedBox(height: 80),
@@ -307,19 +315,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                         textStyle: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onPressed: () async {
-                        // final ref =
-                        //     FirebaseDatabaseService.singleTravelExpenseIdRef(
-                        //       _shownGroupId!,
-                        //       _shownTravelId!,
-                        //       widget.expenseId!,
-                        //     );
-                        //
-                        // await ref.remove();
-                        // Navigator.pushNamed(
-                        //   context,
-                        //   StartScreen.id,
-                        //   arguments: {"index": 1},
-                        // );
+                        /* 削除する */
                       },
                     ),
                 ],
