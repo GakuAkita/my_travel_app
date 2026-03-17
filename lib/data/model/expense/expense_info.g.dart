@@ -17,12 +17,13 @@ _ExpenseInfo _$ExpenseInfoFromJson(Map<String, dynamic> json) => _ExpenseInfo(
   createdAt: _createdAtFromJson(json['createdAt']),
 );
 
-Map<String, dynamic> _$ExpenseInfoToJson(_ExpenseInfo instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'payer': instance.payer,
-      'reimbursedBy': instance.reimbursedBy,
-      'expenseItem': instance.expenseItem,
-      'expense': instance.expense,
-      'createdAt': _createdAtToJson(instance.createdAt),
-    };
+Map<String, dynamic> _$ExpenseInfoToJson(
+  _ExpenseInfo instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'payer': instance.payer.toJson(),
+  'reimbursedBy': instance.reimbursedBy.map((k, e) => MapEntry(k, e.toJson())),
+  'expenseItem': instance.expenseItem,
+  'expense': instance.expense,
+  'createdAt': _createdAtToJson(instance.createdAt),
+};

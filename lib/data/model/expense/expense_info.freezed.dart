@@ -221,8 +221,8 @@ return $default(_that.id,_that.payer,_that.reimbursedBy,_that.expenseItem,_that.
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class _ExpenseInfo implements ExpenseInfo {
   const _ExpenseInfo({required this.id, required this.payer, required final  Map<String, TravelerCore> reimbursedBy, required this.expenseItem, required this.expense, @JsonKey(name: 'createdAt', fromJson: _createdAtFromJson, toJson: _createdAtToJson) this.createdAt}): _reimbursedBy = reimbursedBy;
   factory _ExpenseInfo.fromJson(Map<String, dynamic> json) => _$ExpenseInfoFromJson(json);

@@ -300,11 +300,6 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       }
 
                       //popだとExpensesScreenに戻ったときに更新されない。
-                      // Navigator.pushNamed(
-                      //   context,
-                      //   StartScreen.id,
-                      //   arguments: {"index": 1},
-                      // );
                     },
                   ),
                   SizedBox(height: 80),
@@ -323,6 +318,18 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       onPressed: () async {
                         /* 削除する */
                         final ret = viewModel.deleteExpense();
+                        if (ret.isSuccess) {
+                          context.pop();
+                        } else {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                ret.error?.errorMessage ?? "保存に失敗しました",
+                              ),
+                            ),
+                          );
+                        }
                       },
                     ),
                 ],

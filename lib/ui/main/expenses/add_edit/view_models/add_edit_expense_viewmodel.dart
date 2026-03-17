@@ -188,6 +188,7 @@ class AddEditExpenseViewModel extends ChangeNotifier {
       }
       return ResultInfo.success();
     } catch (e) {
+      print("Caught an error!!");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }

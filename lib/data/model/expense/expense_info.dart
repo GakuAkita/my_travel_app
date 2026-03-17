@@ -11,6 +11,7 @@ part 'expense_info.g.dart';
 abstract class ExpenseInfo
     with _$ExpenseInfo
     implements Identifiable, Creatable {
+  @JsonSerializable(explicitToJson: true)
   const factory ExpenseInfo({
     required String? id,
     required TravelerCore payer,
