@@ -89,7 +89,9 @@ class AddEditExpenseViewModel extends ChangeNotifier {
       if (_expenseId != null) {
         /// 万が一、画面編集中にExpenseが削除されたとき、expenseIdだけだと元に戻せなくなるので
         /// initialExpenseで値を持っておく
-        _initialExpense = _expenseStore.allExpenses.data![_expenseId];
+        _initialExpense = _expenseStore.allExpenses.data?[_expenseId];
+      } else {
+        _initialExpense = null;
       }
     }
 
@@ -190,7 +192,7 @@ class AddEditExpenseViewModel extends ChangeNotifier {
     }
   }
 
-  Future<ResultInfo> deleteExpense(String expenseId) async {
+  Future<ResultInfo> deleteExpense() async {
     final travel = _travelSession.currentTravel;
     if (travel == null || !checkIsShownTravelValid(travel).isSuccess) {
       return ResultInfo.failed(
@@ -198,11 +200,19 @@ class AddEditExpenseViewModel extends ChangeNotifier {
       );
     }
 
+    if (_expenseId == null) {
+      return ResultInfo.failed(
+        error: ErrorInfo(
+          errorMessage: "This might be codding error. expenseId =null",
+        ),
+      );
+    }
+
     final groupId = travel.groupId!;
     final travelId = travel.travelId!;
 
     try {
-      await _expenseRepository.deleteExpense(groupId, travelId, expenseId);
+      await _expenseRepository.deleteExpense(groupId, travelId, _expenseId);
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));

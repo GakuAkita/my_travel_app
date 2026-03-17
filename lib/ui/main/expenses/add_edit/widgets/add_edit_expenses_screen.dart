@@ -251,6 +251,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       );
 
                       if (expenseResult.isFailed) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -258,8 +259,10 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                             ),
                           ),
                         );
+                        return;
                       } else if (!expenseResult.isSuccess) {
                         /* Unknown state */
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -267,10 +270,12 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                             ),
                           ),
                         );
+                        return;
                       }
 
                       final expense = expenseResult.data;
                       if (expense == null) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text("Expense is null.　Coding error."),
@@ -284,6 +289,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                         /* リスナー経由で更新されるはず */
                         context.pop();
                       } else {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -316,6 +322,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       ),
                       onPressed: () async {
                         /* 削除する */
+                        final ret = viewModel.deleteExpense();
                       },
                     ),
                 ],
