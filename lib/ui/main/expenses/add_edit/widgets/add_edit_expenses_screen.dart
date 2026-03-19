@@ -317,7 +317,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       ),
                       onPressed: () async {
                         /* 削除する */
-                        final ret = viewModel.deleteExpense();
+                        final ret = await viewModel.deleteExpense();
                         if (ret.isSuccess) {
                           context.pop();
                         } else {
