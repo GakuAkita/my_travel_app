@@ -82,6 +82,8 @@ class ExpensesViewModel extends ChangeNotifier {
 
     _expenseStore.addListener(_expenseSync);
     _travelScopeStore.addListener(_travelsSync);
+
+    /* subscriptionして追加があったら更新する */
   }
 
   void _expenseSync() {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/core/utils/CheckShownTravelBasic.dart';
@@ -23,6 +25,8 @@ class ExpenseStore extends ChangeNotifier {
   bool _storeInitialized = false;
 
   bool get storeInitialized => _storeInitialized;
+
+  StreamSubscription<Map<String, ExpenseInfo>>? _subscription;
 
   ExpenseStore({
     required ExpenseRepository expenseRepository,
@@ -73,6 +77,7 @@ class ExpenseStore extends ChangeNotifier {
       notifyListeners();
       return;
     }
+
     await _refreshExpenses(
       _travelSession.currentTravel!,
       isLastNotify: isLastNotify,
@@ -85,37 +90,41 @@ class ExpenseStore extends ChangeNotifier {
     bool isLoadingNotify = true,
     bool isLastNotify = true,
   }) async {
-    try {
-      if (!checkIsShownTravelValid(travel).isSuccess) {
-        _allExpenses = DataState(
-          isLoading: false,
-          error: ErrorInfo(errorMessage: "Invalid shown travel"),
-        );
-        return;
-      }
-
-      _allExpenses = const DataState(isLoading: true, error: null);
-      if (isLoadingNotify) {
-        notifyListeners();
-      }
-
-      final data = await _expenseRepository.getAllExpenses(
-        _travelSession.currentTravel!.groupId!,
-        _travelSession.currentTravel!.travelId!,
-      );
-      _allExpenses = DataState(data: data, isLoading: false, error: null);
-      return;
-    } catch (e) {
+    if (!checkIsShownTravelValid(travel).isSuccess) {
       _allExpenses = DataState(
-        data: null,
         isLoading: false,
-        error: ErrorInfo(errorMessage: e.toString()),
+        error: ErrorInfo(errorMessage: "Invalid shown travel"),
       );
-    } finally {
-      if (isLastNotify) {
-        notifyListeners();
-      }
+      return;
     }
+
+    // 前のsubscriptionを破棄
+    _subscription?.cancel();
+
+    _allExpenses = const DataState(isLoading: true, error: null);
+    if (isLoadingNotify) {
+      notifyListeners();
+    }
+
+    _subscription = _expenseRepository
+        .watchExpenses(travel.groupId!, travel.travelId!)
+        .listen(
+          (data) {
+            _allExpenses = DataState(data: data, isLoading: false);
+            if (isLastNotify) {
+              notifyListeners();
+            }
+          },
+          onError: (e) {
+            _allExpenses = DataState(
+              isLoading: false,
+              error: ErrorInfo(errorMessage: e.toString()),
+            );
+            if (isLastNotify) {
+              notifyListeners();
+            }
+          },
+        );
   }
 
   @override
