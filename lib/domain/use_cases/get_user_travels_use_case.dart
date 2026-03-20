@@ -2,6 +2,8 @@ import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
 
+/// あるユーザーの参加しているグループを取ってきて
+/// そこに連なっている旅行idを取得して旅行名を取る
 class GetUserTravelsUseCase {
   final GroupKeysRepository _groupKeysRepository;
   final JoinedGroupsRepository _joinedGroupsRepository;

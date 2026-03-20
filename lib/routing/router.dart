@@ -174,17 +174,20 @@ GoRouter createRouter(AppSession session) {
           ),
           GoRoute(
             path: Routes.settings_travel_select,
-            builder:
-                (context, state) => ChangeNotifierProvider(
-                  create:
-                      (innerContext) => TravelSelectViewModel(
-                        appSession: innerContext.read(),
-                        travelSession: innerContext.read(),
-                        getUserTravelsUseCase: innerContext.read(),
-                        userSettingsRepository: innerContext.read(),
-                      ),
-                  child: TravelSelectScreen(),
-                ),
+            builder: (context, state) {
+              /* Adminかどうかを引数で渡しておく */
+
+              return ChangeNotifierProvider(
+                create:
+                    (innerContext) => TravelSelectViewModel(
+                      appSession: innerContext.read(),
+                      travelSession: innerContext.read(),
+                      getUserTravelsUseCase: innerContext.read(),
+                      userSettingsRepository: innerContext.read(),
+                    ),
+                child: TravelSelectScreen(),
+              );
+            },
           ),
           GoRoute(
             path: Routes.settings_version_info,
