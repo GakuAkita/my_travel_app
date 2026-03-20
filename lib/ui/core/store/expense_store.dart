@@ -143,6 +143,7 @@ class ExpenseStore extends ChangeNotifier {
   @override
   void dispose() {
     print("ExpenseStore was disposed. hashCode=${hashCode}");
+    _subscription?.cancel();
     // TODO: implement dispose
     _travelSession.removeListener(_refresh);
     super.dispose();
