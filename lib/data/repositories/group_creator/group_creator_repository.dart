@@ -5,9 +5,5 @@ abstract class GroupCreatorRepository {
 
   /// 思ったけど、グループIDは自動生成で絶対被らないようにしないとだめだ。
   /// グループIDが被ったときにかなりまずい。
-  Future<void> setGroupCreator(
-    String groupId,
-    TravelerCore travelerCore, {
-    bool isExistCheck = true,
-  });
+  Future<void> setGroupCreator(String groupId, TravelerCore travelerCore);
 }
