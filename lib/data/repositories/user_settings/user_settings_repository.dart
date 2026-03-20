@@ -16,4 +16,8 @@ abstract class UserSettingsRepository {
   Future<String?> getLastLogin(String uid);
 
   Future<void> setLastLogin(String uid, String lastLogin);
+
+  Future<String?> getUserRole(String uid);
+
+  Future<void> setUserRole(String uid, String role);
 }

@@ -77,4 +77,17 @@ class UserSettingsRepositoryRealtimeDb implements UserSettingsRepository {
     );
     await service.set(travel);
   }
+
+  @override
+  Future<String?> getUserRole(String uid) async {
+    final service = _serviceSingleValue(FirebaseDatabasePaths.user(uid).role);
+    final role = await service.getValue<String?>();
+    return role;
+  }
+
+  @override
+  Future<void> setUserRole(String uid, String role) async {
+    final service = _serviceSingleValue(FirebaseDatabasePaths.user(uid).role);
+    await service.setValue(role);
+  }
 }
