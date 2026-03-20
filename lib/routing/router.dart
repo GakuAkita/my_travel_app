@@ -31,6 +31,7 @@ import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expense
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.dart';
 import 'package:my_travel_app/ui/main/settings/main/widgets/settings_screen.dart';
+import 'package:my_travel_app/ui/main/settings/software_version/widgets/version_info_screen.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_select_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/widgets/travel_select_screen.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
@@ -184,6 +185,10 @@ GoRouter createRouter(AppSession session) {
                       ),
                   child: TravelSelectScreen(),
                 ),
+          ),
+          GoRoute(
+            path: Routes.settings_version_info,
+            builder: (context, state) => VersionInfoScreen(),
           ),
         ],
       ),

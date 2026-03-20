@@ -44,7 +44,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SettingMenubar(onPressed: () {}, menuName: "プランナー選択"),
               SettingMenubar(onPressed: () {}, menuName: "旅行削除"),
             ], //adminだったらこちらを表示
-            SettingMenubar(onPressed: () {}, menuName: "バージョン情報"),
+            SettingMenubar(
+              onPressed: () {
+                context.push(Routes.settings_version_info);
+              },
+              menuName: "バージョン情報/ソースコード",
+            ),
             TextButton(
               onPressed: () async {
                 viewModel.signOut();

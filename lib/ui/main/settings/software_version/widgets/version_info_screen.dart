@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VersionInfoScreen extends StatefulWidget {
   const VersionInfoScreen({super.key});
@@ -31,8 +32,17 @@ class _VersionInfoScreenState extends State<VersionInfoScreen> {
     });
   }
 
+  Future<void> _launchUrl(String uri) async {
+    final Uri _url = Uri.parse(uri);
+
+    if (!await launchUrl(_url)) {
+      throw Exception("Could not launch $uri");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    const String githubUrl = "https://github.com/GakuAkita/my_travel_app";
     return Scaffold(
       appBar: TopAppBar(automaticallyImplyLeading: true),
       body:
@@ -54,6 +64,11 @@ class _VersionInfoScreenState extends State<VersionInfoScreen> {
                         const SizedBox(height: 16),
                         _buildInfoRow("バージョン", _version),
                         _buildInfoRow("ビルド番号", _buildNumber),
+                        _buildInfoRow(
+                          "GitHub",
+                          githubUrl,
+                          onTap: () => _launchUrl(githubUrl),
+                        ),
                       ],
                     ),
                   ),
@@ -62,7 +77,8 @@ class _VersionInfoScreenState extends State<VersionInfoScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  /// もっと柔軟に作った方が良いが、、
+  Widget _buildInfoRow(String label, String value, {VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -75,7 +91,22 @@ class _VersionInfoScreenState extends State<VersionInfoScreen> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(child: Text(value, style: TextStyle(fontSize: 16))),
+          Expanded(
+            child:
+                onTap == null
+                    ? Text(value, style: TextStyle(fontSize: 16))
+                    : GestureDetector(
+                      onTap: onTap,
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+          ),
         ],
       ),
     );
