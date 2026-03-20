@@ -41,7 +41,9 @@ class TravelScopeStore extends ChangeNotifier {
   }
 
   void _refresh() async {
-    print("TravelScopeStore detected change in ShownTravelSession.");
+    print(
+      "TravelScopeStore detected change in ShownTravelSession.${_session.currentTravel.toString()}",
+    );
     if (!_session.initialized) {
       /**
        * travelSessionはログアウトしない限りは作り直されることはないので、
@@ -67,6 +69,7 @@ class TravelScopeStore extends ChangeNotifier {
         print("TravelScopeStore was initialized");
         _storeInitialized = true;
       }
+      print("NotifyListeners in TravelScope after _refresh (finally)");
       notifyListeners();
     }
   }

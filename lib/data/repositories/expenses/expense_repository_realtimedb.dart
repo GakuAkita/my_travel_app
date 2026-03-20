@@ -15,7 +15,7 @@ class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
   FirebaseDatabaseService<ExpenseInfo> _service(
     String groupId,
     String travelId, {
-    String? expenseId /* ifを渡したときは単一ノード */,
+    String? expenseId /* idを渡したときは単一ノード */,
   }) {
     String _path = "";
     if (expenseId == null) {
@@ -35,6 +35,16 @@ class ExpenseRepositoryRealtimeDb implements ExpenseRepository {
       fromJson: ExpenseInfo.fromJson,
       toJson: (e) => e.toJson(),
     );
+  }
+
+  @override
+  Stream<Map<String, ExpenseInfo>> watchExpenses(
+    String groupId,
+    String travelId,
+  ) {
+    //print("****** Stream all was called! ******");
+    final service = _service(groupId, travelId);
+    return service.streamAll();
   }
 
   @override

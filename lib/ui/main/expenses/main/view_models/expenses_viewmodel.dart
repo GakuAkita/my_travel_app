@@ -119,7 +119,11 @@ class ExpensesViewModel extends ChangeNotifier {
         print("There are group members!");
         _allGroupMembers = groupMembersDataState.data;
       } else {
-        print("This might be coding error?? group members");
+        /// グループメンバー、参加者、プランナー等々並列でロードするので
+        /// どれからのローディングのnotifyでここに来てしまう。
+        if (_travelScopeStore.storeInitialized) {
+          print("This might be coding error?? group members");
+        }
       }
 
       if (plannersDataState.hasError) {
@@ -128,7 +132,9 @@ class ExpensesViewModel extends ChangeNotifier {
         print("There are planners!");
         _allPlanners = plannersDataState.data;
       } else {
-        print("This might be coding error?? planners");
+        if (_travelScopeStore.storeInitialized) {
+          print("This might be coding error?? planners");
+        }
       }
 
       if (participantsDataState.hasError) {
@@ -139,18 +145,17 @@ class ExpensesViewModel extends ChangeNotifier {
         print("There are participants");
         _allParticipants = participantsDataState.data;
       } else {
-        print("This might be coding error??? participants");
+        if (_travelScopeStore.storeInitialized) {
+          print("This might be coding error??? participants");
+        }
       }
     } finally {
       notifyListeners();
     }
   }
 
-  Future<void> refreshExpenses({bool isLoadingNotify = true}) async {
-    await _expenseStore.refreshExpenses(
-      isLoadingNotify: isLoadingNotify,
-      isLastNotify: true,
-    );
+  void refreshExpenses({bool isLoadingNotify = true}) async {
+    _expenseStore.refreshExpenses(isLoadingNotify: isLoadingNotify);
   }
 
   Future<void> refreshParticipants({bool isLoadingNotify = true}) async {

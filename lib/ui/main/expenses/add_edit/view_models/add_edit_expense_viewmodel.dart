@@ -85,6 +85,7 @@ class AddEditExpenseViewModel extends ChangeNotifier {
     if (_expenseStore.allExpenses.hasError ||
         !_expenseStore.allExpenses.hasData) {
       _isError = true;
+      _initialExpense = null;
     } else {
       if (_expenseId != null) {
         /// 万が一、画面編集中にExpenseが削除されたとき、expenseIdだけだと元に戻せなくなるので

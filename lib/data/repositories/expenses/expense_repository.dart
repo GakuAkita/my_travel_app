@@ -4,7 +4,7 @@ abstract class ExpenseRepository {
   /* 全体が全部流れていくる。毎回全体更新 */
   Stream<Map<String, ExpenseInfo>> watchExpenses(
     String groupId,
-    String travelID,
+    String travelId,
   );
 
   Future<Map<String, ExpenseInfo>> getAllExpenses(
