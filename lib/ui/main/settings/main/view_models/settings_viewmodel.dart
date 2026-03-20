@@ -25,6 +25,7 @@ class SettingsViewModel extends ChangeNotifier {
        _authRepository = authRepository,
        _userSettingsRepository = userSettingsRepository {
     print("SettingsViewModel was created. hashCode=${hashCode}");
+    fetchUserRoles();
   }
 
   Future<void> fetchUserRoles() async {

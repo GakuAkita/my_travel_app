@@ -30,8 +30,9 @@ class GroupCreatorRepositoryRealtimeDb implements GroupCreatorRepository {
   @override
   Future<void> setGroupCreator(
     String groupId,
-    TravelerCore travelerCore,
-  ) async {
+    TravelerCore travelerCore, {
+    bool isExistCheck = true,
+  }) async {
     // TODO: implement setGroupCreator
     throw UnimplementedError();
   }
