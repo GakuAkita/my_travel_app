@@ -71,6 +71,8 @@ class GroupPath extends PathNode {
   TravelsPath get travels => TravelsPath(path);
 
   String get members => child("members");
+
+  String get creator => child("creator");
 }
 
 /// ===============================
