@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/BasicText.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
-import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_traveler.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_user.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicTextField.dart';

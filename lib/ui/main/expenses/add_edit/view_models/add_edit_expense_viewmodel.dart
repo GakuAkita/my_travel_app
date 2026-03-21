@@ -9,7 +9,7 @@ import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
 import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
-import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_traveler.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_user.dart';
 
 import '../../../../../data/model/traveler/traveler_core/traveler_core.dart';
 

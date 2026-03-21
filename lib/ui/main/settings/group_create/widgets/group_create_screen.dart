@@ -4,6 +4,8 @@ import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../../../expenses/add_edit/widgets/selected_user.dart';
+
 class GroupCreateScreen extends StatefulWidget {
   const GroupCreateScreen({super.key});
 
@@ -34,7 +36,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("グループ名"),
+                  Text("グループ名 [英字のみ、特殊文字禁止]"),
                   TextField(controller: _groupNameController),
                 ],
               ),
@@ -44,17 +46,67 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               if (viewModel.allUsers.data!.isEmpty)
                 Text("ユーザーがいません")
               else
-                ...viewModel.allUsers.data!.entries
-                    .map((traveler) => Text("${traveler.key}"))
-                    .toList()
+                /* チェックを変えるたびに全部再描画しているからくっそ遅い!!!! */
+                /* @TODO おれしか使わないからいいが、将来的には直す!!! */
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: viewModel.allUsers.data!.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return UserCheckRow(
+                      user: viewModel.allUsers.data!.values.elementAt(index),
+                      onTap: () {
+                        final traveler = viewModel.allUsers.data!.values
+                            .elementAt(index);
+                        print("tapped :${traveler.traveler.core.email}");
+                        viewModel.switchChecked(traveler.traveler.core.uid);
+                      },
+                    );
+                  },
+                )
             else if (viewModel.allUsers.hasError)
               Text("エラーが出ています。${viewModel.allUsers.error?.errorMessage}")
             else
               Text("loading??"),
 
-            RoundedButton(title: "グループ作成", onPressed: () {}),
+            RoundedButton(
+              title: "グループ作成",
+              onPressed: () {
+                if (_groupNameController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text("グループ名を入力してください")));
+                }
+                viewModel.createGroup(_groupNameController.text);
+              },
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class UserCheckRow extends StatelessWidget {
+  final SelectedUser user;
+  final VoidCallback? onTap;
+
+  UserCheckRow({required SelectedUser this.user, VoidCallback? this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Checkbox(value: user.isChecked, onChanged: (_) {}),
+          Expanded(
+            flex: 1,
+            child: Text("${user.traveler.core.email}", maxLines: 1),
+          ),
+          Expanded(flex: 1, child: Text("${user.traveler.core.uid}")),
+        ],
       ),
     );
   }
