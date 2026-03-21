@@ -20,7 +20,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   /// _travelersをそのままドロップダウンのリストにすると、
   /// その後で支払者のチェックボックスを切り替えた時、ドロップダウンの方にも影響が行ってしまい
   /// クラッシュする
-  List<SelectedTraveler> _travelersOptions = [];
+  List<SelectedUser> _travelersOptions = [];
 
   /* チェックされた人(支払われた人) */
   TravelerBasic? _payer;
@@ -60,7 +60,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
             final bool isParticipant = viewModel.participants.any(
               (p) => p.uid == member.core.uid,
             );
-            return SelectedTraveler(traveler: member, isChecked: isParticipant);
+            return SelectedUser(traveler: member, isChecked: isParticipant);
           }).toList();
     } else {
       final reimbursedBy = viewModel.initialExpense?.reimbursedBy;
@@ -69,7 +69,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
         _travelersOptions =
             viewModel.groupMembers.map((member) {
               final bool isChecked = reimbursedBy.containsKey(member.core.uid);
-              return SelectedTraveler(traveler: member, isChecked: isChecked);
+              return SelectedUser(traveler: member, isChecked: isChecked);
             }).toList();
       }
     }

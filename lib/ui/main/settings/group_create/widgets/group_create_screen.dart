@@ -26,31 +26,35 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
     final viewModel = context.watch<GroupCreateViewModel>();
     return Scaffold(
       appBar: TopAppBar(title: 'Create Group', automaticallyImplyLeading: true),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("グループ名"),
-                TextField(controller: _groupNameController),
-              ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("グループ名"),
+                  TextField(controller: _groupNameController),
+                ],
+              ),
             ),
-          ),
-          /* ユーザーを全部表示 */
-          if (viewModel.allUsers.hasData)
-            if (viewModel.allUsers.data!.isEmpty)
-              Text("ユーザーがいません")
+            /* ユーザーを全部表示 */
+            if (viewModel.allUsers.hasData)
+              if (viewModel.allUsers.data!.isEmpty)
+                Text("ユーザーがいません")
+              else
+                ...viewModel.allUsers.data!.entries
+                    .map((traveler) => Text("${traveler.key}"))
+                    .toList()
+            else if (viewModel.allUsers.hasError)
+              Text("エラーが出ています。${viewModel.allUsers.error?.errorMessage}")
             else
-              Text("ユーザーを表示:${viewModel.allUsers.data}")
-          else if (viewModel.allUsers.hasError)
-            Text("エラーが出ています。${viewModel.allUsers.error?.errorMessage}")
-          else
-            Text("loading??"),
+              Text("loading??"),
 
-          RoundedButton(title: "グループ作成", onPressed: () {}),
-        ],
+            RoundedButton(title: "グループ作成", onPressed: () {}),
+          ],
+        ),
       ),
     );
   }

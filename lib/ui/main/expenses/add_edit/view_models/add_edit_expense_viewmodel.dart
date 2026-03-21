@@ -103,7 +103,7 @@ class AddEditExpenseViewModel extends ChangeNotifier {
   /* 失敗した場合はUI側でSnackBar */
   ResultInfo<ExpenseInfo> createExpenseFromInput(
     TravelerBasic? payer,
-    List<SelectedTraveler> options,
+    List<SelectedUser> options,
     String expenseItem,
     int expense,
   ) {
