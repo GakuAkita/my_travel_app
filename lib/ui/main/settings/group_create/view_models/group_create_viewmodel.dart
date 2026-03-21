@@ -4,39 +4,63 @@ import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/data/repositories/users/users_repository.dart';
-import 'package:my_travel_app/domain/use_cases/crud_group_user_case.dart';
+import 'package:my_travel_app/domain/use_cases/crud_group_use_case.dart';
+import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/ui/core/store/data_state.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_user.dart';
 
 class GroupCreateViewModel extends ChangeNotifier {
   final UsersRepository _usersRepository;
-  final CrudGroupUSerCase _crudGroupUSerCase;
+  final CrudGroupUseCase _crudGroupUseCase;
+  final AppSession _appSession;
 
   DataState<Map<String, SelectedUser>> _allUsers = DataState(data: {});
 
   DataState<Map<String, SelectedUser>> get allUsers => _allUsers;
 
   GroupCreateViewModel({
+    required AppSession appSession,
     required UsersRepository usersRepository,
-    required CrudGroupUSerCase crudGroupUSerCase,
-  }) : _usersRepository = usersRepository,
-       _crudGroupUSerCase = crudGroupUSerCase {
+    required CrudGroupUseCase crudGroupUseCase,
+  }) : _appSession = appSession,
+       _usersRepository = usersRepository,
+       _crudGroupUseCase = crudGroupUseCase {
     getAllUserIds();
   }
 
-  Future<ResultInfo> createGroup(
-    String name,
-    Map<String, SelectedUser> members,
-  ) async {
+  Future<ResultInfo> createGroup(String name) async {
     if (name.isEmpty) {
       return ResultInfo.failed(
         error: ErrorInfo(errorMessage: "グループ名を入力してください"),
       );
     }
 
+    /* allUsersからチェックされているやつだけを抽出する */
+    if (!_allUsers.hasData) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "データがありません"));
+    }
+    final Map<String, SelectedUser> users = _allUsers.data!;
+    bool found = false;
+    Map<String, TravelerCore> members = {};
+    for (final user in users.values) {
+      if (user.isChecked) {
+        found = true;
+        members[user.traveler.core.uid] = user.traveler.core;
+      }
+    }
+    if (!found) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "メンバーを選択してください"));
+    }
+
     /* 本当は被っていないかと、禁止文字が入っていないかチェックしたい、、 */
     try {
-      await _crudGroupUSerCase.createGroup(members, name);
+      final creatorId = _appSession.currentUser!.uid;
+      final creatorEmail = _appSession.currentUser!.email!;
+      await _crudGroupUseCase.createGroup(
+        members,
+        TravelerCore(uid: creatorId, email: creatorEmail),
+        name,
+      );
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));

@@ -27,6 +27,12 @@ class FirebaseDatabaseService<T> {
     await _database.ref(path).set(toJson(item));
   }
 
+  /* toJsonを適用していき、一気にMapをセットする */
+  Future<void> setAll(Map<String, T> items) async {
+    final map = items.map((key, value) => MapEntry(key, toJson(value)));
+    await _database.ref(path).set(map);
+  }
+
   /// データを更新（部分更新）
   Future<void> update(T item) async {
     await _database.ref(path).update(toJson(item));

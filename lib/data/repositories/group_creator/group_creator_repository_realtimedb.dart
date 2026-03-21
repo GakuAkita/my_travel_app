@@ -32,7 +32,7 @@ class GroupCreatorRepositoryRealtimeDb implements GroupCreatorRepository {
     String groupId,
     TravelerCore travelerCore,
   ) async {
-    // TODO: implement setGroupCreator
-    throw UnimplementedError();
+    final service = _service(groupId);
+    await service.set(travelerCore);
   }
 }

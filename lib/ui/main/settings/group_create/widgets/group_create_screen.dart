@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
@@ -71,14 +72,24 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
 
             RoundedButton(
               title: "グループ作成",
-              onPressed: () {
+              onPressed: () async {
                 if (_groupNameController.text.isEmpty) {
                   ScaffoldMessenger.of(context).clearSnackBars();
                   ScaffoldMessenger.of(
                     context,
                   ).showSnackBar(SnackBar(content: Text("グループ名を入力してください")));
                 }
-                viewModel.createGroup(_groupNameController.text);
+                final ret = await viewModel.createGroup(
+                  _groupNameController.text,
+                );
+                if (ret.isSuccess) {
+                  context.pop();
+                } else {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("${ret.error?.errorMessage}")),
+                  );
+                }
               },
             ),
           ],

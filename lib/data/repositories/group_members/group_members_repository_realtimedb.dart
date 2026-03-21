@@ -4,8 +4,6 @@ import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.da
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 import 'package:my_travel_app/data/services/firebase_database_service.dart';
 
-import '../../../core/exceptions/app_exception.dart';
-
 class GroupMembersRepositoryRealtimeDb implements GroupMembersRepository {
   final FirebaseDatabase _firebaseDatabase;
 
@@ -33,7 +31,7 @@ class GroupMembersRepositoryRealtimeDb implements GroupMembersRepository {
     String groupId,
     Map<String, TravelerCore> members,
   ) async {
-    // TODO: implement setGroupMembers
-    throw AppException("Not implemented setGroupMembers");
+    final service = _service(groupId);
+    await service.setAll(members);
   }
 }
