@@ -36,6 +36,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             ),
           ),
           /* ユーザーを全部表示 */
+          /* やり方は汚いけど、 */
           RoundedButton(title: "グループ作成", onPressed: () {}),
         ],
       ),
