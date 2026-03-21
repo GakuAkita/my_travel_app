@@ -6,8 +6,8 @@ import 'package:my_travel_app/data/services/firebase_database_service.dart';
 class UsersRepositoryRealtimeDb implements UsersRepository {
   final FirebaseDatabase _database;
 
-  UsersRepositoryRealtimeDb(FirebaseDatabase firebaseDatabase)
-    : _database = firebaseDatabase;
+  UsersRepositoryRealtimeDb({required FirebaseDatabase database})
+    : _database = database;
 
   FirebaseDatabaseService _service() {
     return FirebaseDatabaseService(

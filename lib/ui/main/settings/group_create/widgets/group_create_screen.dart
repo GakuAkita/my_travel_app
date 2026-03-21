@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
+import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class GroupCreateScreen extends StatefulWidget {
   const GroupCreateScreen({super.key});
@@ -21,6 +23,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<GroupCreateViewModel>();
     return Scaffold(
       appBar: TopAppBar(title: 'Create Group', automaticallyImplyLeading: true),
       body: Column(
@@ -36,7 +39,16 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             ),
           ),
           /* ユーザーを全部表示 */
-          /* やり方は汚いけど、 */
+          if (viewModel.allUsers.hasData)
+            if (viewModel.allUsers.data!.isEmpty)
+              Text("ユーザーがいません")
+            else
+              Text("ユーザーを表示:${viewModel.allUsers.data}")
+          else if (viewModel.allUsers.hasError)
+            Text("エラーが出ています。${viewModel.allUsers.error?.errorMessage}")
+          else
+            Text("loading??"),
+
           RoundedButton(title: "グループ作成", onPressed: () {}),
         ],
       ),

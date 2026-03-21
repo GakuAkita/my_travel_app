@@ -17,6 +17,8 @@ import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
 import 'package:my_travel_app/data/repositories/travel/travel_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository_realtimedb.dart';
+import 'package:my_travel_app/data/repositories/users/users_repository.dart';
+import 'package:my_travel_app/data/repositories/users/users_repository_realtimedb.dart';
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
@@ -30,6 +32,7 @@ import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_exp
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expenses_screen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.dart';
+import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/widgets/group_create_screen.dart';
 import 'package:my_travel_app/ui/main/settings/main/widgets/settings_screen.dart';
 import 'package:my_travel_app/ui/main/settings/software_version/widgets/version_info_screen.dart';
@@ -196,7 +199,14 @@ GoRouter createRouter(AppSession session) {
           ),
           GoRoute(
             path: Routes.settings_create_group,
-            builder: (context, state) => GroupCreateScreen(),
+            builder:
+                (context, state) => ChangeNotifierProvider(
+                  create:
+                      (innerContext) => GroupCreateViewModel(
+                        usersRepository: innerContext.read(),
+                      ),
+                  child: GroupCreateScreen(),
+                ),
           ),
         ],
       ),
@@ -323,6 +333,11 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ),
     Provider<PlannersRepository>(
       create: (innerContext) => PlannersRepositoryRealtimeDb(),
+    ),
+    Provider<UsersRepository>(
+      create:
+          (innerContext) =>
+              UsersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
 
     /// UserCases
