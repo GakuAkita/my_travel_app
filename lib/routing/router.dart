@@ -205,6 +205,7 @@ GoRouter createRouter(AppSession session) {
                   create:
                       (innerContext) => GroupCreateViewModel(
                         usersRepository: innerContext.read(),
+                        crudGroupUSerCase: innerContext.read(),
                       ),
                   child: GroupCreateScreen(),
                 ),

@@ -26,13 +26,14 @@ class GroupCreateViewModel extends ChangeNotifier {
 
   Future<ResultInfo> createGroup(
     String name,
-    Map<String, TravelerCore> members,
+    Map<String, SelectedUser> members,
   ) async {
     if (name.isEmpty) {
       return ResultInfo.failed(
         error: ErrorInfo(errorMessage: "グループ名を入力してください"),
       );
     }
+
     /* 本当は被っていないかと、禁止文字が入っていないかチェックしたい、、 */
     try {
       await _crudGroupUSerCase.createGroup(members, name);
