@@ -29,7 +29,10 @@ class GroupMembersRepositoryRealtimeDb implements GroupMembersRepository {
   }
 
   @override
-  Future<void> setGroupMembers(String groupId) async {
+  Future<void> setGroupMembers(
+    String groupId,
+    Map<String, TravelerCore> members,
+  ) async {
     // TODO: implement setGroupMembers
     throw AppException("Not implemented setGroupMembers");
   }

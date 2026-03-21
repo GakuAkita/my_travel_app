@@ -6,5 +6,8 @@ import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.da
 abstract class GroupMembersRepository {
   Future<Map<String, TravelerCore>> getAllGroupMembers(String groupId);
 
-  Future<void> setGroupMembers(String groupId);
+  Future<void> setGroupMembers(
+    String groupId,
+    Map<String, TravelerCore> members,
+  );
 }
