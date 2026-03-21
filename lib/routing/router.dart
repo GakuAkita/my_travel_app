@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
+import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository.dart';
+import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository.dart';
 import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
@@ -341,6 +343,12 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create:
           (innerContext) =>
               UsersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+    ),
+    Provider<GroupCreatorRepository>(
+      create:
+          (innerContext) => GroupCreatorRepositoryRealtimeDb(
+            firebaseDatabase: FirebaseDatabase.instance,
+          ),
     ),
 
     /// UserCases
