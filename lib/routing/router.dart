@@ -19,6 +19,7 @@ import 'package:my_travel_app/data/repositories/user_settings/user_settings_repo
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/users/users_repository.dart';
 import 'package:my_travel_app/data/repositories/users/users_repository_realtimedb.dart';
+import 'package:my_travel_app/domain/use_cases/crud_group_user_case.dart';
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
@@ -347,6 +348,13 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             groupKeysRepository: innerContext.read(),
             joinedGroupsRepository: innerContext.read(),
             travelRepository: innerContext.read(),
+          ),
+    ),
+    Provider<CrudGroupUSerCase>(
+      create:
+          (innerContext) => CrudGroupUSerCase(
+            groupMembersRepository: innerContext.read(),
+            joinedGroupsRepository: innerContext.read(),
           ),
     ),
     ChangeNotifierProvider(
