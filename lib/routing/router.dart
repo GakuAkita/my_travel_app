@@ -41,6 +41,7 @@ import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_cr
 import 'package:my_travel_app/ui/main/settings/group_create/widgets/group_create_screen.dart';
 import 'package:my_travel_app/ui/main/settings/main/widgets/settings_screen.dart';
 import 'package:my_travel_app/ui/main/settings/software_version/widgets/version_info_screen.dart';
+import 'package:my_travel_app/ui/main/settings/travel_create/view_models/travel_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_select_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/widgets/travel_select_screen.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
@@ -55,6 +56,7 @@ import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/core/store/travel_scope_store.dart';
 import '../ui/main/app_navigation_bar.dart';
+import '../ui/main/settings/travel_create/widgets/travel_create_screen.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
 
@@ -214,6 +216,20 @@ GoRouter createRouter(AppSession session) {
                         joinedGroupRepository: innerContext.read(),
                       ),
                   child: GroupCreateScreen(),
+                ),
+          ),
+          GoRoute(
+            path: Routes.settings_create_travel,
+            builder:
+                (context, state) => ChangeNotifierProvider(
+                  create:
+                      (innerContext) => TravelCreateViewModel(
+                        appSession: innerContext.read(),
+                        travelRepository: innerContext.read(),
+                        travelKeysRepository: innerContext.read(),
+                        joinedGroupsRepository: innerContext.read(),
+                      ),
+                  child: TravelCreateScreen(),
                 ),
           ),
         ],
