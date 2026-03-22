@@ -88,22 +88,34 @@ class _TravelCreateScreenState extends State<TravelCreateScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: DropdownButton(
+                    child: DropdownButton<String>(
                       isExpanded: true,
+                      value: viewModel.travelIdDeleted,
                       items:
-                          viewModel.joinedGroupIds.data!
-                              .map(
-                                (id) => DropdownMenuItem(
-                                  value: id,
-                                  child: Text(id),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (selected) {},
+                          viewModel.userTravels.data!.entries.expand((entry) {
+                            final groupId = entry.key;
+                            final travels = entry.value;
+
+                            return travels.entries.map((travelEntry) {
+                              final travelId = travelEntry.key;
+                              final travelName = travelEntry.value;
+
+                              return DropdownMenuItem<String>(
+                                value: travelId,
+                                child: Text("${travelName}:${groupId}"),
+                              );
+                            });
+                          }).toList(),
+                      onChanged: (val) {
+                        ///表示はtravel名になっているが、内部で保持しているのはtravelId
+                        print(val);
+                        viewModel.selectTravelId(val);
+                      },
                     ),
                   ),
                 ],
               ),
+              RoundedButton(title: "旅行削除", onPressed: () {}),
             ],
           ],
         ],

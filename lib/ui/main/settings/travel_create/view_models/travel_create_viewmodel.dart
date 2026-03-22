@@ -48,6 +48,7 @@ class TravelCreateViewModel extends ChangeNotifier {
        _getUserTravelsUseCase = getUserTravelsUseCase {
     _uid = _appSession.currentUser!.uid;
     getJoinedGroups();
+    getUserTravels();
   }
 
   Future<void> getJoinedGroups() async {
@@ -91,6 +92,14 @@ class TravelCreateViewModel extends ChangeNotifier {
       _userTravels = DataState(data: data);
     } catch (e) {
       _userTravels = DataState(error: ErrorInfo(errorMessage: e.toString()));
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  void selectTravelId(String? travelId) {
+    try {
+      _travelIdDeleted = travelId;
     } finally {
       notifyListeners();
     }
