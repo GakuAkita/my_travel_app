@@ -13,7 +13,7 @@ class GroupsRepositoryRealtimeDb implements GroupsRepository {
   Future<void> deleteGroupsRepository(String groupId) async {
     final service = FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.groups.toString(),
+      path: FirebaseDatabasePaths.group(groupId).toString(),
       fromJson: (e) => e,
       toJson: (e) => e,
     );

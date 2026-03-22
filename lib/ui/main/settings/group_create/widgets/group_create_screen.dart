@@ -121,15 +121,18 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               ),
               RoundedButton(
                 title: "グループ削除",
-                onPressed: () {
-                  if (viewModel.selectedGroupId == null) {
+                onPressed: () async {
+                  print("Delete ${viewModel.selectedGroupId}");
+                  /* 本当はポップアップを出した方が良い */
+                  final ret = await viewModel.deleteGroup();
+                  if (ret.isSuccess) {
+                    context.pop();
+                  } else {
                     ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("削除するグループを選択してください")),
+                      SnackBar(content: Text("${ret.error?.errorMessage}")),
                     );
-                    return;
                   }
-                  print("Delete ${viewModel.selectedGroupId}");
                 },
               ),
             ],

@@ -131,4 +131,19 @@ class GroupCreateViewModel extends ChangeNotifier {
     _selectedGroupId = groupId;
     notifyListeners();
   }
+
+  Future<ResultInfo> deleteGroup() async {
+    if (_selectedGroupId == null) {
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "削除するグループを選択してください"),
+      );
+    }
+
+    try {
+      await _crudGroupUseCase.deleteGroup(_selectedGroupId!);
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
 }

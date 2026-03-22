@@ -51,6 +51,9 @@ class JoinedGroupsRepositoryRealtimeDb implements JoinedGroupsRepository {
       fromJson: (val) => val,
       toJson: (val) => val,
     );
+    print(
+      "Deleted path:${FirebaseDatabasePaths.user(uid).settings.joined_group(groupId)}",
+    );
 
     await service.delete();
   }
