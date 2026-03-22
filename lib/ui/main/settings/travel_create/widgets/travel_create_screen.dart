@@ -115,7 +115,20 @@ class _TravelCreateScreenState extends State<TravelCreateScreen> {
                   ),
                 ],
               ),
-              RoundedButton(title: "旅行削除", onPressed: () {}),
+              RoundedButton(
+                title: "旅行削除",
+                onPressed: () async {
+                  final ret = await viewModel.deleteTravel();
+                  if (ret.isSuccess) {
+                    context.pop();
+                  } else {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("${ret.error?.errorMessage}")),
+                    );
+                  }
+                },
+              ),
             ],
           ],
         ],
