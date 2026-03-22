@@ -1,19 +1,19 @@
-import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
+import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository.dart';
 
 /// あるユーザーの参加しているグループを取ってきて
 /// そこに連なっている旅行idを取得して旅行名を取る
 class GetUserTravelsUseCase {
-  final GroupKeysRepository _groupKeysRepository;
+  final TravelKeysRepository _travelKeysRepository;
   final JoinedGroupsRepository _joinedGroupsRepository;
   final TravelRepository _travelRepository;
 
   GetUserTravelsUseCase({
-    required GroupKeysRepository groupKeysRepository,
+    required TravelKeysRepository travelKeysRepository,
     required JoinedGroupsRepository joinedGroupsRepository,
     required TravelRepository travelRepository,
-  }) : _groupKeysRepository = groupKeysRepository,
+  }) : _travelKeysRepository = travelKeysRepository,
        _joinedGroupsRepository = joinedGroupsRepository,
        _travelRepository = travelRepository;
 
@@ -25,7 +25,9 @@ class GetUserTravelsUseCase {
 
     final entries = await Future.wait(
       joinedGroupsIds.map((groupId) async {
-        final travelIds = await _groupKeysRepository.getGroupTravelIds(groupId);
+        final travelIds = await _travelKeysRepository.getGroupTravelIds(
+          groupId,
+        );
         return MapEntry(groupId, travelIds);
       }),
     );
@@ -43,7 +45,9 @@ class GetUserTravelsUseCase {
 
     final groupEntries = await Future.wait(
       joinedGroupIds.map((groupId) async {
-        final travelIds = await _groupKeysRepository.getGroupTravelIds(groupId);
+        final travelIds = await _travelKeysRepository.getGroupTravelIds(
+          groupId,
+        );
 
         final travelEntries = await Future.wait(
           travelIds.map((travelId) async {

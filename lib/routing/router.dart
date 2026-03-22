@@ -6,9 +6,9 @@ import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart
 import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
 import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository.dart';
 import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository.dart';
-import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
+import 'package:my_travel_app/data/repositories/groups/groups_repository.dart';
+import 'package:my_travel_app/data/repositories/groups/groups_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository_realtimedb.dart';
@@ -17,6 +17,8 @@ import 'package:my_travel_app/data/repositories/planners/planners_repository.dar
 import 'package:my_travel_app/data/repositories/planners/planners_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
 import 'package:my_travel_app/data/repositories/travel/travel_repository_realtimedb.dart';
+import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository.dart';
+import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/users/users_repository.dart';
@@ -325,9 +327,9 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             database: FirebaseDatabase.instance,
           ),
     ),
-    Provider<GroupKeysRepository>(
+    Provider<TravelKeysRepository>(
       create:
-          (innerContext) => GroupKeysRepositoryRealtimeDb(
+          (innerContext) => TravelKeysRepositoryRealtimedb(
             database: FirebaseDatabase.instance,
           ),
     ),
@@ -350,12 +352,17 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             firebaseDatabase: FirebaseDatabase.instance,
           ),
     ),
+    Provider<GroupsRepository>(
+      create:
+          (innerContext) =>
+              GroupsRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+    ),
 
     /// UserCases
     Provider<GetUserTravelsUseCase>(
       create:
           (innerContext) => GetUserTravelsUseCase(
-            groupKeysRepository: innerContext.read(),
+            travelKeysRepository: innerContext.read(),
             joinedGroupsRepository: innerContext.read(),
             travelRepository: innerContext.read(),
           ),
@@ -366,6 +373,8 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
             groupCreatorRepository: innerContext.read(),
             groupMembersRepository: innerContext.read(),
             joinedGroupsRepository: innerContext.read(),
+            groupsRepository: innerContext.read(),
+            travelKeyRepository: innerContext.read(),
           ),
     ),
     ChangeNotifierProvider(

@@ -20,7 +20,7 @@ class FirebaseDatabasePaths {
 
   static const PathNode users = PathNode("users");
   static const PathNode groups = PathNode("groups");
-  static const PathNode groupKeys = PathNode("group_keys");
+  static const PathNode groupKeys = PathNode("travel_keys");
 
   static GroupPath group(String groupId) => GroupPath(groups.child(groupId));
 

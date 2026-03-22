@@ -1,12 +1,12 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/data/firebase_database_paths.dart';
-import 'package:my_travel_app/data/repositories/group_keys/group_keys_repository.dart';
+import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository.dart';
 import 'package:my_travel_app/data/services/firebase_database_service.dart';
 
-class GroupKeysRepositoryRealtimeDb implements GroupKeysRepository {
+class TravelKeysRepositoryRealtimedb implements TravelKeysRepository {
   final FirebaseDatabase _database;
 
-  GroupKeysRepositoryRealtimeDb({required FirebaseDatabase database})
+  TravelKeysRepositoryRealtimedb({required FirebaseDatabase database})
     : _database = database;
 
   @override
@@ -47,6 +47,17 @@ class GroupKeysRepositoryRealtimeDb implements GroupKeysRepository {
     final service = FirebaseDatabaseService(
       database: _database,
       path: FirebaseDatabasePaths.groupKey(groupId).travel(travelId),
+      fromJson: (val) => val,
+      toJson: (val) => val,
+    );
+    await service.delete();
+  }
+
+  @override
+  Future<void> removeAllGroupTravelIds(String groupId) async {
+    final service = FirebaseDatabaseService(
+      database: _database,
+      path: FirebaseDatabasePaths.groupKey(groupId).path,
       fromJson: (val) => val,
       toJson: (val) => val,
     );
