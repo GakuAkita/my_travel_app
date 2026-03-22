@@ -16,6 +16,13 @@ class _TravelCreateScreenState extends State<TravelCreateScreen> {
   final TextEditingController _travelNameController = TextEditingController();
 
   @override
+  void dispose() {
+    _travelNameController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<TravelCreateViewModel>();
     return Scaffold(

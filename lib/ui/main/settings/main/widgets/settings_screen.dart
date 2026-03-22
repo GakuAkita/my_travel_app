@@ -26,7 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             SettingMenubar(
               onPressed: () {
-                //Navigator.pushNamed(context, ProfileScreen.id);
+                context.push(Routes.settings_profile);
               },
               menuName: "プロフィール",
             ),

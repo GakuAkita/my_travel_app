@@ -40,6 +40,8 @@ import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.da
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/widgets/group_create_screen.dart';
 import 'package:my_travel_app/ui/main/settings/main/widgets/settings_screen.dart';
+import 'package:my_travel_app/ui/main/settings/profile/view_models/profile_viewmodel.dart';
+import 'package:my_travel_app/ui/main/settings/profile/widgets/profile_screen.dart';
 import 'package:my_travel_app/ui/main/settings/software_version/widgets/version_info_screen.dart';
 import 'package:my_travel_app/ui/main/settings/travel_create/view_models/travel_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_select_viewmodel.dart';
@@ -231,6 +233,18 @@ GoRouter createRouter(AppSession session) {
                         getUserTravelsUseCase: innerContext.read(),
                       ),
                   child: TravelCreateScreen(),
+                ),
+          ),
+          GoRoute(
+            path: Routes.settings_profile,
+            builder:
+                (context, state) => ChangeNotifierProvider(
+                  create:
+                      (innerContext) => ProfileViewModel(
+                        appSession: innerContext.read(),
+                        userSettingsRepository: innerContext.read(),
+                      ),
+                  child: ProfileScreen(),
                 ),
           ),
         ],
