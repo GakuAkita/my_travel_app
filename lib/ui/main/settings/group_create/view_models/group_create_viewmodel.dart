@@ -24,6 +24,10 @@ class GroupCreateViewModel extends ChangeNotifier {
 
   DataState<List<String>> get joinedGroups => _joinedGroups;
 
+  String? _selectedGroupId;
+
+  String? get selectedGroupId => _selectedGroupId;
+
   GroupCreateViewModel({
     required AppSession appSession,
     required UsersRepository usersRepository,
@@ -34,6 +38,7 @@ class GroupCreateViewModel extends ChangeNotifier {
        _crudGroupUseCase = crudGroupUseCase,
        _joinedGroupsRepository = joinedGroupRepository {
     getAllUserIds();
+    getJoinedGroups();
   }
 
   Future<ResultInfo> createGroup(String name) async {
@@ -120,5 +125,10 @@ class GroupCreateViewModel extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  void selectGroup(String? groupId) {
+    _selectedGroupId = groupId;
+    notifyListeners();
   }
 }

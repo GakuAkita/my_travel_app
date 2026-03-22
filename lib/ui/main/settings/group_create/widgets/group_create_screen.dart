@@ -93,8 +93,46 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               },
             ),
 
-            SizedBox(height: 20),
-            if (viewModel.joinedGroups.hasData) ...[Text("削除するグループ選択")],
+            SizedBox(height: 40),
+            if (viewModel.joinedGroups.hasData) ...[
+              Divider(),
+              Text("削除するグループ選択"),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButton(
+                      isExpanded: true,
+                      items:
+                          viewModel.joinedGroups.data!
+                              .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value, maxLines: 1),
+                                );
+                              })
+                              .toList(),
+                      value: viewModel.selectedGroupId,
+                      onChanged: (String? value) {
+                        viewModel.selectGroup(value);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              RoundedButton(
+                title: "グループ削除",
+                onPressed: () {
+                  if (viewModel.selectedGroupId == null) {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("削除するグループを選択してください")),
+                    );
+                    return;
+                  }
+                  print("Delete ${viewModel.selectedGroupId}");
+                },
+              ),
+            ],
           ],
         ),
       ),
