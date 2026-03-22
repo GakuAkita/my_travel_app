@@ -228,6 +228,7 @@ GoRouter createRouter(AppSession session) {
                         travelRepository: innerContext.read(),
                         travelKeysRepository: innerContext.read(),
                         joinedGroupsRepository: innerContext.read(),
+                        getUserTravelsUseCase: innerContext.read(),
                       ),
                   child: TravelCreateScreen(),
                 ),

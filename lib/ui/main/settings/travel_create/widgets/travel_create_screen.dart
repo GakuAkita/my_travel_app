@@ -81,6 +81,30 @@ class _TravelCreateScreenState extends State<TravelCreateScreen> {
                 }
               },
             ),
+
+            if (viewModel.userTravels.hasData &&
+                viewModel.userTravels.data!.isNotEmpty) ...[
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButton(
+                      isExpanded: true,
+                      items:
+                          viewModel.joinedGroupIds.data!
+                              .map(
+                                (id) => DropdownMenuItem(
+                                  value: id,
+                                  child: Text(id),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (selected) {},
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ],
       ),
