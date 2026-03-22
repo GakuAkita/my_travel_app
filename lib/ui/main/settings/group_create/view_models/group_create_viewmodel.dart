@@ -3,6 +3,7 @@ import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
+import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/users/users_repository.dart';
 import 'package:my_travel_app/domain/use_cases/crud_group_use_case.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
@@ -12,19 +13,26 @@ import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_user.da
 class GroupCreateViewModel extends ChangeNotifier {
   final UsersRepository _usersRepository;
   final CrudGroupUseCase _crudGroupUseCase;
+  final JoinedGroupsRepository _joinedGroupsRepository;
   final AppSession _appSession;
 
   DataState<Map<String, SelectedUser>> _allUsers = DataState(data: {});
 
   DataState<Map<String, SelectedUser>> get allUsers => _allUsers;
 
+  DataState<List<String>> _joinedGroups = DataState(data: []);
+
+  DataState<List<String>> get joinedGroups => _joinedGroups;
+
   GroupCreateViewModel({
     required AppSession appSession,
     required UsersRepository usersRepository,
     required CrudGroupUseCase crudGroupUseCase,
+    required JoinedGroupsRepository joinedGroupRepository,
   }) : _appSession = appSession,
        _usersRepository = usersRepository,
-       _crudGroupUseCase = crudGroupUseCase {
+       _crudGroupUseCase = crudGroupUseCase,
+       _joinedGroupsRepository = joinedGroupRepository {
     getAllUserIds();
   }
 
@@ -100,5 +108,17 @@ class GroupCreateViewModel extends ChangeNotifier {
       isChecked: !_allUsers.data![uid]!.isChecked,
     );
     notifyListeners();
+  }
+
+  Future<void> getJoinedGroups() async {
+    try {
+      final uid = _appSession.currentUser!.uid;
+      final groupIds = await _joinedGroupsRepository.getJoinedGroupIds(uid);
+      _joinedGroups = DataState(data: groupIds);
+    } catch (e) {
+      _joinedGroups = DataState(error: ErrorInfo(errorMessage: e.toString()));
+    } finally {
+      notifyListeners();
+    }
   }
 }

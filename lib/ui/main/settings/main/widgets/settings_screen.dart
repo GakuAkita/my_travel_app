@@ -44,9 +44,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: () {
                   context.push(Routes.settings_create_group);
                 },
-                menuName: "グループ作成",
+                menuName: "グループ作成/削除",
               ),
-              // SettingMenubar(onPressed: () {}, menuName: "グループ削除"),
               SettingMenubar(onPressed: () {}, menuName: "旅行削除"),
             ], //adminだったらこちらを表示
             SettingMenubar(

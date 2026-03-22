@@ -211,6 +211,7 @@ GoRouter createRouter(AppSession session) {
                         appSession: innerContext.read(),
                         usersRepository: innerContext.read(),
                         crudGroupUseCase: innerContext.read(),
+                        joinedGroupRepository: innerContext.read(),
                       ),
                   child: GroupCreateScreen(),
                 ),

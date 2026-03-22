@@ -92,6 +92,9 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 }
               },
             ),
+
+            SizedBox(height: 20),
+            if (viewModel.joinedGroups.hasData) ...[Text("削除するグループ選択")],
           ],
         ),
       ),
