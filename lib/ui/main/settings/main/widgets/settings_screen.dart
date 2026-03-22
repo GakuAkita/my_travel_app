@@ -39,14 +39,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             if (viewModel.roleState.data == UserRole.admin) ...[
               SizedBox(height: 50),
-              SettingMenubar(onPressed: () {}, menuName: "旅行新規作成"),
+              SettingMenubar(
+                onPressed: () {
+                  context.push(Routes.settings_create_travel);
+                },
+                menuName: "旅行新規作成/削除",
+              ),
               SettingMenubar(
                 onPressed: () {
                   context.push(Routes.settings_create_group);
                 },
                 menuName: "グループ作成/削除",
               ),
-              SettingMenubar(onPressed: () {}, menuName: "旅行削除"),
             ], //adminだったらこちらを表示
             SettingMenubar(
               onPressed: () {
