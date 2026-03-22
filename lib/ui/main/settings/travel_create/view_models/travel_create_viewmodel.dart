@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
+import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
 import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/ui/core/store/data_state.dart';
 
 class TravelCreateViewModel extends ChangeNotifier {
   final AppSession _appSession;
+  final TravelRepository _travelRepository;
   final TravelKeysRepository _travelKeysRepository;
   final JoinedGroupsRepository _joinedGroupsRepository;
 
@@ -19,9 +21,11 @@ class TravelCreateViewModel extends ChangeNotifier {
 
   TravelCreateViewModel({
     required AppSession appSession,
+    required TravelRepository travelRepository,
     required TravelKeysRepository travelKeysRepository,
     required JoinedGroupsRepository joinedGroupsRepository,
   }) : _appSession = appSession,
+       _travelRepository = travelRepository,
        _travelKeysRepository = travelKeysRepository,
        _joinedGroupsRepository = joinedGroupsRepository {
     _uid = _appSession.currentUser!.uid;
@@ -42,11 +46,18 @@ class TravelCreateViewModel extends ChangeNotifier {
   Future<ResultInfo> createTravel({
     required String groupId,
     required String travelName,
-  }) {
+  }) async {
     try {
-      /* travelKeyに追加する */
-      /* nameとともに、$groupId/travels配下に追加する */
-    } catch (e) {}
-    return ResultInfo.success();
+      final newId = await _travelRepository.addTravelId(
+        groupId: groupId,
+        travelName: travelName,
+      );
+
+      /* travelKeyとして追加 */
+      await _travelKeysRepository.addGroupTravelId(groupId, newId);
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 }
