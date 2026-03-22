@@ -9,6 +9,9 @@ class TravelKeysRepositoryRealtimedb implements TravelKeysRepository {
   TravelKeysRepositoryRealtimedb({required FirebaseDatabase database})
     : _database = database;
 
+  /**
+   * ノード名はgroup_keysになっているが、意味的にはtravel_keys
+   */
   @override
   Future<List<String>> getGroupTravelIds(String groupId) async {
     final service = FirebaseDatabaseService(
