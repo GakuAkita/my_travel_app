@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
+import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
@@ -36,5 +37,16 @@ class TravelCreateViewModel extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  Future<ResultInfo> createTravel({
+    required String groupId,
+    required String travelName,
+  }) {
+    try {
+      /* travelKeyに追加する */
+      /* nameとともに、$groupId/travels配下に追加する */
+    } catch (e) {}
+    return ResultInfo.success();
   }
 }
