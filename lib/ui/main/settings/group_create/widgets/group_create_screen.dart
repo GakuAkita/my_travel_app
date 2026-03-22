@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_travel_app/components/BasicTextField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
@@ -39,6 +41,16 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 children: [
                   Text("グループ名 [英字のみ、特殊文字禁止]"),
                   TextField(controller: _groupNameController),
+                  BasicTextField(
+                    controller: _groupNameController,
+                    hintText: "group id",
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[a-zA-Z0-9_\-@.]+'), // ← 使用を許可する文字だけ
+                      ),
+                    ],
+                    onChanged: (val) {},
+                  ),
                 ],
               ),
             ),
