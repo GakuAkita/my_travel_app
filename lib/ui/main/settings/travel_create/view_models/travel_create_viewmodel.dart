@@ -17,6 +17,10 @@ class TravelCreateViewModel extends ChangeNotifier {
 
   DataState<List<String>> get joinedGroupIds => _joinedGroupIds;
 
+  String? _selectedGroupId;
+
+  String? get selectedGroupId => _selectedGroupId;
+
   late final String _uid;
 
   TravelCreateViewModel({
@@ -43,18 +47,24 @@ class TravelCreateViewModel extends ChangeNotifier {
     }
   }
 
-  Future<ResultInfo> createTravel({
-    required String groupId,
-    required String travelName,
-  }) async {
+  void selectGroup(String? groupId) {
+    _selectedGroupId = groupId;
+    notifyListeners();
+  }
+
+  Future<ResultInfo> createTravel({required String travelName}) async {
+    if (_selectedGroupId == null) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "グループを選択してください"));
+    }
+
     try {
       final newId = await _travelRepository.addTravelId(
-        groupId: groupId,
+        groupId: _selectedGroupId!,
         travelName: travelName,
       );
 
       /* travelKeyとして追加 */
-      await _travelKeysRepository.addGroupTravelId(groupId, newId);
+      await _travelKeysRepository.addGroupTravelId(_selectedGroupId!, newId);
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
