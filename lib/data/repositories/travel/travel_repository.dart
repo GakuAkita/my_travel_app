@@ -10,9 +10,8 @@ abstract class TravelRepository {
     required String travelName,
   });
 
-  Future<void> setTravelName({
+  Future<void> deleteTravel({
     required String groupId,
     required String travelId,
-    required String travelName,
   });
 }

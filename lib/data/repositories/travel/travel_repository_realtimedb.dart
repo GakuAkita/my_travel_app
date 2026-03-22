@@ -52,18 +52,20 @@ class TravelRepositoryRealtimeDb implements TravelRepository {
   }
 
   @override
-  Future<void> setTravelName({
+  Future<void> deleteTravel({
     required String groupId,
     required String travelId,
-    required String travelName,
   }) async {
     final service = FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.group(groupId).travels.travel(travelId).name,
-      fromJson: (val) => val,
-      toJson: (val) => val,
+      path:
+          FirebaseDatabasePaths.group(
+            groupId,
+          ).travels.travel(travelId).toString(),
+      fromJson: (e) => e,
+      toJson: (e) => e,
     );
-
-    await service.setValue(travelName);
+    await service.delete();
+    return;
   }
 }

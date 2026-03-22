@@ -104,4 +104,38 @@ class TravelCreateViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<ResultInfo> deleteTravel() async {
+    if (_travelIdDeleted == null) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "旅行を選択してください"));
+    }
+    try {
+      final travelId = _travelIdDeleted!;
+
+      /// travelIdDeletedからgroupIdを取得してくる
+      String? groupId;
+      for (final travels in _userTravels.data!.entries) {
+        for (final travel in travels.value.entries) {
+          if (travel.key == travelId) {
+            groupId = travels.key;
+            break;
+          }
+        }
+      }
+      if (groupId == null) {
+        /* ここに入ることはあまりない */
+        return ResultInfo.failed(
+          error: ErrorInfo(errorMessage: "travelIdが正しくない"),
+        );
+      }
+
+      await Future.wait([
+        _travelKeysRepository.removeGroupTravelId(groupId, travelId),
+        _travelRepository.deleteTravel(groupId: groupId, travelId: travelId),
+      ]);
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
 }
