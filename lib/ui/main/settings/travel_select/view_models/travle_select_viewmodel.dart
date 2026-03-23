@@ -13,12 +13,14 @@ class TravelSelectViewModel extends ChangeNotifier {
   final AppSession _appSession;
   final ShownTravelSession _travelSession;
   final UserSettingsRepository _userSettingsRepository;
+  final String? userRole;
 
   TravelSelectViewModel({
     required AppSession appSession,
     required ShownTravelSession travelSession,
     required GetUserTravelsUseCase getUserTravelsUseCase,
     required UserSettingsRepository userSettingsRepository,
+    this.userRole /* やり方汚いけどどうせまた作り直すからとりあえずこれでいいや。 */,
   }) : _getUserTravelsUseCase = getUserTravelsUseCase,
        _appSession = appSession,
        _travelSession = travelSession,

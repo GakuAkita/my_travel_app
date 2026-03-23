@@ -198,6 +198,7 @@ GoRouter createRouter(AppSession session) {
                       travelSession: innerContext.read(),
                       getUserTravelsUseCase: innerContext.read(),
                       userSettingsRepository: innerContext.read(),
+                      userRole: role,
                     ),
                 child: TravelSelectScreen(userRole: role),
               );

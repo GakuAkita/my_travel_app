@@ -5,6 +5,7 @@ import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_select_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../constants.dart';
 import '../../../../core/ui/TopAppBar.dart';
 
 class TravelSelectScreen extends StatelessWidget {
@@ -56,6 +57,9 @@ class TravelSelectScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              if (userRole == UserRole.admin) ...[
+                Row(children: [Text("参加者選択")]),
+              ],
             ],
           ),
         ),
