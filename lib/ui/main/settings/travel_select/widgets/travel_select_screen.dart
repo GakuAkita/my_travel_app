@@ -59,6 +59,7 @@ class TravelSelectScreen extends StatelessWidget {
               ),
               if (userRole == UserRole.admin) ...[
                 Row(children: [Text("参加者選択")]),
+                Column(),
               ],
             ],
           ),

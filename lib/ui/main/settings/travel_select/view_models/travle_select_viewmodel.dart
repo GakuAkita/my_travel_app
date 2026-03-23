@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
+import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
+import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
@@ -14,17 +17,23 @@ class TravelSelectViewModel extends ChangeNotifier {
   final ShownTravelSession _travelSession;
   final UserSettingsRepository _userSettingsRepository;
   final String? userRole;
+  final GroupMembersRepository _groupMembersRepository;
+  final ParticipantsRepository _participantsRepository;
 
   TravelSelectViewModel({
     required AppSession appSession,
     required ShownTravelSession travelSession,
     required GetUserTravelsUseCase getUserTravelsUseCase,
     required UserSettingsRepository userSettingsRepository,
+    required GroupMembersRepository groupMembersRepository,
+    required ParticipantsRepository participantsRepository,
     this.userRole /* やり方汚いけどどうせまた作り直すからとりあえずこれでいいや。 */,
   }) : _getUserTravelsUseCase = getUserTravelsUseCase,
        _appSession = appSession,
        _travelSession = travelSession,
-       _userSettingsRepository = userSettingsRepository {
+       _userSettingsRepository = userSettingsRepository,
+       _groupMembersRepository = groupMembersRepository,
+       _participantsRepository = participantsRepository {
     initialize();
   }
 
@@ -35,6 +44,8 @@ class TravelSelectViewModel extends ChangeNotifier {
   String? _selectedTravelId;
 
   String? get selectedTravelId => _selectedTravelId;
+
+  Map<String, Map<String, TravelerCore>> _travelersWithIds = {};
 
   Future<void> initialize() async {
     _selectedTravelId = _travelSession.currentTravel?.travelId;
@@ -85,5 +96,31 @@ class TravelSelectViewModel extends ChangeNotifier {
     );
     /* ShownTravelを設定する */
     return ResultInfo.success();
+  }
+
+  Future<void> loadTravelers() async {
+    if (_selectedTravelId == null) {
+      return;
+    }
+
+    if (_userTravels == null) {
+      print("travels are not loaded");
+      return;
+    }
+
+    /* travelIdからgroupIdを逆に検索 */
+    String? groupId;
+    for (final travelMap in _userTravels!.entries) {
+      if (travelMap.value.containsKey(_selectedTravelId)) {
+        groupId = travelMap.key;
+        break;
+      }
+    }
+    if (groupId == null) {
+      print("This is not possible");
+      return;
+    }
+
+    /* グループメンバーを取得する */
   }
 }
