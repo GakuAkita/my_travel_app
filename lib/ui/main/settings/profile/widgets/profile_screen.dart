@@ -45,6 +45,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
+              child: Row(children: [Text("Email: ${viewModel.email}")]),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   Expanded(
@@ -52,14 +56,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: BasicTextField(
                       controller: _profileNameController,
                       hintText: "プロフィール名",
-                      readOnly: true,
+                      readOnly: !viewModel.editMode,
+                      enabled: viewModel.editMode,
                       onChanged: (name) {},
                     ),
                   ),
-                  Expanded(
-                    flex: 5,
-                    child: RoundedButton(title: "変更", onPressed: () {}),
-                  ),
+                  viewModel.isLoading
+                      ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: CircularProgressIndicator(),
+                      )
+                      : Expanded(
+                        flex: 5,
+                        child: RoundedButton(
+                          title: viewModel.editMode ? "保存" : "変更",
+                          onPressed: () async {
+                            if (viewModel.editMode) {
+                              /* 保存する */
+                              final ret = await viewModel.updateProfileName(
+                                _profileNameController.text,
+                              );
+                              if (ret.isSuccess) {
+                                viewModel.switchEditMode();
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("プロフィール名を保存しました")),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("${ret.error?.errorMessage}"),
+                                  ),
+                                );
+                              }
+                            } else {
+                              /* プロフィール名が変更できないとき */
+                              viewModel.switchEditMode();
+                            }
+                          },
+                        ),
+                      ),
                 ],
               ),
             ),
