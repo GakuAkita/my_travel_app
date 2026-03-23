@@ -188,6 +188,7 @@ GoRouter createRouter(AppSession session) {
           GoRoute(
             path: Routes.settings_travel_select,
             builder: (context, state) {
+              final role = state.extra as String?;
               /* Adminかどうかを引数で渡しておく */
 
               return ChangeNotifierProvider(
@@ -198,7 +199,7 @@ GoRouter createRouter(AppSession session) {
                       getUserTravelsUseCase: innerContext.read(),
                       userSettingsRepository: innerContext.read(),
                     ),
-                child: TravelSelectScreen(),
+                child: TravelSelectScreen(userRole: role),
               );
             },
           ),

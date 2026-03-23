@@ -8,7 +8,9 @@ import 'package:provider/provider.dart';
 import '../../../../core/ui/TopAppBar.dart';
 
 class TravelSelectScreen extends StatelessWidget {
-  const TravelSelectScreen({super.key});
+  final String? userRole;
+
+  const TravelSelectScreen({this.userRole, super.key});
 
   @override
   Widget build(BuildContext context) {

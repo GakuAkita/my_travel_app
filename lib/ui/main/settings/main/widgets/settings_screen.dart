@@ -32,9 +32,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             SettingMenubar(
               onPressed: () {
-                context.push(Routes.settings_travel_select);
+                final role = viewModel.roleState.data;
+                context.push(Routes.settings_travel_select, extra: role);
               },
-              menuName: "表示旅行選択",
+              menuName:
+                  viewModel.roleState.data == UserRole.admin
+                      ? "表示旅行選択(参加者決定)"
+                      : "表示旅行選択",
             ),
 
             if (viewModel.roleState.data == UserRole.admin) ...[
