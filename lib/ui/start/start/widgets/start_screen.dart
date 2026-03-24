@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/routing/routes.dart';
+import 'package:my_travel_app/screens/Start/LoginScreen.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
@@ -18,7 +17,7 @@ class StartScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '精神的なこと、それも技術のうち。',
+                '精神的なこと、これも技術のうち。',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 48),
@@ -29,14 +28,14 @@ class StartScreen extends StatelessWidget {
                   // RoundedButton(
                   //   title: "SignUp",
                   //   onPressed: () {
-                  //     context.push(Routes.signUp);
+                  //     Navigator.pushNamed(context, SignUpScreen.id);
                   //   },
                   //   enabled: true, //基本は押しても何も起こらないようにしておく
                   // ),
                   RoundedButton(
                     title: "Login",
                     onPressed: () {
-                      context.push(Routes.signIn);
+                      Navigator.pushNamed(context, LoginScreen.id);
                     },
                   ),
                 ],

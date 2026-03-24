@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TopAppBar({
-    this.title = '精神的なこと、それも技術のうち。',
+    this.title = '精神的なこと、これも技術のうち。',
     this.centerTitle = false,
     this.automaticallyImplyLeading = false,
     super.key,
