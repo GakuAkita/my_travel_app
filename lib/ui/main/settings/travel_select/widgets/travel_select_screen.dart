@@ -27,9 +27,10 @@ class TravelSelectScreen extends StatelessWidget {
             children: [
               RadioGroup<String>(
                 groupValue: viewModel.selectedTravelId,
-                onChanged: (value) {
+                onChanged: (value) async {
                   if (value != null) {
                     viewModel.setSelectTravelId(value);
+                    viewModel.setTravelers();
                   }
                 },
                 child: Column(
@@ -59,7 +60,13 @@ class TravelSelectScreen extends StatelessWidget {
               ),
               if (userRole == UserRole.admin) ...[
                 Row(children: [Text("参加者選択")]),
-                Column(),
+                Column(
+                  children: [
+                    ...viewModel.selectableParticipants.map((traveler) {
+                      return Text("${traveler.traveler.core.email}");
+                    }).toList(),
+                  ],
+                ),
               ],
             ],
           ),

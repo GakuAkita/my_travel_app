@@ -60,6 +60,7 @@ class TravelSelectViewModel extends ChangeNotifier {
     final uid = _appSession.currentUser!.uid;
     _userTravels = await _getUserTravelsUseCase.getUserTravelsWithNames(uid);
     notifyListeners();
+    setTravelers();
   }
 
   void setSelectTravelId(String travelId) {
@@ -107,6 +108,8 @@ class TravelSelectViewModel extends ChangeNotifier {
 
   Future<void> setTravelers() async {
     if (_selectedTravelId == null) {
+      _selectableParticipants = [];
+      notifyListeners();
       return;
     }
 
@@ -133,32 +136,45 @@ class TravelSelectViewModel extends ChangeNotifier {
     /* 一旦初期化する */
     _selectableParticipants = [];
     notifyListeners();
+
+    print("Selected travelId GroupId =$groupId");
     /* グループメンバーを取得する */
+    bool doneNotify = false;
     if (_cachedGroupMembers[groupId] == null) {
       try {
         _cachedGroupMembers[groupId] = await _groupMembersRepository
             .getAllGroupMembers(groupId);
+
         if (localTravelId == _selectedTravelId) {
           /* 非同期処理中にユーザーが別の旅行を選択してしまった場合はおかしくなるので、ここでチェックをいれる */
           /* 変わっていなかったら値をいれる */
-          _selectableParticipants = createSelectableParticipants(localTravelId);
+          _selectableParticipants = createSelectableParticipants(
+            _cachedGroupMembers[groupId]!,
+          );
+          doneNotify = true;
           notifyListeners();
-        }
+        } else {}
       } catch (e) {
         print("${e.toString()}");
       }
     } else {
       /* Do Nothing */
-      _selectableParticipants = createSelectableParticipants(localTravelId);
+      if (!doneNotify) {
+        print("All ready loaded ${groupId}");
+        /* 初回ですでにnotifyしている場合はいらない */
+        _selectableParticipants = createSelectableParticipants(
+          _cachedGroupMembers[groupId]!,
+        );
+        notifyListeners();
+      }
     }
   }
 
-  List<SelectableTraveler> createSelectableParticipants(String travelId) {
-    if (_cachedGroupMembers[travelId] == null) {
-      return [];
-    }
-
-    return _cachedGroupMembers[travelId]!.entries
+  List<SelectableTraveler> createSelectableParticipants(
+    Map<String, TravelerCore> gMembers,
+  ) {
+    print("createSelectableParticipants called");
+    return gMembers.entries
         .map(
           (entry) => SelectableTraveler(
             traveler: TravelerBasic(core: entry.value),
