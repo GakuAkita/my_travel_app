@@ -6,7 +6,7 @@ import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_
 import 'package:provider/provider.dart';
 
 import '../../../../../constants.dart';
-import '../../../../core/ui/TopAppBar.dart';
+import '../../../../core/ui/top_app_bar.dart';
 
 class TravelSelectScreen extends StatelessWidget {
   final String? userRole;

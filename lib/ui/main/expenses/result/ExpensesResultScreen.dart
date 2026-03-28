@@ -4,7 +4,7 @@ import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
 import 'package:my_travel_app/CommonClass/ExchangeData.dart';
 
 import '../../../../components/BasicText.dart';
-import '../../../core/ui/TopAppBar.dart';
+import '../../../core/ui/top_app_bar.dart';
 
 /***
  * 計算自体はクラウドfunctionでやってもらう。

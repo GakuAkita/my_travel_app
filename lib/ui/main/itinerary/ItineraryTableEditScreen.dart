@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 
 class ItineraryTableEditScreen extends StatefulWidget {
   static const String id = "itinerary_table_edit_screen";

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
@@ -8,6 +9,7 @@ import 'package:my_travel_app/data/repositories/user_settings/user_settings_repo
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
+import 'package:my_travel_app/ui/main/expenses/selectable_traveler.dart';
 
 import '../../../../../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 
@@ -45,7 +47,12 @@ class TravelSelectViewModel extends ChangeNotifier {
 
   String? get selectedTravelId => _selectedTravelId;
 
-  Map<String, Map<String, TravelerCore>> _travelersWithIds = {};
+  Map<String, Map<String, TravelerCore>> _cachedGroupMembers = {};
+
+  List<SelectableTraveler> _selectableParticipants = [];
+
+  List<SelectableTraveler> get selectableParticipants =>
+      _selectableParticipants;
 
   Future<void> initialize() async {
     _selectedTravelId = _travelSession.currentTravel?.travelId;
@@ -98,10 +105,12 @@ class TravelSelectViewModel extends ChangeNotifier {
     return ResultInfo.success();
   }
 
-  Future<void> loadTravelers() async {
+  Future<void> setTravelers() async {
     if (_selectedTravelId == null) {
       return;
     }
+
+    final String localTravelId = _selectedTravelId!;
 
     if (_userTravels == null) {
       print("travels are not loaded");
@@ -111,7 +120,7 @@ class TravelSelectViewModel extends ChangeNotifier {
     /* travelIdからgroupIdを逆に検索 */
     String? groupId;
     for (final travelMap in _userTravels!.entries) {
-      if (travelMap.value.containsKey(_selectedTravelId)) {
+      if (travelMap.value.containsKey(localTravelId)) {
         groupId = travelMap.key;
         break;
       }
@@ -121,6 +130,41 @@ class TravelSelectViewModel extends ChangeNotifier {
       return;
     }
 
+    /* 一旦初期化する */
+    _selectableParticipants = [];
+    notifyListeners();
     /* グループメンバーを取得する */
+    if (_cachedGroupMembers[groupId] == null) {
+      try {
+        _cachedGroupMembers[groupId] = await _groupMembersRepository
+            .getAllGroupMembers(groupId);
+        if (localTravelId == _selectedTravelId) {
+          /* 非同期処理中にユーザーが別の旅行を選択してしまった場合はおかしくなるので、ここでチェックをいれる */
+          /* 変わっていなかったら値をいれる */
+          _selectableParticipants = createSelectableParticipants(localTravelId);
+          notifyListeners();
+        }
+      } catch (e) {
+        print("${e.toString()}");
+      }
+    } else {
+      /* Do Nothing */
+      _selectableParticipants = createSelectableParticipants(localTravelId);
+    }
+  }
+
+  List<SelectableTraveler> createSelectableParticipants(String travelId) {
+    if (_cachedGroupMembers[travelId] == null) {
+      return [];
+    }
+
+    return _cachedGroupMembers[travelId]!.entries
+        .map(
+          (entry) => SelectableTraveler(
+            traveler: TravelerBasic(core: entry.value),
+            isChecked: true,
+          ),
+        )
+        .toList();
   }
 }

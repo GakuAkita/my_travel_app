@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../components/AuthForm.dart';
 import '../../../../constants.dart';
-import '../../../core/ui/TopAppBar.dart';
+import '../../../core/ui/top_app_bar.dart';
 import '../../sign_in/view_models/sign_in_viewmodel.dart';
 
 class SignUpScreen extends StatefulWidget {

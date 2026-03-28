@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/BasicTextField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/settings/profile/view_models/profile_viewmodel.dart';
 import 'package:provider/provider.dart';
 

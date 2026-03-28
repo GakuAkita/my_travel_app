@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/settings/travel_create/view_models/travel_create_viewmodel.dart';
 import 'package:provider/provider.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_travel_app/ui/core/ui/TopAppBar.dart';
+import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 
 class AppNavigationBar extends StatelessWidget {
   const AppNavigationBar({super.key, required this.navigationShell});
