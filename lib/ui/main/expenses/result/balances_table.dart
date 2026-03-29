@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
+import 'package:my_travel_app/data/model/balance/balance_info.dart';
 
 import '../../../../data/model/traveler/traveler_basic.dart';
 
 class BalancesTable extends StatelessWidget {
-  final Map<String, BalancesInfo> balances;
+  final Map<String, BalanceInfo> balances;
   final Map<String, TravelerBasic> participants;
 
   /* ResultScreenの引数として渡されている、、 */

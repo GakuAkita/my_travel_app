@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
 import 'package:my_travel_app/ui/main/expenses/result/exchange_data.dart';
 
 import '../../../../components/BasicText.dart';
+import '../../../../data/model/balance/balance_info.dart';
 import '../../../core/ui/top_app_bar.dart';
 
 /***
@@ -25,7 +25,7 @@ class _ExpensesResultScreenOldState extends State<ExpensesResultScreenOld> {
   bool _isLoading = true;
   ExchangeData? _exchangeData;
   DateTime? _parsedLastUpdated;
-  Map<String, BalancesInfo>? _balances;
+  Map<String, BalanceInfo>? _balances;
 
   @override
   void initState() {

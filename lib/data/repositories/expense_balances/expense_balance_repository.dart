@@ -1,7 +1,7 @@
-import '../../../CommonClass/BalanceInfo.dart';
+import '../../model/balance/balance_info.dart';
 
 abstract class ExpenseBalanceRepository {
-  Future<Map<String, BalancesInfo>> getExpenseBalances({
+  Future<Map<String, BalanceInfo>> getExpenseBalances({
     required String groupId,
     required String travelId,
   });
