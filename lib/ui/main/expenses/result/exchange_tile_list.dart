@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_travel_app/CommonClass/MoneyExchange.dart';
 
 import '../../../../core/utils/UidColorHelper.dart';
+import '../../../../data/model/money_exchange/money_exchange.dart';
 import '../../../../data/model/traveler/traveler_basic.dart';
 
 class ExchangeTileList extends StatelessWidget {

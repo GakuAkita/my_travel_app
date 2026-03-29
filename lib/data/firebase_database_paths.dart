@@ -115,6 +115,8 @@ class ExpensesPath extends PathNode {
   String get balances => child("balances");
 
   String get exchanges => child("$_exchangesStr/result");
+
+  String get lastUpdated => child("$_exchangesStr/lastUpdated");
 }
 
 class ItineraryPath extends PathNode {

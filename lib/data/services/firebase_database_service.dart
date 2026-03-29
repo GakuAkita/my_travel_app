@@ -68,6 +68,34 @@ class FirebaseDatabaseService<T> {
     });
   }
 
+  Future<List<T>> getList() async {
+    final snapshot = await _database.ref(path).get();
+    if (!snapshot.exists || snapshot.value == null) return [];
+
+    final value = snapshot.value;
+
+    // Listの場合
+    if (value is List) {
+      /* これ順番守ってくれるかな、、 */
+      return value
+          .where((e) => e != null)
+          .map((e) => fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    }
+
+    // Mapの場合（Firebaseあるある）
+    if (value is Map) {
+      final normalized = normalizeMapStructure(value) as Map<String, dynamic>;
+
+      return normalized.values.map((e) {
+        return fromJson(Map<String, dynamic>.from(e));
+      }).toList();
+    }
+
+    // 想定外
+    return [];
+  }
+
   Future<void> delete() async {
     await _database.ref(path).remove();
   }

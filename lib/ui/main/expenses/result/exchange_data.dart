@@ -1,4 +1,4 @@
-import '../../../../CommonClass/MoneyExchange.dart';
+import '../../../../data/model/money_exchange/money_exchange.dart';
 
 class ExchangeData {
   final String? lastUpdated;
@@ -6,12 +6,13 @@ class ExchangeData {
 
   ExchangeData({this.lastUpdated, required this.result});
 
+  /* これ必要ないな、、 */
   static ExchangeData convFromMap(Map<dynamic, dynamic> map) {
     final rawList = map["result"];
     final List<MoneyExchange> resultList = [];
     for (var item in rawList) {
       if (item != null) {
-        resultList.add(MoneyExchange.convFromMap(item));
+        resultList.add(MoneyExchange.fromJson(item));
       }
     }
     return ExchangeData(lastUpdated: map["lastUpdated"], result: resultList);

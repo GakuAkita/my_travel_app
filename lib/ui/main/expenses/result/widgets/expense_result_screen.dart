@@ -25,7 +25,9 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
       body: SingleChildScrollView(
         child: Column(
           children:
-              viewModel.allExpensesList().isEmpty ? "費用が追加されていません" : "データあり",
+              viewModel.allExpensesList().isEmpty
+                  ? [Text("費用が追加されていません")]
+                  : [Text("データあり")],
         ),
       ),
     );
