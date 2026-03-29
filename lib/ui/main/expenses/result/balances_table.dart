@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
 
-import '../../data/model/traveler/traveler_basic.dart';
+import '../../../../data/model/traveler/traveler_basic.dart';
 
 class BalancesTable extends StatelessWidget {
   final Map<String, BalancesInfo> balances;
