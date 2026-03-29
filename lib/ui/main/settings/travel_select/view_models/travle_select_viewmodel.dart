@@ -106,6 +106,19 @@ class TravelSelectViewModel extends ChangeNotifier {
     return ResultInfo.success();
   }
 
+  String? getGroupIdFromTravel(String travelId) {
+    if (_userTravels == null) return null;
+    /* travelIdからgroupIdを逆に検索 */
+    String? groupId;
+    for (final travelMap in _userTravels!.entries) {
+      if (travelMap.value.containsKey(travelId)) {
+        groupId = travelMap.key;
+        break;
+      }
+    }
+    return groupId;
+  }
+
   Future<void> setTravelers() async {
     if (_selectedTravelId == null) {
       _selectableParticipants = [];
@@ -121,13 +134,7 @@ class TravelSelectViewModel extends ChangeNotifier {
     }
 
     /* travelIdからgroupIdを逆に検索 */
-    String? groupId;
-    for (final travelMap in _userTravels!.entries) {
-      if (travelMap.value.containsKey(localTravelId)) {
-        groupId = travelMap.key;
-        break;
-      }
-    }
+    String? groupId = getGroupIdFromTravel(localTravelId);
     if (groupId == null) {
       print("This is not possible");
       return;
@@ -182,5 +189,54 @@ class TravelSelectViewModel extends ChangeNotifier {
           ),
         )
         .toList();
+  }
+
+  void switchChecked(int index) {
+    _selectableParticipants[index] = _selectableParticipants[index].copyWith(
+      isChecked: !_selectableParticipants[index].isChecked,
+    );
+    notifyListeners();
+  }
+
+  Future<ResultInfo> setParticipants() async {
+    if (_selectableParticipants.length == 0) {
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "参加者候補リストがロードされていません"),
+      );
+    }
+
+    if (_selectedTravelId == null) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "旅行が選択されていません"));
+    }
+    final travelId = _selectedTravelId!;
+
+    try {
+      final groupId = getGroupIdFromTravel(travelId);
+      if (groupId == null) {
+        return ResultInfo.failed(error: ErrorInfo(errorMessage: "不正なグループIDです"));
+      }
+
+      /* 参加者を作る */
+      Map<String, TravelerCore> participants = {};
+      for (final sTraveler in _selectableParticipants) {
+        if (sTraveler.isChecked) {
+          participants[sTraveler.traveler.core.uid] = sTraveler.traveler.core;
+        }
+      }
+      if (participants.isEmpty) {
+        return ResultInfo.failed(
+          error: ErrorInfo(errorMessage: "参加者を選択してください"),
+        );
+      }
+      ;
+      await _participantsRepository.saveAllTravelers(
+        groupId: groupId,
+        travelId: travelId,
+        travelers: participants,
+      );
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 }

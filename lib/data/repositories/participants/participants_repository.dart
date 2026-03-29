@@ -10,9 +10,9 @@ abstract class ParticipantsRepository {
     String travelId,
   );
 
-  Future<void> saveAllTravelers(
-    String groupId,
-    String travelId,
-    Map<String, TravelerCore> travelers,
-  );
+  Future<void> saveAllTravelers({
+    required String groupId,
+    required String travelId,
+    required Map<String, TravelerCore> travelers,
+  });
 }

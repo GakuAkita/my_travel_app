@@ -1,5 +1,4 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/firebase_database_paths.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
@@ -7,13 +6,11 @@ import 'package:my_travel_app/data/services/firebase_database_service.dart';
 
 class ParticipantsRepositoryRealtimeDb implements ParticipantsRepository {
   final FirebaseDatabase _firebaseDatabase;
-  final String _userId;
 
   ParticipantsRepositoryRealtimeDb({
     required FirebaseDatabase firebaseDatabase,
     required String userId,
-  }) : _firebaseDatabase = firebaseDatabase,
-       _userId = userId;
+  }) : _firebaseDatabase = firebaseDatabase;
 
   FirebaseDatabaseService<TravelerCore> _service(
     String groupId,
@@ -41,11 +38,12 @@ class ParticipantsRepositoryRealtimeDb implements ParticipantsRepository {
   }
 
   @override
-  Future<void> saveAllTravelers(
-    String groupId,
-    String travelId,
-    Map<String, TravelerCore> travelers,
-  ) async {
-    throw AppException("Not implemented:${saveAllTravelers.toString()}");
+  Future<void> saveAllTravelers({
+    required String groupId,
+    required String travelId,
+    required Map<String, TravelerCore> travelers,
+  }) async {
+    final service = _service(groupId, travelId);
+    await service.setAll(travelers);
   }
 }

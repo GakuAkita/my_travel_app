@@ -62,9 +62,47 @@ class TravelSelectScreen extends StatelessWidget {
                 Row(children: [Text("参加者選択")]),
                 Column(
                   children: [
-                    ...viewModel.selectableParticipants.map((traveler) {
-                      return Text("${traveler.traveler.core.email}");
-                    }).toList(),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        final core =
+                            viewModel
+                                .selectableParticipants[index]
+                                .traveler
+                                .core;
+                        return CheckboxListTile(
+                          value:
+                              viewModel.selectableParticipants[index].isChecked,
+                          onChanged: (val) {
+                            viewModel.switchChecked(index);
+                          },
+                          title: Text(core.email, maxLines: 1),
+                          controlAffinity: ListTileControlAffinity.leading,
+                        );
+                      },
+                      itemCount: viewModel.selectableParticipants.length,
+                    ),
+                    RoundedButton(
+                      title: "参加者更新",
+                      onPressed: () async {
+                        final ret = await viewModel.setParticipants();
+                        if (ret.isSuccess) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text("更新しました")));
+                          context.pop();
+                        } else {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("${ret.error?.errorMessage}"),
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ],
                 ),
               ],
