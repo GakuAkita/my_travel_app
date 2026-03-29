@@ -9,6 +9,9 @@ class ExpenseResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ExpenseResultViewModel>();
-    return Scaffold(appBar: TopAppBar(), body: Column());
+    return Scaffold(
+      appBar: TopAppBar(automaticallyImplyLeading: true, title: "結果"),
+      body: SingleChildScrollView(child: Column()),
+    );
   }
 }

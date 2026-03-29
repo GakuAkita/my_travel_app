@@ -1,4 +1,4 @@
-import 'MoneyExchange.dart';
+import '../../../../CommonClass/MoneyExchange.dart';
 
 class ExchangeData {
   final String? lastUpdated;

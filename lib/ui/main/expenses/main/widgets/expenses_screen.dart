@@ -6,9 +6,8 @@ import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmod
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
-import '../../../../../components/Expenses/ExpenseTile.dart';
 import '../../../../../components/RoundedButton.dart';
-import '../../result/ExpensesResultScreen.dart';
+import 'expense_tile.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
@@ -66,10 +65,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               title: "割り勘確認",
                               enabled: viewModel.allExpensesList().isNotEmpty,
                               onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  ExpensesResultScreen.id,
-                                );
+                                context.push(Routes.expenses_result);
                               },
                             ),
                             /* プランナーとAdminだけは見れる */

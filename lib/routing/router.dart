@@ -35,6 +35,8 @@ import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart
 import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expenses_screen.dart';
+import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
+import 'package:my_travel_app/ui/main/expenses/result/widgets/expense_result_screen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
@@ -182,6 +184,19 @@ GoRouter createRouter(AppSession session) {
                       appSession: innerContext.read(),
                     ),
                 child: AddEditExpenseScreen(),
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.expenses_result,
+            builder: (context, state) {
+              return ChangeNotifierProvider(
+                create:
+                    (innerContext) => ExpenseResultViewModel(
+                      expenseStore: innerContext.read(),
+                      travelScopeStore: innerContext.read(),
+                    ),
+                child: ExpenseResultScreen(),
               );
             },
           ),

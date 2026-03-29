@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/CommonClass/BalanceInfo.dart';
-import 'package:my_travel_app/CommonClass/ExchangeData.dart';
+import 'package:my_travel_app/ui/main/expenses/result/exchange_data.dart';
 
 import '../../../../components/BasicText.dart';
 import '../../../core/ui/top_app_bar.dart';
@@ -11,16 +11,17 @@ import '../../../core/ui/top_app_bar.dart';
  * 基本的にはそれを上から取ってくるだけ。
  */
 
-class ExpensesResultScreen extends StatefulWidget {
+class ExpensesResultScreenOld extends StatefulWidget {
   static const String id = "expenses_result_screen";
 
-  ExpensesResultScreen({super.key});
+  ExpensesResultScreenOld({super.key});
 
   @override
-  State<ExpensesResultScreen> createState() => _ExpensesResultScreenState();
+  State<ExpensesResultScreenOld> createState() =>
+      _ExpensesResultScreenOldState();
 }
 
-class _ExpensesResultScreenState extends State<ExpensesResultScreen> {
+class _ExpensesResultScreenOldState extends State<ExpensesResultScreenOld> {
   bool _isLoading = true;
   ExchangeData? _exchangeData;
   DateTime? _parsedLastUpdated;

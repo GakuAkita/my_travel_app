@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/utils/UidColorHelper.dart';
-import '../../data/model/expense/expense_info.dart';
-import '../../data/model/traveler/traveler_basic.dart';
+import '../../../../../core/utils/UidColorHelper.dart';
+import '../../../../../data/model/expense/expense_info.dart';
+import '../../../../../data/model/traveler/traveler_basic.dart';
 
 class ExpenseTile extends StatelessWidget {
   final ExpenseInfo expense;
