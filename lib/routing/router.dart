@@ -12,6 +12,7 @@ import 'package:my_travel_app/data/repositories/groups/groups_repository_realtim
 import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
 import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository_realtimedb.dart';
+import 'package:my_travel_app/data/repositories/money_exchange/money_exchange_repository.dart';
 import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
 import 'package:my_travel_app/data/repositories/planners/planners_repository.dart';
 import 'package:my_travel_app/data/repositories/planners/planners_repository_realtimedb.dart';
@@ -57,6 +58,7 @@ import '../data/repositories/expenses/expense_repository_realtimedb.dart';
 import '../data/repositories/general_manager/general_manager_repository_realtimedb.dart';
 import '../data/repositories/group_members/group_members_repository_realtimedb.dart';
 import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
+import '../data/repositories/money_exchange/money_exchange_repository_realtimedb.dart';
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/core/store/travel_scope_store.dart';
 import '../ui/main/app_navigation_bar.dart';
@@ -195,6 +197,8 @@ GoRouter createRouter(AppSession session) {
                     (innerContext) => ExpenseResultViewModel(
                       expenseStore: innerContext.read(),
                       travelScopeStore: innerContext.read(),
+                      session: innerContext.read(),
+                      moneyExchangeRepository: innerContext.read(),
                     ),
                 child: ExpenseResultScreen(),
               );
@@ -407,6 +411,12 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create:
           (innerContext) =>
               GroupsRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+    ),
+    Provider<MoneyExchangeRepository>(
+      create:
+          (innerContext) => MoneyExchangeRepositoryRealtimeDb(
+            database: FirebaseDatabase.instance,
+          ),
     ),
 
     /// UserCases

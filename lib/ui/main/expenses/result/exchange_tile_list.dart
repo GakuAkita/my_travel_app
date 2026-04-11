@@ -6,11 +6,11 @@ import '../../../../data/model/traveler/traveler_basic.dart';
 
 class ExchangeTileList extends StatelessWidget {
   final List<MoneyExchange> exgData;
-  final Map<String, TravelerBasic> participants;
+  final Map<String, TravelerBasic> groupMembers;
 
   ExchangeTileList({
     required this.exgData,
-    required this.participants,
+    required this.groupMembers,
     super.key,
   });
 
@@ -32,128 +32,122 @@ class ExchangeTileList extends StatelessWidget {
       );
     }
 
-    final uidColorIndexMap = UidColorHelper.getUidColorIndexMap(participants);
+    final uidColorIndexMap = UidColorHelper.getUidColorIndexMap(groupMembers);
     final theme = Theme.of(context);
 
     return Column(
-      // children:
-      //     exgData.map((exchange) {
-      //       final senderName = TravelerBasic.getProfileNameFromUid(
-      //         exchange.sender,
-      //         participants,
-      //       );
-      //       final receiverName = TravelerBasic.getProfileNameFromUid(
-      //         exchange.receiver,
-      //         participants,
-      //       );
-      //
-      //       final senderColor = UidColorHelper.getColorForUid(
-      //         exchange.sender,
-      //         uidColorIndexMap,
-      //       );
-      //       final receiverColor = UidColorHelper.getColorForUid(
-      //         exchange.receiver,
-      //         uidColorIndexMap,
-      //       );
-      //
-      //       return Card(
-      //         margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
-      //         elevation: 2,
-      //         shape: RoundedRectangleBorder(
-      //           borderRadius: BorderRadius.circular(12),
-      //         ),
-      //         child: Padding(
-      //           padding: const EdgeInsets.all(16),
-      //           child: Row(
-      //             children: [
-      //               // 送信者
-      //               Expanded(
-      //                 child: Column(
-      //                   crossAxisAlignment: CrossAxisAlignment.start,
-      //                   children: [
-      //                     Container(
-      //                       padding: const EdgeInsets.symmetric(
-      //                         horizontal: 10,
-      //                         vertical: 6,
-      //                       ),
-      //                       decoration: BoxDecoration(
-      //                         color: senderColor,
-      //                         borderRadius: BorderRadius.circular(8),
-      //                       ),
-      //                       child: Text(
-      //                         senderName,
-      //                         style: TextStyle(
-      //                           fontSize: 14,
-      //                           fontWeight: FontWeight.w600,
-      //                           color: UidColorHelper.getTextColorForUid(
-      //                             exchange.sender,
-      //                             uidColorIndexMap,
-      //                           ),
-      //                         ),
-      //                         maxLines: 1,
-      //                         overflow: TextOverflow.ellipsis,
-      //                       ),
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ),
-      //               // 矢印と金額
-      //               Padding(
-      //                 padding: const EdgeInsets.symmetric(horizontal: 12),
-      //                 child: Column(
-      //                   children: [
-      //                     Icon(
-      //                       Icons.arrow_forward,
-      //                       color: theme.colorScheme.onSurfaceVariant,
-      //                     ),
-      //                     const SizedBox(height: 4),
-      //                     Text(
-      //                       "¥${exchange.amount.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-      //                       style: TextStyle(
-      //                         fontSize: 16,
-      //                         fontWeight: FontWeight.bold,
-      //                         color: theme.colorScheme.onSurface,
-      //                       ),
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ),
-      //               // 受信者
-      //               Expanded(
-      //                 child: Column(
-      //                   crossAxisAlignment: CrossAxisAlignment.end,
-      //                   children: [
-      //                     Container(
-      //                       padding: const EdgeInsets.symmetric(
-      //                         horizontal: 10,
-      //                         vertical: 6,
-      //                       ),
-      //                       decoration: BoxDecoration(
-      //                         color: receiverColor,
-      //                         borderRadius: BorderRadius.circular(8),
-      //                       ),
-      //                       child: Text(
-      //                         receiverName,
-      //                         style: TextStyle(
-      //                           fontSize: 14,
-      //                           fontWeight: FontWeight.w600,
-      //                           color: UidColorHelper.getTextColorForUid(
-      //                             exchange.receiver,
-      //                             uidColorIndexMap,
-      //                           ),
-      //                         ),
-      //                         maxLines: 1,
-      //                         overflow: TextOverflow.ellipsis,
-      //                       ),
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       );
-      //     }).toList(),
+      children:
+          exgData.map((exchange) {
+            final senderName = groupMembers.getProfileName(exchange.sender);
+            final receiverName = groupMembers.getProfileName(exchange.receiver);
+
+            final senderColor = UidColorHelper.getColorForUid(
+              exchange.sender,
+              uidColorIndexMap,
+            );
+            final receiverColor = UidColorHelper.getColorForUid(
+              exchange.receiver,
+              uidColorIndexMap,
+            );
+
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    // 送信者
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: senderColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              senderName,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: UidColorHelper.getTextColorForUid(
+                                  exchange.sender,
+                                  uidColorIndexMap,
+                                ),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // 矢印と金額
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.arrow_forward,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "¥${exchange.amount.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // 受信者
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: receiverColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              receiverName,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: UidColorHelper.getTextColorForUid(
+                                  exchange.receiver,
+                                  uidColorIndexMap,
+                                ),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 }

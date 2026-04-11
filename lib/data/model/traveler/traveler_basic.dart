@@ -6,6 +6,11 @@ class TravelerBasic {
 
   TravelerBasic({required this.core, this.profile_name});
 
+  //表示用
+  String get displayName {
+    return profile_name ?? core.email;
+  }
+
   TravelerBasic copyWith({TravelerCore? core, String? profile_name}) {
     return TravelerBasic(
       core: core ?? this.core,
@@ -21,5 +26,11 @@ extension TravelerMapExtension on Map<String, TravelerCore> {
     return Map.fromEntries(
       entries.map((e) => MapEntry(e.key, TravelerBasic(core: e.value))),
     );
+  }
+}
+
+extension TravelerBasicMapExt on Map<String, TravelerBasic> {
+  String getProfileName(String uid) {
+    return this[uid]?.displayName ?? "Unknown";
   }
 }

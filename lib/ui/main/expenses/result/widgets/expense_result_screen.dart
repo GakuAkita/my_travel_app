@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
+import 'package:my_travel_app/ui/main/expenses/result/exchange_tile_list.dart';
 import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +16,8 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    final viewModel = context.read<ExpenseResultViewModel>();
+    viewModel.fetchMoneyExchanges(); /* 初期化時に一度だけ呼ぶ */
   }
 
   @override
@@ -25,9 +28,14 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
       body: SingleChildScrollView(
         child: Column(
           children:
-              viewModel.allExpensesList().isEmpty
+              viewModel.exchangeList.isEmpty
                   ? [Text("費用が追加されていません")]
-                  : [Text("データあり")],
+                  : [
+                    ExchangeTileList(
+                      exgData: viewModel.exchangeList,
+                      groupMembers: viewModel.groupMembers(),
+                    ),
+                  ],
         ),
       ),
     );
