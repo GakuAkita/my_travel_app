@@ -22,12 +22,12 @@ class BalancesTable extends StatelessWidget {
     // final personalCostDetailsResult = expenseStore.calcEachPersonalDetails();
     return Table(
       children: [
-        FourRowTableRow(
-          first: Text("名前"),
-          second: Text("払った金額(計)"),
-          third: Text("かかった金額(計)"),
-          fourth: Text("受け取る金額(負の場合は払う)"),
-        ),
+        // FourRowTableRow(
+        //   first: Text("名前"),
+        //   second: Text("払った金額(計)"),
+        //   third: Text("かかった金額(計)"),
+        //   fourth: Text("受け取る金額(負の場合は払う)"),
+        // ),
         // ...balances.entries.map((entry) {
         //   final uid = entry.key;
         //   final name = TravelerBasic.getProfileNameFromUid(uid, participants);
@@ -178,60 +178,4 @@ class BalancesTable extends StatelessWidget {
       ],
     );
   }
-}
-
-TableRow buildBalancesRow({
-  required String name,
-  required double paidSum,
-  required double reimbursedSum,
-  required double netTotal,
-  required bool roundDouble,
-  VoidCallback? onPaidTap,
-  VoidCallback? onReimbursedTap,
-}) {
-  return FourRowTableRow(
-    first: Text(name),
-    second: GestureDetector(
-      onTap: onPaidTap,
-      child: Text(
-        roundDouble ? paidSum.round().toString() : paidSum.toStringAsFixed(2),
-        style: TextStyle(
-          color: onPaidTap != null ? Colors.cyanAccent : null,
-          decoration: onPaidTap != null ? TextDecoration.underline : null,
-        ),
-      ),
-    ),
-    third: GestureDetector(
-      onTap: onReimbursedTap,
-      child: Text(
-        roundDouble
-            ? reimbursedSum.round().toString()
-            : reimbursedSum.toStringAsFixed(2),
-        style: TextStyle(
-          color: onReimbursedTap != null ? Colors.cyanAccent : null,
-          decoration: onReimbursedTap != null ? TextDecoration.underline : null,
-        ),
-      ),
-    ),
-    fourth: Text(
-      roundDouble ? netTotal.round().toString() : netTotal.toStringAsFixed(2),
-    ),
-  );
-}
-
-TableRow FourRowTableRow({
-  required Widget first,
-  required Widget second,
-  required Widget third,
-  required Widget fourth,
-}) {
-  const double pad = 8;
-  return TableRow(
-    children: [
-      Padding(padding: EdgeInsets.all(pad), child: first),
-      Padding(padding: EdgeInsets.all(pad), child: second),
-      Padding(padding: EdgeInsets.all(pad), child: third),
-      Padding(padding: EdgeInsets.all(pad), child: fourth),
-    ],
-  );
 }
