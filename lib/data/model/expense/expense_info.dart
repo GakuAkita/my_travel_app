@@ -78,4 +78,38 @@ extension ExpenseInfoExt on ExpenseInfo {
       owedAmount: members.contains(userId) ? perPerson : 0,
     );
   }
+
+  Map<String, List<ExpenseDetail>> toAllDetails(
+    Map<String, ExpenseInfo> expenses,
+  ) {
+    final Map<String, List<ExpenseDetail>> result = {};
+
+    for (final expense in expenses.values) {
+      final members = expense.reimbursedBy.keys.toSet();
+
+      if (members.isEmpty) {
+        /* これは基本おかしい */
+        print(
+          "This should not happen!! No Reimbursed by.　expenseId=${expense.id} expenseItem=${expense.expenseItem} in toAllDetails",
+        );
+        continue;
+      }
+
+      final perPerson = expense.expense / members.length;
+
+      for (final uid in members) {
+        result.putIfAbsent(uid, () => []); /* 初回だけリストを作る。あとはListに追加していく */
+        result[uid]!.add(
+          ExpenseDetail(
+            expenseId: expense.id ?? "",
+            expenseItem: expense.expenseItem,
+            paidAmount:
+                expense.payer.uid == uid ? expense.expense.toDouble() : 0,
+            owedAmount: perPerson,
+          ),
+        );
+      }
+    }
+    return result;
+  }
 }
