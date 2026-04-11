@@ -26,6 +26,10 @@ class ExpenseResultViewModel extends ChangeNotifier {
 
   List<MoneyExchange> get exchangeList => _exchangeList;
 
+  String? _lastUpdated;
+
+  String? get lastUpdated => _lastUpdated;
+
   ExpenseResultViewModel({
     required ExpenseStore expenseStore,
     required TravelScopeStore travelScopeStore,
@@ -75,6 +79,26 @@ class ExpenseResultViewModel extends ChangeNotifier {
       );
       _exchangeList = exchangesData;
       print("$_exchangeList");
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<ResultInfo<void>> fetchMoneyExchangesLastUpdated() async {
+    try {
+      final lastUpdatedStr = await _moneyExchangeRepository
+          .getMoneyExchangeLastUpdated(groupId: _groupId, travelId: _travelId);
+      if (lastUpdatedStr != null) {
+        /* 日本時間に変換する */
+        final utcDate = DateTime.parse(lastUpdatedStr!);
+        final localDate = utcDate.toLocal();
+        _lastUpdated = localDate.toString();
+        print("$_lastUpdated in local");
+      }
+
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));

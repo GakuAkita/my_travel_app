@@ -18,6 +18,7 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
     super.initState();
     final viewModel = context.read<ExpenseResultViewModel>();
     viewModel.fetchMoneyExchanges(); /* 初期化時に一度だけ呼ぶ */
+    viewModel.fetchMoneyExchangesLastUpdated();
   }
 
   @override
@@ -31,6 +32,7 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
               viewModel.exchangeList.isEmpty
                   ? [Text("費用が追加されていません")]
                   : [
+                    Text("最終更新日: ${viewModel.lastUpdated ?? ""}"),
                     ExchangeTileList(
                       exgData: viewModel.exchangeList,
                       groupMembers: viewModel.groupMembers(),
