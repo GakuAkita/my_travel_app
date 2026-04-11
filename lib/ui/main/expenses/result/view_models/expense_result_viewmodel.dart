@@ -114,3 +114,5 @@ class ExpenseResultViewModel extends ChangeNotifier {
     super.dispose();
   }
 }
+
+//ResultInfo<Map<String,List<>>>

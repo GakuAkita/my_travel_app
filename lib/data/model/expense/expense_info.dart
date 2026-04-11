@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:my_travel_app/data/model/identifiable.dart';
 import 'package:my_travel_app/data/model/timestamped.dart';
+import 'package:my_travel_app/ui/main/expenses/expense_detail.dart';
 
 import '../traveler/traveler_core/traveler_core.dart';
 
@@ -56,3 +57,25 @@ int? _createdAtFromJson(dynamic value) {
 }
 
 int? _createdAtToJson(int? value) => value;
+
+extension ExpenseInfoExt on ExpenseInfo {
+  ExpenseDetail toDetail(String userId) {
+    final members = reimbursedBy.keys.toSet();
+    int len = members.length;
+    if (len == 0) {
+      /* まあ基本的に0になることはないが */
+      print(
+        "This should not happen!! No Reimbursed by.　expenseId=$id expenseItem=$expenseItem",
+      );
+      len = -1; /* 負の値にして気づかせる */
+    }
+    final perPerson = expense / len;
+
+    return ExpenseDetail(
+      expenseId: id ?? '',
+      expenseItem: expenseItem,
+      paidAmount: payer.uid == userId ? expense.toDouble() : 0,
+      owedAmount: members.contains(userId) ? perPerson : 0,
+    );
+  }
+}

@@ -1,5 +1,6 @@
 import '../../../../data/model/money_exchange/money_exchange.dart';
 
+/* これいらない？？ */
 class ExchangeData {
   final String? lastUpdated;
   final List<MoneyExchange> result;
