@@ -123,6 +123,38 @@ class ExpenseResultViewModel extends ChangeNotifier {
     }
   }
 
+  /// Expenseの中には自分が関与していないものもある。
+  /// 自分が支払いではないやつもあるので、そうでないやつだけまとめる
+  List<ExpenseDetail> buildPaidDetails(String uid) {
+    final details = _allDetails[uid];
+    if (details == null || details.isEmpty) {
+      return [];
+    }
+
+    final List<ExpenseDetail> paidList = [];
+    for (var detail in details) {
+      if (detail.paidAmount != 0) {
+        paidList.add(detail);
+      }
+    }
+    return paidList;
+  }
+
+  List<ExpenseDetail> buildReimbursedDetails(String uid) {
+    final details = _allDetails[uid];
+    if (details == null || details.isEmpty) {
+      return [];
+    }
+
+    final List<ExpenseDetail> reimbursedList = [];
+    for (var detail in details) {
+      if (detail.owedAmount != 0) {
+        reimbursedList.add(detail);
+      }
+    }
+    return reimbursedList;
+  }
+
   @override
   void dispose() {
     print("dispose ExpenseResultViewModel $hashCode");

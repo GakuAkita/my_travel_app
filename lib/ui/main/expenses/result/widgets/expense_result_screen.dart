@@ -4,6 +4,7 @@ import 'package:my_travel_app/ui/main/expenses/result/exchange_tile_list.dart';
 import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../components/ScrollableDialog.dart';
 import '../../../../../data/model/traveler/traveler_basic.dart';
 
 class ExpenseResultScreen extends StatefulWidget {
@@ -75,8 +76,137 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                               reimbursedSum: owedTotal,
                               netTotal: balance,
                               roundDouble: false,
-                              onPaidTap: () {},
-                              onReimbursedTap: () {},
+                              onPaidTap: () {
+                                /* 自分で支払いのやつを表示する */
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    final paidList = viewModel.buildPaidDetails(
+                                      uid,
+                                    );
+                                    return ScrollableDialog(
+                                      head: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(3),
+                                            child: Text(
+                                              "支払った金額詳細 $profileName",
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                          Divider(color: Colors.cyan),
+                                        ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          children: [
+                                            Table(
+                                              border: TableBorder.all(
+                                                color: Colors.grey,
+                                              ), // 枠線を付けたい場合
+                                              columnWidths: const {
+                                                /* 票の横幅を調整 */
+                                                0: FlexColumnWidth(1),
+                                                1: FlexColumnWidth(1),
+                                              },
+                                              children:
+                                                  paidList.map((data) {
+                                                    return TableRow(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child: Text(
+                                                            data.expenseItem,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child: Text(
+                                                            "${data.paidAmount.round()}円",
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              onReimbursedTap: () {
+                                /* 支払ってもらったリスト表示する */
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    final reimbursedList = viewModel
+                                        .buildReimbursedDetails(uid);
+                                    return ScrollableDialog(
+                                      head: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(3),
+                                            child: Text(
+                                              "かかった金額詳細 $profileName",
+                                            ),
+                                          ),
+                                          Divider(color: Colors.cyan),
+                                        ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          children: [
+                                            Table(
+                                              border: TableBorder.all(
+                                                color: Colors.grey,
+                                              ), // 枠線を付けたい場合
+                                              columnWidths: const {
+                                                0: FlexColumnWidth(1),
+                                                1: FlexColumnWidth(1),
+                                              },
+                                              children:
+                                                  reimbursedList.map((data) {
+                                                    return TableRow(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child: Text(
+                                                            data.expenseItem,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child: Text(
+                                                            "${data.owedAmount.toStringAsFixed(2)}円",
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             );
                           }),
                         ],
