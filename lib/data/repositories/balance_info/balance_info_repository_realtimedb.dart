@@ -12,10 +12,10 @@ class BalanceInfoRepositoryRealtimeDb implements BalanceInfoRepository {
     : _database = database;
 
   @override
-  Future<Map<String, BalanceInfo>> getBalanceInfo(
-    String groupId,
-    String travelId,
-  ) async {
+  Future<Map<String, BalanceInfo>> getBalanceInfo({
+    required String groupId,
+    required String travelId,
+  }) async {
     final service = FirebaseDatabaseService(
       database: _database,
       path:

@@ -22,6 +22,7 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
     final viewModel = context.read<ExpenseResultViewModel>();
     viewModel.fetchMoneyExchanges(); /* 初期化時に一度だけ呼ぶ */
     viewModel.fetchMoneyExchangesLastUpdated();
+    viewModel.fetchBalanceInfo();
   }
 
   @override
@@ -43,7 +44,8 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                     SizedBox(height: 20),
                     Divider(),
                     SizedBox(height: 20),
-                    if (viewModel.allDetails.keys.isNotEmpty) /* 基本trueに入るはず。 */
+                    if (viewModel.allDetails.isNotEmpty &&
+                        viewModel.balanceInfo.isNotEmpty) /* 基本trueに入るはず。 */
                       Table(
                         children: [
                           FourRowTableRow(

@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
+import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository.dart';
+import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
 import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository.dart';
@@ -199,6 +201,7 @@ GoRouter createRouter(AppSession session) {
                       travelScopeStore: innerContext.read(),
                       session: innerContext.read(),
                       moneyExchangeRepository: innerContext.read(),
+                      balanceInfoRepository: innerContext.read(),
                     ),
                 child: ExpenseResultScreen(),
               );
@@ -415,6 +418,12 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     Provider<MoneyExchangeRepository>(
       create:
           (innerContext) => MoneyExchangeRepositoryRealtimeDb(
+            database: FirebaseDatabase.instance,
+          ),
+    ),
+    Provider<BalanceInfoRepository>(
+      create:
+          (innerContext) => BalanceInfoRepositoryRealtimeDb(
             database: FirebaseDatabase.instance,
           ),
     ),

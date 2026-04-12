@@ -1,9 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/data/model/balance/balance_info.dart';
 import 'package:my_travel_app/data/model/expense/expense_info.dart';
 import 'package:my_travel_app/data/model/money_exchange/money_exchange.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
+import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository.dart';
 import 'package:my_travel_app/data/repositories/money_exchange/money_exchange_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
@@ -15,6 +17,7 @@ class ExpenseResultViewModel extends ChangeNotifier {
   final ExpenseStore _expenseStore;
   final TravelScopeStore _travelScopeStore;
   final MoneyExchangeRepository _moneyExchangeRepository;
+  final BalanceInfoRepository _balanceInfoRepository;
 
   late final String _groupId;
   late final String _travelId;
@@ -35,15 +38,21 @@ class ExpenseResultViewModel extends ChangeNotifier {
 
   Map<String, List<ExpenseDetail>> get allDetails => _allDetails;
 
+  Map<String, BalanceInfo> _balanceInfo = {};
+
+  Map<String, BalanceInfo> get balanceInfo => _balanceInfo;
+
   ExpenseResultViewModel({
     required ExpenseStore expenseStore,
     required TravelScopeStore travelScopeStore,
     required ShownTravelSession session,
     required MoneyExchangeRepository moneyExchangeRepository,
+    required BalanceInfoRepository balanceInfoRepository,
   }) : _expenseStore = expenseStore,
        _travelScopeStore = travelScopeStore,
        _moneyExchangeRepository = moneyExchangeRepository,
-       _session = session {
+       _session = session,
+       _balanceInfoRepository = balanceInfoRepository {
     print("ExpenseResultViewModel Created. $hashCode");
 
     _expenseStore.addListener(_onExpensesUpdated);
@@ -105,6 +114,21 @@ class ExpenseResultViewModel extends ChangeNotifier {
         print("$_lastUpdated in local");
       }
 
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<ResultInfo<void>> fetchBalanceInfo() async {
+    try {
+      final balance = await _balanceInfoRepository.getBalanceInfo(
+        groupId: _groupId,
+        travelId: _travelId,
+      );
+      _balanceInfo = balance;
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
