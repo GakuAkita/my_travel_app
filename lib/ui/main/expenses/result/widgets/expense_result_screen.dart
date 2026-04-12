@@ -137,6 +137,7 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                                                     );
                                                   }).toList(),
                                             ),
+                                            Text("合計：$paidTotal円"),
                                           ],
                                         ),
                                       ),
@@ -200,6 +201,9 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                                                       ],
                                                     );
                                                   }).toList(),
+                                            ),
+                                            Text(
+                                              "合計：${owedTotal.toStringAsFixed(2)}円",
                                             ),
                                           ],
                                         ),
