@@ -4,6 +4,8 @@ import 'package:my_travel_app/ui/main/expenses/result/exchange_tile_list.dart';
 import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../data/model/traveler/traveler_basic.dart';
+
 class ExpenseResultScreen extends StatefulWidget {
   const ExpenseResultScreen({super.key});
 
@@ -51,6 +53,9 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                           ),
                           ...viewModel.allDetails.entries.map((entry) {
                             final uid = entry.key;
+                            final profileName = viewModel
+                                .groupMembers()
+                                .getProfileName(uid);
 
                             final details = entry.value;
                             final paidTotal = details.fold<double>(
@@ -65,11 +70,13 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                             final balance = paidTotal - owedTotal;
 
                             return buildBalancesRow(
-                              name: uid,
+                              name: profileName,
                               paidSum: paidTotal,
                               reimbursedSum: owedTotal,
                               netTotal: balance,
                               roundDouble: false,
+                              onPaidTap: () {},
+                              onReimbursedTap: () {},
                             );
                           }),
                         ],

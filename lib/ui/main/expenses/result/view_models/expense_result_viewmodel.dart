@@ -84,7 +84,7 @@ class ExpenseResultViewModel extends ChangeNotifier {
       );
       _exchangeList = exchangesData;
       print("$_exchangeList");
-      calcExpenseDetails();
+      calcExpenseDetails(); /* 取得できたら計算する */
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
