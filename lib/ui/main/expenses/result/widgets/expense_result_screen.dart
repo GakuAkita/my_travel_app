@@ -84,6 +84,7 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                                     final paidList = viewModel.buildPaidDetails(
                                       uid,
                                     );
+                                    /* 関数化したい、、 */
                                     return ScrollableDialog(
                                       head: Column(
                                         children: [
