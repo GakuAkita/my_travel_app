@@ -159,6 +159,7 @@ class ExpenseResultViewModel extends ChangeNotifier {
   void dispose() {
     print("dispose ExpenseResultViewModel $hashCode");
     // TODO: implement dispose
+    _expenseStore.removeListener(_onExpensesUpdated);
     super.dispose();
   }
 }
