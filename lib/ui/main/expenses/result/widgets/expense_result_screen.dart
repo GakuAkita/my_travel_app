@@ -40,16 +40,40 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                     SizedBox(height: 20),
                     Divider(),
                     SizedBox(height: 20),
-                    Table(
-                      children: [
-                        FourRowTableRow(
-                          first: Text("名前"),
-                          second: Text("払った金額(計)"),
-                          third: Text("かかった金額(計)"),
-                          fourth: Text("受け取る金額(負の場合は払う)"),
-                        ),
-                      ],
-                    ),
+                    if (viewModel.allDetails.keys.isNotEmpty) /* 基本trueに入るはず。 */
+                      Table(
+                        children: [
+                          FourRowTableRow(
+                            first: Text("名前"),
+                            second: Text("払った金額(計)"),
+                            third: Text("かかった金額(計)"),
+                            fourth: Text("受け取る金額(負の場合は払う)"),
+                          ),
+                          ...viewModel.allDetails.entries.map((entry) {
+                            final uid = entry.key;
+
+                            final details = entry.value;
+                            final paidTotal = details.fold<double>(
+                              0,
+                              (sum, d) => sum + d.paidAmount,
+                            );
+                            final owedTotal = details.fold<double>(
+                              0,
+                              (sum, d) => sum + d.owedAmount,
+                            );
+
+                            final balance = paidTotal - owedTotal;
+
+                            return buildBalancesRow(
+                              name: uid,
+                              paidSum: paidTotal,
+                              reimbursedSum: owedTotal,
+                              netTotal: balance,
+                              roundDouble: false,
+                            );
+                          }),
+                        ],
+                      ),
                   ],
         ),
       ),

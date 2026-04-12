@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:my_travel_app/data/model/identifiable.dart';
 import 'package:my_travel_app/data/model/timestamped.dart';
-import 'package:my_travel_app/ui/main/expenses/expense_detail.dart';
 
+import '../../../ui/main/expenses/expense_detail.dart';
 import '../traveler/traveler_core/traveler_core.dart';
 
 part 'expense_info.freezed.dart';
@@ -78,19 +78,18 @@ extension ExpenseInfoExt on ExpenseInfo {
       owedAmount: members.contains(userId) ? perPerson : 0,
     );
   }
+}
 
-  Map<String, List<ExpenseDetail>> toAllDetails(
-    Map<String, ExpenseInfo> expenses,
-  ) {
+extension ExpenseInfoMapExt on Map<String, ExpenseInfo> {
+  Map<String, List<ExpenseDetail>> toAllDetails() {
     final Map<String, List<ExpenseDetail>> result = {};
 
-    for (final expense in expenses.values) {
+    for (final expense in values) {
       final members = expense.reimbursedBy.keys.toSet();
 
       if (members.isEmpty) {
-        /* これは基本おかしい */
         print(
-          "This should not happen!! No Reimbursed by.　expenseId=${expense.id} expenseItem=${expense.expenseItem} in toAllDetails",
+          "This should not happen!! No Reimbursed by. expenseId=${expense.id} expenseItem=${expense.expenseItem}",
         );
         continue;
       }
@@ -98,7 +97,7 @@ extension ExpenseInfoExt on ExpenseInfo {
       final perPerson = expense.expense / members.length;
 
       for (final uid in members) {
-        result.putIfAbsent(uid, () => []); /* 初回だけリストを作る。あとはListに追加していく */
+        result.putIfAbsent(uid, () => []);
         result[uid]!.add(
           ExpenseDetail(
             expenseId: expense.id ?? "",
@@ -110,6 +109,7 @@ extension ExpenseInfoExt on ExpenseInfo {
         );
       }
     }
+
     return result;
   }
 }

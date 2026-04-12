@@ -8,6 +8,7 @@ import 'package:my_travel_app/data/repositories/money_exchange/money_exchange_re
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
 import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
+import 'package:my_travel_app/ui/main/expenses/expense_detail.dart';
 
 class ExpenseResultViewModel extends ChangeNotifier {
   final ShownTravelSession _session;
@@ -29,6 +30,10 @@ class ExpenseResultViewModel extends ChangeNotifier {
   String? _lastUpdated;
 
   String? get lastUpdated => _lastUpdated;
+
+  Map<String, List<ExpenseDetail>> _allDetails = {};
+
+  Map<String, List<ExpenseDetail>> get allDetails => _allDetails;
 
   ExpenseResultViewModel({
     required ExpenseStore expenseStore,
@@ -79,6 +84,7 @@ class ExpenseResultViewModel extends ChangeNotifier {
       );
       _exchangeList = exchangesData;
       print("$_exchangeList");
+      calcExpenseDetails();
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
@@ -104,6 +110,16 @@ class ExpenseResultViewModel extends ChangeNotifier {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     } finally {
       notifyListeners();
+    }
+  }
+
+  void calcExpenseDetails() {
+    if (_expenseStore.allExpenses.hasData) {
+      final expenses = _expenseStore.allExpenses.data!;
+      _allDetails = expenses.toAllDetails();
+      notifyListeners();
+    } else {
+      print("ExpenseStore has no data. This might be a coding error.");
     }
   }
 
