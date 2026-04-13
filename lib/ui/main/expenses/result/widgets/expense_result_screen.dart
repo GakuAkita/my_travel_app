@@ -36,7 +36,7 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
               viewModel.exchangeList.isEmpty
                   ? [Text("費用が追加されていません")]
                   : [
-                    if (viewModel.isExpensesUpdated || true)
+                    if (viewModel.isExpensesUpdated)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(

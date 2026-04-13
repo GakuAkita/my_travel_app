@@ -74,6 +74,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               RoundedButton(
                                 title: "費用概算",
                                 onPressed: () {
+                                  print("まだ実装されていません");
                                   // for (final i
                                   //     in viewModel.allGroupMembers.entries) {
                                   //   print("${i.value.profile_name}");
@@ -102,6 +103,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                       viewModel.allGroupMembers ??
                                       {} /* viewModel内でStateを監視して取る */,
                                   onTap: () {
+                                    print(
+                                      "onTap called. Expense Id = ${expense.id}",
+                                    );
                                     context.push(
                                       Routes.expenses_add_edit,
                                       extra: expense.id,

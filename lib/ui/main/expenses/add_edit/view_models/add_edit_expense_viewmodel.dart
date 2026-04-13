@@ -105,7 +105,7 @@ class AddEditExpenseViewModel extends ChangeNotifier {
     TravelerBasic? payer,
     List<SelectedUser> options,
     String expenseItem,
-    int expense,
+    String expense,
   ) {
     if (payer == null) {
       print("_payer is empty!!");
@@ -129,7 +129,13 @@ class AddEditExpenseViewModel extends ChangeNotifier {
     }
 
     /* 金額をチェックする */
-    if (expense <= 0) {
+    final expenseVal = int.tryParse(expense);
+    if (expenseVal == null) {
+      print("expenseが数値に変換できない");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "金額が入力が不適切です"));
+    }
+
+    if (expenseVal <= 0) {
       print("_expenseが0以下になっている");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: "金額が0以下になっています"));
     }
@@ -161,7 +167,7 @@ class AddEditExpenseViewModel extends ChangeNotifier {
       payer: payer.core,
       reimbursedBy: reimbursedBy,
       expenseItem: expenseItem,
-      expense: expense,
+      expense: expenseVal,
       createdAt: _initialExpense?.createdAt,
     );
 

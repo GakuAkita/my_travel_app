@@ -34,9 +34,6 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   /// グループメンバーをいれる
   List<TravelerBasic> _payerOption = [];
 
-  int _expense = 0;
-  String _expenseItem = "";
-
   final TextEditingController _expenseController = TextEditingController();
   final TextEditingController _expenseItemController = TextEditingController();
 
@@ -87,10 +84,20 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
 
   @override
   void initState() {
+    final viewModel = context.read<AddEditExpenseViewModel>();
     super.initState();
 
     initTravelerOptions();
     initPayer();
+
+    if (viewModel.expenseId != null) {
+      /* コントローラにも本体にも同じ値をいれないといけない */
+      _expenseController.text =
+          viewModel.initialExpense?.expense.toString() ?? "";
+
+      /* expenseはControllerと中身が別なので、 */
+      _expenseItemController.text = viewModel.initialExpense?.expenseItem ?? "";
+    }
 
     setState(() {});
   }
@@ -194,7 +201,7 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                             controller: _expenseItemController,
                             hintText: "何に使ったか",
                             onChanged: (memo) {
-                              _expenseItem = memo;
+                              /* Controllerの値をそのまま使う */
                             },
                           ),
                         ),
@@ -214,7 +221,9 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                             keyboardType: TextInputType.number,
                             hintText: "金額",
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d+\.?\d{0,2}'),
+                              ),
                             ],
                             onChanged: (value) {
                               String sanitized = value.replaceFirst(
@@ -230,9 +239,9 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                                   ),
                                 );
                               }
-                              setState(() {
-                                _expense = int.tryParse(sanitized) ?? 0;
-                              });
+                              // setState(() {
+                              //   _expense = int.tryParse(sanitized) ?? 0;
+                              // });
                             },
                           ),
                         ),
@@ -246,8 +255,8 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                       final expenseResult = viewModel.createExpenseFromInput(
                         _payer,
                         _travelersOptions,
-                        _expenseItem,
-                        _expense,
+                        _expenseItemController.text,
+                        _expenseController.text,
                       );
 
                       if (expenseResult.isFailed) {
