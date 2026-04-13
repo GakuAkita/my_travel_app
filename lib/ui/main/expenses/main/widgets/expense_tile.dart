@@ -150,7 +150,8 @@ class ExpenseTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  "¥${expense.expense.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                  /* @TODO 円の場合はこれでいいが、外貨も対応するとなると、設定に応じて円なのかそれ以外なのかでわけないといけない!! */
+                  "¥${expense.expense.round().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
