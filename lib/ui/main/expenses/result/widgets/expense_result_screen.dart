@@ -36,6 +36,33 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
               viewModel.exchangeList.isEmpty
                   ? [Text("費用が追加されていません")]
                   : [
+                    if (viewModel.isExpensesUpdated || true)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Card(
+                                color: Theme.of(context).colorScheme.error,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Center(
+                                    child: Text(
+                                      "!!費用が更新されました!! \n一度戻って再度開いてください",
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onError,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     Text("最終更新日: ${viewModel.lastUpdated ?? ""}"),
                     ExchangeTileList(
                       exgData: viewModel.exchangeList,
@@ -71,6 +98,14 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                             );
 
                             final balance = paidTotal - owedTotal;
+
+                            /* なんとかUI側に伝えたいが、、 */
+                            if (balance !=
+                                viewModel.balanceInfo[uid]?.netTotal) {
+                              print(
+                                "Error!!: $balance != ${viewModel.balanceInfo[uid]?.netTotal}",
+                              );
+                            }
 
                             return buildBalancesRow(
                               name: profileName,
@@ -139,7 +174,14 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                                                     );
                                                   }).toList(),
                                             ),
-                                            Text("合計：$paidTotal円"),
+                                            paidTotal ==
+                                                    viewModel
+                                                        .balanceInfo[uid]
+                                                        ?.paidSum
+                                                ? Text("合計：$paidTotal円")
+                                                : Text(
+                                                  "Warning!!! $paidTotal != ${viewModel.balanceInfo[uid]?.paidSum}",
+                                                ),
                                           ],
                                         ),
                                       ),
@@ -204,9 +246,14 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
                                                     );
                                                   }).toList(),
                                             ),
-                                            Text(
-                                              "合計：${owedTotal.toStringAsFixed(2)}円",
-                                            ),
+                                            owedTotal ==
+                                                    viewModel
+                                                        .balanceInfo[uid]
+                                                        ?.reimbursedSum
+                                                ? Text("合計：$owedTotal円")
+                                                : Text(
+                                                  "合計：${owedTotal.toStringAsFixed(2)}円",
+                                                ),
                                           ],
                                         ),
                                       ),

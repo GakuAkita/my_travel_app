@@ -85,18 +85,21 @@ extension ExpenseInfoMapExt on Map<String, ExpenseInfo> {
     final Map<String, List<ExpenseDetail>> result = {};
 
     for (final expense in values) {
-      final members = expense.reimbursedBy.keys.toSet();
-
-      if (members.isEmpty) {
+      final reimbursedMembers = expense.reimbursedBy.keys.toSet();
+      if (reimbursedMembers.isEmpty) {
         print(
           "This should not happen!! No Reimbursed by. expenseId=${expense.id} expenseItem=${expense.expenseItem}",
         );
         continue;
       }
 
-      final perPerson = expense.expense / members.length;
+      final perPerson = expense.expense / reimbursedMembers.length;
 
-      for (final uid in members) {
+      bool payerFound = false;
+      for (final uid in reimbursedMembers) {
+        if (uid == expense.payer.uid) {
+          payerFound = true;
+        }
         result.putIfAbsent(uid, () => []);
         result[uid]!.add(
           ExpenseDetail(
@@ -105,6 +108,19 @@ extension ExpenseInfoMapExt on Map<String, ExpenseInfo> {
             paidAmount:
                 expense.payer.uid == uid ? expense.expense.toDouble() : 0,
             owedAmount: perPerson,
+          ),
+        );
+      }
+
+      /* reimbursedByの中にpayerが含まれていないケースはこっちで入れないとだめ。 */
+      if (!payerFound) {
+        result.putIfAbsent(expense.payer.uid, () => []);
+        result[expense.payer.uid]!.add(
+          ExpenseDetail(
+            expenseId: expense.id ?? "",
+            expenseItem: expense.expenseItem,
+            paidAmount: expense.expense.toDouble(),
+            owedAmount: 0,
           ),
         );
       }
