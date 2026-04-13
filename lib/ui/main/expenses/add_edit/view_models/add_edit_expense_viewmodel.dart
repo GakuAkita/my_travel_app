@@ -129,7 +129,7 @@ class AddEditExpenseViewModel extends ChangeNotifier {
     }
 
     /* 金額をチェックする */
-    final expenseVal = int.tryParse(expense);
+    final expenseVal = double.tryParse(expense);
     if (expenseVal == null) {
       print("expenseが数値に変換できない");
       return ResultInfo.failed(error: ErrorInfo(errorMessage: "金額が入力が不適切です"));

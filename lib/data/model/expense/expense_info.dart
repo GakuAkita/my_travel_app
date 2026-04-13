@@ -18,7 +18,8 @@ abstract class ExpenseInfo
     required TravelerCore payer,
     required Map<String, TravelerCore> reimbursedBy,
     required String expenseItem,
-    required int expense,
+    @JsonKey(fromJson: _expenseFromJson, toJson: _expenseToJson)
+    required double expense,
     /* nameを変える場合はFirebaseDatabaseServiceも変えないとだめ */
     @JsonKey(
       name: 'createdAt',
@@ -57,6 +58,14 @@ int? _createdAtFromJson(dynamic value) {
 }
 
 int? _createdAtToJson(int? value) => value;
+
+double _expenseFromJson(dynamic value) {
+  if (value is int) return value.toDouble();
+  if (value is double) return value;
+  return 0.0;
+}
+
+double _expenseToJson(double value) => value;
 
 extension ExpenseInfoExt on ExpenseInfo {
   ExpenseDetail toDetail(String userId) {

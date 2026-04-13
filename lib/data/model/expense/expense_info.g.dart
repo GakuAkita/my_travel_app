@@ -13,7 +13,7 @@ _ExpenseInfo _$ExpenseInfoFromJson(Map<String, dynamic> json) => _ExpenseInfo(
     (k, e) => MapEntry(k, TravelerCore.fromJson(e as Map<String, dynamic>)),
   ),
   expenseItem: json['expenseItem'] as String,
-  expense: (json['expense'] as num).toInt(),
+  expense: _expenseFromJson(json['expense']),
   createdAt: _createdAtFromJson(json['createdAt']),
 );
 
@@ -24,6 +24,6 @@ Map<String, dynamic> _$ExpenseInfoToJson(
   'payer': instance.payer.toJson(),
   'reimbursedBy': instance.reimbursedBy.map((k, e) => MapEntry(k, e.toJson())),
   'expenseItem': instance.expenseItem,
-  'expense': instance.expense,
+  'expense': _expenseToJson(instance.expense),
   'createdAt': _createdAtToJson(instance.createdAt),
 };
