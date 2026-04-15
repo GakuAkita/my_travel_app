@@ -40,7 +40,7 @@ class ItineraryViewModel extends ChangeNotifier {
   Future<ResultInfo<void>> saveItineraryForTravel(
     String groupId,
     String travelId,
-    List<Map<String, dynamic>> sections /* dynamicでいいのか？？ */,
+    List<ItinerarySection> sections /* dynamicでいいのか？？ */,
   ) async {
     try {
       await _itineraryRepository.saveItinerarySections(
@@ -54,7 +54,7 @@ class ItineraryViewModel extends ChangeNotifier {
     }
   }
 
-  Future<ResultInfo<List<Map<String, dynamic>>>> loadItineraryForTravel(
+  Future<ResultInfo<List<ItinerarySection>>> loadItineraryForTravel(
     String groupId,
     String travelId,
   ) async {

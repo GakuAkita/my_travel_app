@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:my_travel_app/CommonClass/ItineraryDefaultTable.dart';
 import 'package:my_travel_app/data/model/itinerary_table/itinerary_table.dart';
 
 part 'itinerary_section.freezed.dart';
