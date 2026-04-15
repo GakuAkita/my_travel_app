@@ -25,7 +25,10 @@ class ItineraryStore extends ChangeNotifier {
 
   DataState<List<ItinerarySection>> get itinerarySections => _itinerarySections;
 
-  StreamSubscription<List<ItinerarySection>>? _itinerarySectionsSubscription;
+  StreamSubscription<List<ItinerarySection>>? _subscription;
+
+  late String _groupId;
+  late String _travelId;
 
   ItineraryStore({
     required ItineraryRepository itineraryRepository,
@@ -34,6 +37,8 @@ class ItineraryStore extends ChangeNotifier {
        _travelSession = travelSession {
     print("ItineraryStore was created. hashCode=${hashCode}");
 
+    _groupId = _travelSession.currentTravel!.groupId!;
+    _travelId = _travelSession.currentTravel!.travelId!;
     _travelSession.addListener(_refresh);
   }
 
@@ -68,6 +73,31 @@ class ItineraryStore extends ChangeNotifier {
 
     /* 前のsubscriptionを破棄 */
     _subscriptionFirst = false;
+
+    _itinerarySections = const DataState(isLoading: true, error: null);
+    if (isLoadingNotify) {
+      notifyListeners();
+    }
+
+    print("Add subscription to ItineraryRepository");
+    _subscription = _itineraryRepository
+        .watchItinerarySections(_groupId, _travelId)
+        .listen(
+          (data) {
+            _itinerarySections = DataState(data: data, isLoading: false);
+            _subscriptionFirst = true;
+            notifyListeners();
+          },
+          onError: (e) {
+            print("Error in ItineraryStore: ${e.toString()}");
+            _itinerarySections = DataState(
+              isLoading: false,
+              error: ErrorInfo(errorMessage: e.toString()),
+            );
+            _subscriptionFirst = true;
+            notifyListeners();
+          },
+        );
   }
 
   @override

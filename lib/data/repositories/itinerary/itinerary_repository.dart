@@ -1,8 +1,12 @@
-
+import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
 
 abstract class ItineraryRepository {
-  //Future<ResultInfo<>>
-  Future<List<Map<String, dynamic>>> getItinerarySections(
+  Stream<List<ItinerarySection>> watchItinerarySections(
+    String groupId,
+    String travelId,
+  );
+
+  Future<List<ItinerarySection>> getItinerarySections(
     String groupId,
     String travelId,
   );
@@ -10,6 +14,6 @@ abstract class ItineraryRepository {
   Future<void> saveItinerarySections(
     String groupId,
     String travelId,
-    List<Map<String, dynamic>> sections,
+    List<ItinerarySection> sections,
   );
 }
