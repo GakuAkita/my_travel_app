@@ -484,11 +484,12 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
           ),
       lazy: false,
     ),
-    ChangeNotifierProxyProvider<ShownTravelSession, ItineraryStore>(
-      create: (innerContext) => ItineraryStore(),
-      update: (innerContext, session, previous) {
-        return previous!;
-      },
+    ChangeNotifierProvider<ItineraryStore>(
+      create:
+          (innerContext) => ItineraryStore(
+            itineraryRepository: innerContext.read(),
+            travelSession: innerContext.read(),
+          ),
       lazy: false,
     ),
     ChangeNotifierProvider(

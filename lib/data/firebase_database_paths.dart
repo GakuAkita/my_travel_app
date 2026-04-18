@@ -96,7 +96,7 @@ class TravelPath extends PathNode {
 
   String get createdAt => child("createdAt");
 
-  String get itinerary => child("itinerary");
+  ItineraryPath get itinerary => ItineraryPath(path);
 
   String get travelers => child("travelers");
 }

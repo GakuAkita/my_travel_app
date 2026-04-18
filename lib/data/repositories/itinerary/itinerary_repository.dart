@@ -1,19 +1,19 @@
-import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
+import '../../model/itinerary_section/itinerary_section.dart';
 
 abstract class ItineraryRepository {
-  Stream<List<ItinerarySection>> watchItinerarySections(
-    String groupId,
-    String travelId,
-  );
+  Stream<List<ItinerarySection>> watchItinerarySections({
+    required String groupId,
+    required String travelId,
+  });
 
-  Future<List<ItinerarySection>> getItinerarySections(
-    String groupId,
-    String travelId,
-  );
+  Future<List<ItinerarySection>> getItinerarySections({
+    required String groupId,
+    required String travelId,
+  });
 
-  Future<void> saveItinerarySections(
-    String groupId,
-    String travelId,
-    List<ItinerarySection> sections,
-  );
+  Future<void> saveItinerarySections({
+    required String groupId,
+    required String travelId,
+    required List<ItinerarySection> sections,
+  });
 }
