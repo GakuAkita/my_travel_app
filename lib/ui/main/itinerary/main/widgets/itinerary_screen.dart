@@ -5,6 +5,7 @@ import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewm
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
+import '../../../../../components/ValidatedSwitch.dart';
 import 'itinerary_section_display.dart';
 
 class ItineraryScreen extends StatefulWidget {
@@ -59,7 +60,22 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                       child: Column(
                         children: [
                           if (viewModel.userRole == UserRole.admin)
-                            Text("編集モード表示"),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  BasicText(text: "プランナーモード"),
+                                  SizedBox(width: 10),
+                                  ValidatedSwitch(
+                                    initialStatus: false,
+                                    onWillChange: (val) async {
+                                      return false;
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                           viewModel.itinerarySections.isEmpty
                               ? Center(child: BasicText(text: "しおりが作られていません"))
                               : Column(
