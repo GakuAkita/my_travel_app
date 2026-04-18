@@ -11,3 +11,15 @@ dynamic normalizeMapStructure(dynamic value) {
 
   return value;
 }
+
+dynamic convertMap(dynamic value) {
+  if (value is Map) {
+    return value.map((key, val) => MapEntry(key.toString(), convertMap(val)));
+  }
+
+  if (value is List) {
+    return value.map(convertMap).toList();
+  }
+
+  return value;
+}

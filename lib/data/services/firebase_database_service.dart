@@ -122,10 +122,10 @@ class FirebaseDatabaseService<T> {
       if (value == null) return [];
 
       if (value is List) {
-        return value
-            .where((e) => e != null)
-            .map((e) => fromJson(Map<String, dynamic>.from(e)))
-            .toList();
+        return value.where((e) => e != null).map((e) {
+          /* Mapの中にListが入るこんでいたりするとキャストできないので、convertMapを挟む */
+          return fromJson(Map<String, dynamic>.from(convertMap(e)));
+        }).toList();
       }
 
       // Map化されて変える場合
