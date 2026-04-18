@@ -32,6 +32,13 @@ class ItineraryViewModel extends ChangeNotifier {
 
   DataState<String?> get roleState => _roleState;
 
+  String? get userRole {
+    if (_roleState.hasError || !_roleState.hasData) {
+      return null;
+    }
+    return _roleState.data;
+  }
+
   /**
    * Travelが変わったときは
    */

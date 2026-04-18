@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -41,7 +42,10 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
         children: [
           viewModel.isItineraryLoading
               ? Center(child: Text("Loading..."))
+              : viewModel.travel == null
+              ? Center(child: BasicText(text: "Settingsから表示旅行を設定してください"))
               : Expanded(
+                /* 表示用 */
                 child: RefreshIndicator(
                   onRefresh: () async {},
                   child: SingleChildScrollView(
@@ -52,14 +56,11 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                         left: 10,
                         right: 10,
                       ),
-                      child:
-                          viewModel.travel == null
-                              ? Center(
-                                child: BasicText(
-                                  text: "Settingsから表示旅行を設定してください",
-                                ),
-                              )
-                              : viewModel.itinerarySections.isEmpty
+                      child: Column(
+                        children: [
+                          if (viewModel.userRole == UserRole.admin)
+                            Text("編集モード表示"),
+                          viewModel.itinerarySections.isEmpty
                               ? Center(child: BasicText(text: "しおりが作られていません"))
                               : Column(
                                 children:
@@ -71,6 +72,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                         )
                                         .toList(),
                               ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
