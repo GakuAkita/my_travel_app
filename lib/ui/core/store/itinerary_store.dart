@@ -100,7 +100,6 @@ class ItineraryStore extends ChangeNotifier {
         .watchItinerarySections(groupId: _groupId!, travelId: _travelId!)
         .listen(
           (data) {
-            print("Received data :${data}");
             _itinerarySections = DataState(data: data, isLoading: false);
             _subscriptionFirst = true;
             notifyListeners();

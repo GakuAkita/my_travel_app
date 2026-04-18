@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import '../MultilineTextField.dart';
+import '../../../../../components/MultilineTextField.dart';
 
 class ItineraryMarkdownSectionEdit extends StatefulWidget {
   final int index;

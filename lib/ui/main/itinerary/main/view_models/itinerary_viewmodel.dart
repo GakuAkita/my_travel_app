@@ -17,9 +17,7 @@ class ItineraryViewModel extends ChangeNotifier {
 
   List<ItinerarySection> get itinerarySections => _itinerarySections;
 
-  bool _isLoading = false;
-
-  bool get isLoading => _isLoading;
+  bool get isItineraryLoading => _itineraryStore.itinerarySections.isLoading;
 
   ShownTravelBasic? get travel => _travelSession.currentTravel;
 

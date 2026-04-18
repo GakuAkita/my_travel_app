@@ -31,6 +31,7 @@ abstract class ItinerarySection with _$ItinerarySection {
 
     /* 旧値の変換 */
     /* default_tableをtableに変換 */
+    /* 後方互換性 */
     switch (newJson['runtimeType']) {
       case "default_table":
         newJson['runtimeType'] = 'table';
