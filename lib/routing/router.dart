@@ -496,8 +496,11 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create:
           (innerContext) => ItineraryViewModel(
             itineraryRepository: innerContext.read(),
+            userSettingsRepository: innerContext.read(),
             itineraryStore: innerContext.read(),
+            travelScopeStore: innerContext.read(),
             travelSession: innerContext.read(),
+            appSession: innerContext.read(),
           ),
       lazy: false,
     ),

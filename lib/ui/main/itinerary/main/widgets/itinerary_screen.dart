@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
-import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_section_display.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../../components/BasicText.dart';
+import 'itinerary_section_display.dart';
 
 class ItineraryScreen extends StatefulWidget {
   const ItineraryScreen({super.key});
@@ -20,6 +22,14 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   @override
   void initState() {
     super.initState();
+
+    final viewModel = context.read<ItineraryViewModel>();
+    /* Adminなら常に編集モードを表示 */
+    if (!viewModel.roleState.hasData || viewModel.roleState.hasError) {
+      viewModel.fetchUserRole();
+    } else {
+      /* 再取得する必要はない */
+    }
   }
 
   @override
@@ -27,20 +37,45 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     final viewModel = context.watch<ItineraryViewModel>();
     return LoadingOverlay(
       isLoading: viewModel.isItineraryLoading,
-      child: SingleChildScrollView(
-        child:
-            viewModel.travel == null
-                ? Text("旅行が選択されていません。設定画面より表示する旅行を選択してください")
-                : viewModel.itinerarySections.isEmpty
-                ? Text("しおりが作られていません")
-                : Column(
-                  children:
-                      viewModel.itinerarySections
-                          .map(
-                            (sec) => ItinerarySectionDisplay(itiSection: sec),
-                          )
-                          .toList(),
+      child: Column(
+        children: [
+          viewModel.isItineraryLoading
+              ? Center(child: Text("Loading..."))
+              : Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {},
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        left: 10,
+                        right: 10,
+                      ),
+                      child:
+                          viewModel.travel == null
+                              ? Center(
+                                child: BasicText(
+                                  text: "Settingsから表示旅行を設定してください",
+                                ),
+                              )
+                              : viewModel.itinerarySections.isEmpty
+                              ? Center(child: BasicText(text: "しおりが作られていません"))
+                              : Column(
+                                children:
+                                    viewModel.itinerarySections
+                                        .map(
+                                          (sec) => ItinerarySectionDisplay(
+                                            itiSection: sec,
+                                          ),
+                                        )
+                                        .toList(),
+                              ),
+                    ),
+                  ),
                 ),
+              ),
+        ],
       ),
     );
   }
