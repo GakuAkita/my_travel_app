@@ -28,8 +28,8 @@ class ItineraryStore extends ChangeNotifier {
 
   StreamSubscription<List<ItinerarySection>>? _subscription;
 
-  late String _groupId;
-  late String _travelId;
+  String? _groupId;
+  String? _travelId;
 
   ItineraryStore({
     required ItineraryRepository itineraryRepository,
@@ -38,8 +38,6 @@ class ItineraryStore extends ChangeNotifier {
        _travelSession = travelSession {
     print("ItineraryStore was created. hashCode=${hashCode}");
 
-    _groupId = _travelSession.currentTravel!.groupId!;
-    _travelId = _travelSession.currentTravel!.travelId!;
     _travelSession.addListener(_refresh);
   }
 
@@ -49,7 +47,23 @@ class ItineraryStore extends ChangeNotifier {
         print("travelSession not initialized!! in ItineraryStore");
         return;
       }
-    } catch (e) {}
+      if (_travelSession.currentTravel != null) {
+        _groupId = _travelSession.currentTravel!.groupId!;
+        _travelId = _travelSession.currentTravel!.travelId!;
+      } else {
+        _groupId = null;
+        _travelId = null;
+        return;
+      }
+
+      /* travelIdがnullの場合はここまで来ない */
+      _refreshItinerarySections(
+        travel: _travelSession.currentTravel!,
+        isLoadingNotify: true,
+      );
+    } catch (e) {
+      print("Error in ItineraryStore: ${e.toString()}");
+    }
   }
 
   void _refreshItinerarySections({
@@ -66,6 +80,7 @@ class ItineraryStore extends ChangeNotifier {
 
     if (!_subscriptionFirst && _storeInitialized) {
       /* なんでこのブロックが必要か忘れてしまった、、 */
+      /* 複数回呼ばれたときの対策か。 */
       print(
         "Store is already initialized and subscription doesn't arrive yet.",
       );
@@ -82,9 +97,10 @@ class ItineraryStore extends ChangeNotifier {
 
     print("Add subscription to ItineraryRepository");
     _subscription = _itineraryRepository
-        .watchItinerarySections(groupId: _groupId, travelId: _travelId)
+        .watchItinerarySections(groupId: _groupId!, travelId: _travelId!)
         .listen(
           (data) {
+            print("Received data :${data}");
             _itinerarySections = DataState(data: data, isLoading: false);
             _subscriptionFirst = true;
             notifyListeners();

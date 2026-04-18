@@ -41,7 +41,6 @@ import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expense
 import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/result/widgets/expense_result_screen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
-import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_screen.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/widgets/group_create_screen.dart';
 import 'package:my_travel_app/ui/main/settings/main/widgets/settings_screen.dart';
@@ -64,6 +63,7 @@ import '../data/repositories/money_exchange/money_exchange_repository_realtimedb
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/core/store/travel_scope_store.dart';
 import '../ui/main/app_navigation_bar.dart';
+import '../ui/main/itinerary/main/widgets/itinerary_screen.dart';
 import '../ui/main/settings/travel_create/widgets/travel_create_screen.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
@@ -496,6 +496,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       create:
           (innerContext) => ItineraryViewModel(
             itineraryRepository: innerContext.read(),
+            itineraryStore: innerContext.read(),
             travelSession: innerContext.read(),
           ),
       lazy: false,
