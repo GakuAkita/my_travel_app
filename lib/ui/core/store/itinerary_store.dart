@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
-import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
 import 'package:my_travel_app/core/utils/CheckShownTravelBasic.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/data_state.dart';
+
+import '../../../data/model/itinerary_section/itinerary_section.dart';
 
 class ItineraryStore extends ChangeNotifier {
   ItineraryRepository _itineraryRepository;
@@ -81,7 +82,7 @@ class ItineraryStore extends ChangeNotifier {
 
     print("Add subscription to ItineraryRepository");
     _subscription = _itineraryRepository
-        .watchItinerarySections(_groupId, _travelId)
+        .watchItinerarySections(groupId: _groupId, travelId: _travelId)
         .listen(
           (data) {
             _itinerarySections = DataState(data: data, isLoading: false);

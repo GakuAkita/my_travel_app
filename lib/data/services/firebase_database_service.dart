@@ -102,7 +102,6 @@ class FirebaseDatabaseService<T> {
 
   /// データをlisten
   Stream<Map<String, T>> streamAll() {
-    print("");
     return _database.ref(path).onValue.map((event) {
       print("$path listened");
       final value = event.snapshot.value;
@@ -114,6 +113,30 @@ class FirebaseDatabaseService<T> {
         final item = fromJson(value as Map<String, dynamic>);
         return MapEntry(key, item);
       });
+    });
+  }
+
+  Stream<List<T>> streamList() {
+    return _database.ref(path).onValue.map((event) {
+      final value = event.snapshot.value;
+      if (value == null) return [];
+
+      if (value is List) {
+        return value
+            .where((e) => e != null)
+            .map((e) => fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+
+      // Map化されて変える場合
+      if (value is Map) {
+        final normalized = normalizeMapStructure(value) as Map<String, dynamic>;
+        return normalized.values.map((e) {
+          return fromJson(Map<String, dynamic>.from(e));
+        }).toList();
+      }
+
+      return [];
     });
   }
 }

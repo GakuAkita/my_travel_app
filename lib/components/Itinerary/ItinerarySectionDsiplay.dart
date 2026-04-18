@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
 import 'package:my_travel_app/components/WhiteMarkdownBody.dart';
 import 'package:my_travel_app/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../data/model/itinerary_section/itinerary_section.dart';
 import '../BasicText.dart';
 
 class ItinerarySectionDisplay extends StatelessWidget {

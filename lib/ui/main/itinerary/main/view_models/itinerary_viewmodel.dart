@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
-import 'package:my_travel_app/CommonClass/ItinerarySection.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 
 import '../../../../../CommonClass/ResultInfo.dart';
+import '../../../../../data/model/itinerary_section/itinerary_section.dart';
 import '../../../../../data/repositories/itinerary/itinerary_repository.dart';
 
 class ItineraryViewModel extends ChangeNotifier {
@@ -44,9 +44,9 @@ class ItineraryViewModel extends ChangeNotifier {
   ) async {
     try {
       await _itineraryRepository.saveItinerarySections(
-        groupId,
-        travelId,
-        sections,
+        groupId: groupId,
+        travelId: travelId,
+        sections: sections,
       );
       return ResultInfo.success();
     } catch (e) {
@@ -59,7 +59,10 @@ class ItineraryViewModel extends ChangeNotifier {
     String travelId,
   ) async {
     try {
-      await _itineraryRepository.getItinerarySections(groupId, travelId);
+      await _itineraryRepository.getItinerarySections(
+        groupId: groupId,
+        travelId: travelId,
+      );
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
