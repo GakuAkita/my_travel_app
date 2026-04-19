@@ -158,7 +158,11 @@ class ItineraryViewModel extends ChangeNotifier {
           groupId: travel.groupId!,
           travelId: travel.travelId!,
         );
-        if (onEdit?.onEdit == true) {
+        if (onEdit?.onEdit == true &&
+            onEdit?.editor?.uid != _appSession.currentUser!.uid) {
+          /* o自分の編集中が残っている場合はそのままで良い */
+          /* 仮にAuthもFirebaseではなくなったらどうするんだろう、、 */
+
           /* プロフィール名を出したい */
           if (!_travelScopeStore.allGroupMembers.hasError &&
               _travelScopeStore.allGroupMembers.hasData &&
@@ -207,7 +211,12 @@ class ItineraryViewModel extends ChangeNotifier {
           error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"),
         );
       }
-      /* 設定が完了したら最後にクライアントとの接続が切れたときにサーバー側でonEditを外してもらう設定にする */
+
+      /* onDisconnectする */
+      _itineraryRepository.setOnEditOnDisconnectRemove(
+        groupId: travel.groupId!,
+        travelId: travel.travelId!,
+      );
       return ResultInfo.success();
     } else {
       /**
@@ -224,6 +233,12 @@ class ItineraryViewModel extends ChangeNotifier {
           error: ErrorInfo(errorMessage: "編集状態の更新に失敗しました。: ${e.toString()}"),
         );
       }
+
+      /* こいつはエラーチェックしなくて良い */
+      _itineraryRepository.removeItineraryOnEdit(
+        groupId: travel.groupId!,
+        travelId: travel.travelId!,
+      );
       return ResultInfo.success();
     }
   }
