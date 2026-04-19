@@ -45,6 +45,11 @@ class ItineraryViewModel extends ChangeNotifier {
 
   bool get editMode => _editMode;
 
+  void setEditMode(bool value) {
+    _editMode = value;
+    notifyListeners();
+  }
+
   bool _isEditLoading = false;
 
   bool get isEditLoading => _isEditLoading;
@@ -124,6 +129,15 @@ class ItineraryViewModel extends ChangeNotifier {
     }
   }
 
+  Future<ResultInfo> switchEditModePreCheckWithNotify(bool newValue) async {
+    _isEditLoading = false;
+    notifyListeners();
+    final result = await switchEditModePrecheck(newValue);
+    _isEditLoading = false;
+    notifyListeners();
+    return result;
+  }
+
   /// Switchの状態とViewModelのeditModeはきちんと合わせないとずれる。
   Future<ResultInfo> switchEditModePrecheck(bool newValue) async {
     if (_travelSession.currentTravel == null) {
@@ -138,6 +152,7 @@ class ItineraryViewModel extends ChangeNotifier {
        *  offからonにする場合
        *  on_editをチェックして誰かが触っていないかチェックする
        *  */
+
       try {
         final onEdit = await _itineraryRepository.getItineraryOnEdit(
           groupId: travel.groupId!,
@@ -187,22 +202,28 @@ class ItineraryViewModel extends ChangeNotifier {
             ) /* emailが空になっていることはないはず、、 */,
           ),
         );
-
-        /* アプリを閉じたときに自動でonEditを消してほしいのでその設定をする */
-
-        /* 問題なければさらに次へ */
       } catch (e) {
         return ResultInfo.failed(
           error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"),
         );
       }
+      /* 設定が完了したら最後にクライアントとの接続が切れたときにサーバー側でonEditを外してもらう設定にする */
       return ResultInfo.success();
     } else {
       /**
        * onからoffにする場合
        * on_editの中身を初期状態に戻す
        */
-
+      try {
+        await _itineraryRepository.removeItineraryOnEdit(
+          groupId: travel.groupId!,
+          travelId: travel.travelId!,
+        );
+      } catch (e) {
+        return ResultInfo.failed(
+          error: ErrorInfo(errorMessage: "編集状態の更新に失敗しました。: ${e.toString()}"),
+        );
+      }
       return ResultInfo.success();
     }
   }
