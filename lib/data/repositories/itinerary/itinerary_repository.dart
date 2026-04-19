@@ -34,20 +34,4 @@ abstract class ItineraryRepository {
     required String groupId,
     required String travelId,
   });
-
-  /**
-   * 現状、クライアントとの接続が切れたらonEditのデータを消す仕様だが、
-   * 例えば、アプリ起動中にオフラインになったときもonEditを消してしまう。
-   * 状況としてはそんな頻繁に起こるものではないが、、
-   * UI側でオフラインになったらブロックするのもありだな
-   */
-  Future<void> setOnEditOnDisconnectRemove({
-    required String groupId,
-    required String travelId,
-  });
-
-  Future<void> cancelOnEditDisconnect({
-    required String groupId,
-    required String travelId,
-  });
 }

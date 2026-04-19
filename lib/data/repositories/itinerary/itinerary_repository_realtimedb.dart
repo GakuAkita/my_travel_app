@@ -98,22 +98,4 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
     final service = _onEditService(groupId: groupId, travelId: travelId);
     await service.delete();
   }
-
-  @override
-  Future<void> setOnEditOnDisconnectRemove({
-    required String groupId,
-    required String travelId,
-  }) async {
-    final service = _onEditService(groupId: groupId, travelId: travelId);
-    await service.setOnDisconnectRemove();
-  }
-
-  @override
-  Future<void> cancelOnEditDisconnect({
-    required String groupId,
-    required String travelId,
-  }) async {
-    final service = _onEditService(groupId: groupId, travelId: travelId);
-    await service.cancelOnDisconnect();
-  }
 }
