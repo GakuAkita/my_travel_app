@@ -68,36 +68,38 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                   BasicText(text: "プランナーモード"),
                                   /* 編集モードと同義 */
                                   SizedBox(width: 10),
-                                  ValidatedSwitch(
-                                    initialStatus: viewModel.editMode,
-                                    onWillChange: (newVal) async {
-                                      final ret = await viewModel
-                                          .switchEditModePreCheckWithNotify(
-                                            newVal,
-                                          );
-                                      if (ret.isSuccess) {
-                                        viewModel.setEditMode(newVal);
-                                        return newVal;
-                                      } else {
-                                        print("${ret.error?.errorMessage}");
-                                        viewModel.setEditMode(!newVal);
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).clearSnackBars();
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              ret.error?.errorMessage ??
-                                                  "Unknown error",
-                                            ),
-                                          ),
-                                        );
-                                        return !newVal; /* 変更せずの元の状態を保持 */
-                                      }
-                                    },
-                                  ),
+                                  viewModel.isEditLoading
+                                      ? CircularProgressIndicator()
+                                      : ValidatedSwitch(
+                                        initialStatus: viewModel.editMode,
+                                        onWillChange: (newVal) async {
+                                          final ret = await viewModel
+                                              .switchEditModePreCheckWithNotify(
+                                                newVal,
+                                              );
+                                          if (ret.isSuccess) {
+                                            viewModel.setEditMode(newVal);
+                                            return newVal;
+                                          } else {
+                                            print("${ret.error?.errorMessage}");
+                                            viewModel.setEditMode(!newVal);
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).clearSnackBars();
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  ret.error?.errorMessage ??
+                                                      "Unknown error",
+                                                ),
+                                              ),
+                                            );
+                                            return !newVal; /* 変更せずの元の状態を保持 */
+                                          }
+                                        },
+                                      ),
                                 ],
                               ),
                             ),

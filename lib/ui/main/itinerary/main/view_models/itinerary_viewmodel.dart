@@ -212,12 +212,6 @@ class ItineraryViewModel extends ChangeNotifier {
           error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"),
         );
       }
-
-      /* onDisconnectする */
-      _itineraryRepository.setOnEditOnDisconnectRemove(
-        groupId: travel.groupId!,
-        travelId: travel.travelId!,
-      );
       return ResultInfo.success();
     } else {
       /**
@@ -234,12 +228,6 @@ class ItineraryViewModel extends ChangeNotifier {
           error: ErrorInfo(errorMessage: "編集状態の更新に失敗しました。: ${e.toString()}"),
         );
       }
-
-      /* こいつはエラーチェックしなくて良い */
-      _itineraryRepository.removeItineraryOnEdit(
-        groupId: travel.groupId!,
-        travelId: travel.travelId!,
-      );
       return ResultInfo.success();
     }
   }
