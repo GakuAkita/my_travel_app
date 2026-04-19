@@ -48,10 +48,11 @@ class FirebaseDatabaseService<T> {
   /// データ取得 (単一ノード)
   Future<T?> get() async {
     final snapshot = await _database.ref(path).get();
-    if (!snapshot.exists) return null;
+    if (!snapshot.exists || snapshot.value == null) return null;
 
-    final map = Map<String, dynamic>.from(snapshot.value as Map);
-    return fromJson(map);
+    final normalized =
+        normalizeMapStructure(snapshot.value) as Map<String, dynamic>;
+    return fromJson(normalized);
   }
 
   // 一気に取る場合はこっち(ただし、同じ構造になっている前提)
