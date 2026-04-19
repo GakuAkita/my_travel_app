@@ -130,7 +130,7 @@ class ItineraryViewModel extends ChangeNotifier {
   }
 
   Future<ResultInfo> switchEditModePreCheckWithNotify(bool newValue) async {
-    _isEditLoading = false;
+    _isEditLoading = true;
     notifyListeners();
     final result = await switchEditModePrecheck(newValue);
     _isEditLoading = false;

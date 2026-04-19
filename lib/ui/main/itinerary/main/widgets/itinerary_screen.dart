@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
 import '../../../../../components/ValidatedSwitch.dart';
+import '../../../../../constants.dart';
 import 'itinerary_section_display.dart';
 
 class ItineraryScreen extends StatefulWidget {
@@ -46,79 +46,84 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
               : viewModel.travel == null
               ? Center(child: BasicText(text: "Settingsから表示旅行を設定してください"))
               : Expanded(
-                /* 表示用 */
-                child: RefreshIndicator(
-                  onRefresh: () async {},
-                  child: SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        left: 10,
-                        right: 10,
+                child: Column(
+                  children: [
+                    if (viewModel.userRole == UserRole.admin)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            BasicText(text: "プランナーモード"),
+                            /* 編集モードと同義 */
+                            SizedBox(width: 10),
+
+                            ValidatedSwitch(
+                              initialStatus: viewModel.editMode,
+                              isEnabled: !viewModel.isEditLoading,
+                              onWillChange: (newVal) async {
+                                final ret = await viewModel
+                                    .switchEditModePreCheckWithNotify(newVal);
+                                if (ret.isSuccess) {
+                                  viewModel.setEditMode(newVal);
+                                  return newVal;
+                                } else {
+                                  print("${ret.error?.errorMessage}");
+                                  viewModel.setEditMode(!newVal);
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).clearSnackBars();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        ret.error?.errorMessage ??
+                                            "Unknown error",
+                                      ),
+                                    ),
+                                  );
+                                  return !newVal; /* 変更せずの元の状態を保持 */
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          if (viewModel.userRole == UserRole.admin)
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                    viewModel.editMode
+                        ? Text("編集画面")
+                        : RefreshIndicator(
+                          /* 表示用 */
+                          onRefresh: () async {},
+                          child: SingleChildScrollView(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 10,
+                                left: 10,
+                                right: 10,
+                              ),
+                              child: Column(
                                 children: [
-                                  BasicText(text: "プランナーモード"),
-                                  /* 編集モードと同義 */
-                                  SizedBox(width: 10),
-                                  viewModel.isEditLoading
-                                      ? CircularProgressIndicator()
-                                      : ValidatedSwitch(
-                                        initialStatus: viewModel.editMode,
-                                        onWillChange: (newVal) async {
-                                          final ret = await viewModel
-                                              .switchEditModePreCheckWithNotify(
-                                                newVal,
-                                              );
-                                          if (ret.isSuccess) {
-                                            viewModel.setEditMode(newVal);
-                                            return newVal;
-                                          } else {
-                                            print("${ret.error?.errorMessage}");
-                                            viewModel.setEditMode(!newVal);
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).clearSnackBars();
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  ret.error?.errorMessage ??
-                                                      "Unknown error",
-                                                ),
-                                              ),
-                                            );
-                                            return !newVal; /* 変更せずの元の状態を保持 */
-                                          }
-                                        },
+                                  viewModel.itinerarySections.isEmpty
+                                      ? Center(
+                                        child: BasicText(text: "しおりが作られていません"),
+                                      )
+                                      : Column(
+                                        children:
+                                            viewModel.itinerarySections
+                                                .map(
+                                                  (sec) =>
+                                                      ItinerarySectionDisplay(
+                                                        itiSection: sec,
+                                                      ),
+                                                )
+                                                .toList(),
                                       ),
                                 ],
                               ),
                             ),
-                          viewModel.itinerarySections.isEmpty
-                              ? Center(child: BasicText(text: "しおりが作られていません"))
-                              : Column(
-                                children:
-                                    viewModel.itinerarySections
-                                        .map(
-                                          (sec) => ItinerarySectionDisplay(
-                                            itiSection: sec,
-                                          ),
-                                        )
-                                        .toList(),
-                              ),
-                        ],
-                      ),
-                    ),
-                  ),
+                          ),
+                        ),
+                  ],
                 ),
               ),
         ],
