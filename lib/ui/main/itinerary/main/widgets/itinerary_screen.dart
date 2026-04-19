@@ -69,11 +69,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                   SizedBox(width: 10),
                                   ValidatedSwitch(
                                     initialStatus: viewModel.editMode,
-                                    onWillChange: (val) async {
-                                      viewModel.switchEditMode();
-                                      print("onWillChange called");
-                                      return viewModel.editMode;
-                                    },
+                                    onWillChange: (newVal) async {},
                                   ),
                                 ],
                               ),

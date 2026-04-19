@@ -32,16 +32,20 @@ class ItineraryViewModel extends ChangeNotifier {
 
   DataState<String?> get roleState => _roleState;
 
-  bool _editMode = false;
-
-  bool get editMode => _editMode;
-
   String? get userRole {
     if (_roleState.hasError || !_roleState.hasData) {
       return null;
     }
     return _roleState.data;
   }
+
+  bool _editMode = false;
+
+  bool get editMode => _editMode;
+
+  bool _isEditLoading = false;
+
+  bool get isEditLoading => _isEditLoading;
 
   /**
    * Travelが変わったときは
@@ -118,13 +122,20 @@ class ItineraryViewModel extends ChangeNotifier {
     }
   }
 
-  void switchEditMode() {
-    setEditMode(!_editMode);
-  }
-
-  void setEditMode(bool state) {
-    _editMode = state;
-    notifyListeners();
+  /// Switchの状態とViewModelのeditModeはきちんと合わせないとずれる。
+  Future<ResultInfo> switchEditModePrecheck(bool newValue) async {
+    if (newValue) {
+      /**
+       *  offからonにする場合
+       *  on_editをチェックして誰かが触っていないかチェックする
+       *  */
+    } else {
+      /**
+       * onからoffにする場合
+       * on_editの中身を初期状態に戻す
+       */
+    }
+    return _editMode;
   }
 
   @override
