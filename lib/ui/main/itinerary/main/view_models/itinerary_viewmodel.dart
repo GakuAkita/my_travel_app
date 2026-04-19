@@ -32,6 +32,10 @@ class ItineraryViewModel extends ChangeNotifier {
 
   DataState<String?> get roleState => _roleState;
 
+  bool _editMode = false;
+
+  bool get editMode => _editMode;
+
   String? get userRole {
     if (_roleState.hasError || !_roleState.hasData) {
       return null;
@@ -112,6 +116,15 @@ class ItineraryViewModel extends ChangeNotifier {
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
+  }
+
+  void switchEditMode() {
+    setEditMode(!_editMode);
+  }
+
+  void setEditMode(bool state) {
+    _editMode = state;
+    notifyListeners();
   }
 
   @override

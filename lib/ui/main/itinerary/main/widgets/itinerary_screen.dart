@@ -68,9 +68,11 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                   BasicText(text: "プランナーモード"),
                                   SizedBox(width: 10),
                                   ValidatedSwitch(
-                                    initialStatus: false,
+                                    initialStatus: viewModel.editMode,
                                     onWillChange: (val) async {
-                                      return false;
+                                      viewModel.switchEditMode();
+                                      print("onWillChange called");
+                                      return viewModel.editMode;
                                     },
                                   ),
                                 ],
