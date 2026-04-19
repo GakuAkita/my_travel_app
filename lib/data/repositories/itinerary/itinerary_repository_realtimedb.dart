@@ -77,7 +77,6 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
     required String travelId,
   }) async {
     final service = _onEditService(groupId: groupId, travelId: travelId);
-    final data = await service.get();
     return service.get();
   }
 
@@ -85,9 +84,18 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
   Future<void> setItineraryOnEdit({
     required String groupId,
     required String travelId,
-    required ItineraryOnEdit,
+    required ItineraryOnEdit itineraryOnEdit,
   }) async {
     final service = _onEditService(groupId: groupId, travelId: travelId);
-    await service.set(ItineraryOnEdit);
+    await service.set(itineraryOnEdit);
+  }
+
+  @override
+  Future<void> removeItineraryOnEdit({
+    required String groupId,
+    required String travelId,
+  }) async {
+    final service = _onEditService(groupId: groupId, travelId: travelId);
+    await service.delete();
   }
 }

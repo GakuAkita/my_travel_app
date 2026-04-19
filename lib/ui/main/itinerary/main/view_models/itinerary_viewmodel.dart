@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
+import 'package:my_travel_app/data/model/itinerary_on_edit/itinerary_on_edit.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
+import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
@@ -124,18 +126,85 @@ class ItineraryViewModel extends ChangeNotifier {
 
   /// Switchの状態とViewModelのeditModeはきちんと合わせないとずれる。
   Future<ResultInfo> switchEditModePrecheck(bool newValue) async {
+    if (_travelSession.currentTravel == null) {
+      return ResultInfo.failed(
+        error: ErrorInfo(errorMessage: "Travel is not set."),
+      );
+    }
+    final ShownTravelBasic travel = _travelSession.currentTravel!;
+
     if (newValue) {
       /**
        *  offからonにする場合
        *  on_editをチェックして誰かが触っていないかチェックする
        *  */
+      try {
+        final onEdit = await _itineraryRepository.getItineraryOnEdit(
+          groupId: travel.groupId!,
+          travelId: travel.travelId!,
+        );
+        if (onEdit?.onEdit == true) {
+          /* プロフィール名を出したい */
+          if (!_travelScopeStore.allGroupMembers.hasError &&
+              _travelScopeStore.allGroupMembers.hasData &&
+              !_travelScopeStore.allGroupMembers.isLoading &&
+              onEdit?.editor?.uid != null) {
+            final editorUid = onEdit?.editor!.uid;
+            print("editorUid=${editorUid} is editing");
+            final members = _travelScopeStore.allGroupMembers.data!;
+            final displayName = members[editorUid]?.displayName;
+
+            return ResultInfo.failed(
+              error: ErrorInfo(errorMessage: "${displayName}が編集中です"),
+            );
+          }
+
+          /* 編集者名がちゃんと見つかった場合は上でreturnしている。 */
+          return ResultInfo.failed(error: ErrorInfo(errorMessage: "他の人が編集中です"));
+        } else {
+          /* 誰も編集していない場合は編集して良い */
+          /* この中でsetOnEditをすると失敗したときに下のcatchに入ってしまうので、次のブロックで行う */
+        }
+      } catch (e) {
+        return ResultInfo.failed(
+          error: ErrorInfo(errorMessage: "編集状態の取得に失敗しました。: ${e.toString()}"),
+        );
+      }
+
+      /* onEditで誰も編集していなかったときこちらに来る */
+      try {
+        final uid = _appSession.currentUser!.uid;
+        final email = _appSession.currentUser?.email;
+
+        await _itineraryRepository.setItineraryOnEdit(
+          groupId: travel.groupId!,
+          travelId: travel.travelId!,
+          itineraryOnEdit: ItineraryOnEdit(
+            onEdit: true,
+            editor: TravelerCore(
+              uid: uid,
+              email: email ?? "",
+            ) /* emailが空になっていることはないはず、、 */,
+          ),
+        );
+
+        /* アプリを閉じたときに自動でonEditを消してほしいのでその設定をする */
+
+        /* 問題なければさらに次へ */
+      } catch (e) {
+        return ResultInfo.failed(
+          error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"),
+        );
+      }
+      return ResultInfo.success();
     } else {
       /**
        * onからoffにする場合
        * on_editの中身を初期状態に戻す
        */
+
+      return ResultInfo.success();
     }
-    return _editMode;
   }
 
   @override

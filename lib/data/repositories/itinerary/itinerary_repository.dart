@@ -27,6 +27,11 @@ abstract class ItineraryRepository {
   Future<void> setItineraryOnEdit({
     required String groupId,
     required String travelId,
-    required ItineraryOnEdit,
+    required ItineraryOnEdit itineraryOnEdit,
+  });
+
+  Future<void> removeItineraryOnEdit({
+    required String groupId,
+    required String travelId,
   });
 }
