@@ -66,6 +66,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   BasicText(text: "プランナーモード"),
+                                  /* 編集モードと同義 */
                                   SizedBox(width: 10),
                                   ValidatedSwitch(
                                     initialStatus: viewModel.editMode,
@@ -78,7 +79,21 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                         viewModel.setEditMode(newVal);
                                         return newVal;
                                       } else {
+                                        print("${ret.error?.errorMessage}");
                                         viewModel.setEditMode(!newVal);
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).clearSnackBars();
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              ret.error?.errorMessage ??
+                                                  "Unknown error",
+                                            ),
+                                          ),
+                                        );
                                         return !newVal; /* 変更せずの元の状態を保持 */
                                       }
                                     },

@@ -219,10 +219,10 @@ return $default(_that.onEdit,_that.editor);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class _ItineraryOnEdit implements ItineraryOnEdit {
-  const _ItineraryOnEdit({required this.onEdit, required this.editor});
+  const _ItineraryOnEdit({this.onEdit, this.editor});
   factory _ItineraryOnEdit.fromJson(Map<String, dynamic> json) => _$ItineraryOnEditFromJson(json);
 
 @override final  bool? onEdit;

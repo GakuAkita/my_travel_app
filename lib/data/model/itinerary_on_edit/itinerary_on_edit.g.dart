@@ -16,4 +16,7 @@ _ItineraryOnEdit _$ItineraryOnEditFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$ItineraryOnEditToJson(_ItineraryOnEdit instance) =>
-    <String, dynamic>{'onEdit': instance.onEdit, 'editor': instance.editor};
+    <String, dynamic>{
+      'onEdit': instance.onEdit,
+      'editor': instance.editor?.toJson(),
+    };

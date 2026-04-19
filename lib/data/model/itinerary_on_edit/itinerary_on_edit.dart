@@ -6,10 +6,9 @@ part 'itinerary_on_edit.g.dart';
 
 @freezed
 abstract class ItineraryOnEdit with _$ItineraryOnEdit {
-  const factory ItineraryOnEdit({
-    required bool? onEdit,
-    required TravelerCore? editor,
-  }) = _ItineraryOnEdit;
+  @JsonSerializable(explicitToJson: true)
+  const factory ItineraryOnEdit({bool? onEdit, TravelerCore? editor}) =
+      _ItineraryOnEdit;
 
   factory ItineraryOnEdit.fromJson(Map<String, dynamic> json) =>
       _$ItineraryOnEditFromJson(json);

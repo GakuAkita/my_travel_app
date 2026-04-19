@@ -207,6 +207,7 @@ class ItineraryViewModel extends ChangeNotifier {
           ),
         );
       } catch (e) {
+        print("${e.toString()}");
         return ResultInfo.failed(
           error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"),
         );
