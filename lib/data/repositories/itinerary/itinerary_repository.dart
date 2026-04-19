@@ -1,3 +1,5 @@
+import 'package:my_travel_app/data/model/itinerary_on_edit/itinerary_on_edit.dart';
+
 import '../../model/itinerary_section/itinerary_section.dart';
 
 abstract class ItineraryRepository {
@@ -15,5 +17,16 @@ abstract class ItineraryRepository {
     required String groupId,
     required String travelId,
     required List<ItinerarySection> sections,
+  });
+
+  Future<ItineraryOnEdit?> getItineraryOnEdit({
+    required String groupId,
+    required String travelId,
+  });
+
+  Future<void> setItineraryOnEdit({
+    required String groupId,
+    required String travelId,
+    required ItineraryOnEdit,
   });
 }

@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/firebase_database_paths.dart';
+import 'package:my_travel_app/data/model/itinerary_on_edit/itinerary_on_edit.dart';
 import 'package:my_travel_app/data/services/firebase_database_service.dart';
 
 import '../../model/itinerary_section/itinerary_section.dart';
@@ -12,7 +13,7 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
   ItineraryRepositoryRealtimeDb({required FirebaseDatabase firebaseDatabase})
     : _firebaseDatabase = firebaseDatabase;
 
-  FirebaseDatabaseService<ItinerarySection> _service({
+  FirebaseDatabaseService<ItinerarySection> _sectionsService({
     required String groupId,
     required String travelId,
   }) {
@@ -32,7 +33,7 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
     required String groupId,
     required String travelId,
   }) {
-    final service = _service(groupId: groupId, travelId: travelId);
+    final service = _sectionsService(groupId: groupId, travelId: travelId);
     return service.streamList();
   }
 
@@ -53,5 +54,40 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
   }) async {
     // TODO: implement saveItinerarySections
     throw AppException("No implemented yet!");
+  }
+
+  FirebaseDatabaseService<ItineraryOnEdit> _onEditService({
+    required String groupId,
+    required String travelId,
+  }) {
+    return FirebaseDatabaseService(
+      database: _firebaseDatabase,
+      path:
+          FirebaseDatabasePaths.group(
+            groupId,
+          ).travels.travel(travelId).itinerary.onEdit.toString(),
+      fromJson: ItineraryOnEdit.fromJson,
+      toJson: (e) => e.toJson(),
+    );
+  }
+
+  @override
+  Future<ItineraryOnEdit?> getItineraryOnEdit({
+    required String groupId,
+    required String travelId,
+  }) async {
+    final service = _onEditService(groupId: groupId, travelId: travelId);
+    final data = await service.get();
+    return service.get();
+  }
+
+  @override
+  Future<void> setItineraryOnEdit({
+    required String groupId,
+    required String travelId,
+    required ItineraryOnEdit,
+  }) async {
+    final service = _onEditService(groupId: groupId, travelId: travelId);
+    await service.set(ItineraryOnEdit);
   }
 }
