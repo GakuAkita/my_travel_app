@@ -100,6 +100,14 @@ class FirebaseDatabaseService<T> {
     await _database.ref(path).remove();
   }
 
+  Future<void> setOnDisconnectRemove() async {
+    await _database.ref(path).onDisconnect();
+  }
+
+  Future<void> cancelOnDisconnect() async {
+    await _database.ref(path).onDisconnect().cancel();
+  }
+
   /// データをlisten
   Stream<Map<String, T>> streamAll() {
     return _database.ref(path).onValue.map((event) {
