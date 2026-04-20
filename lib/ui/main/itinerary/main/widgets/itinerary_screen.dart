@@ -61,6 +61,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                             ValidatedSwitch(
                               initialStatus: viewModel.editMode,
                               isEnabled: !viewModel.isEditLoading,
+                              /* 複数連続タップ禁止 */
                               onWillChange: (newVal) async {
                                 final ret = await viewModel
                                     .switchEditModePreCheckWithNotify(newVal);
@@ -89,7 +90,9 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                         ),
                       ),
                     viewModel.editMode
-                        ? Text("編集画面")
+                        ? SingleChildScrollView(
+                          child: Center(child: Text("編集モード")),
+                        )
                         : RefreshIndicator(
                           /* 表示用 */
                           onRefresh: () async {},
