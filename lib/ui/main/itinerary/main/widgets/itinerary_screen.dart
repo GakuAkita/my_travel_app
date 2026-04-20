@@ -57,7 +57,6 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                             BasicText(text: "プランナーモード"),
                             /* 編集モードと同義 */
                             SizedBox(width: 10),
-
                             ValidatedSwitch(
                               initialStatus: viewModel.editMode,
                               isEnabled: !viewModel.isEditLoading,
@@ -89,43 +88,47 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           ],
                         ),
                       ),
-                    viewModel.editMode
-                        ? SingleChildScrollView(
-                          child: Center(child: Text("編集モード")),
-                        )
-                        : RefreshIndicator(
-                          /* 表示用 */
-                          onRefresh: () async {},
-                          child: SingleChildScrollView(
-                            physics: AlwaysScrollableScrollPhysics(),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 10,
-                                left: 10,
-                                right: 10,
-                              ),
-                              child: Column(
+                    Expanded(
+                      child:
+                          viewModel.editMode
+                              ? ListView(
                                 children: [
-                                  viewModel.itinerarySections.isEmpty
-                                      ? Center(
-                                        child: BasicText(text: "しおりが作られていません"),
-                                      )
-                                      : Column(
-                                        children:
-                                            viewModel.itinerarySections
-                                                .map(
-                                                  (sec) =>
-                                                      ItinerarySectionDisplay(
-                                                        itiSection: sec,
-                                                      ),
-                                                )
-                                                .toList(),
-                                      ),
+                                  Center(
+                                    child: Text("プランナーモードをOFFにしたときに保存されます"),
+                                  ),
                                 ],
+                              )
+                              : RefreshIndicator(
+                                /* 表示用 */
+                                onRefresh: () async {},
+                                child: SingleChildScrollView(
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 10,
+                                      left: 10,
+                                      right: 10,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        if (viewModel.itinerarySections.isEmpty)
+                                          Center(
+                                            child: BasicText(
+                                              text: "しおりが作られていません",
+                                            ),
+                                          )
+                                        else
+                                          ...viewModel.itinerarySections.map(
+                                            (sec) => ItinerarySectionDisplay(
+                                              itiSection: sec,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
+                    ),
                   ],
                 ),
               ),

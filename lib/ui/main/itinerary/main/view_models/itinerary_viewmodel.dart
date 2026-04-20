@@ -26,6 +26,11 @@ class ItineraryViewModel extends ChangeNotifier {
 
   List<ItinerarySection> get itinerarySections => _itinerarySections;
 
+  List<ItinerarySection> _editingItinerarySections = [];
+
+  List<ItinerarySection> get editingItinerarySections =>
+      _editingItinerarySections;
+
   bool get isItineraryLoading => _itineraryStore.itinerarySections.isLoading;
 
   ShownTravelBasic? get travel => _travelSession.currentTravel;
@@ -230,6 +235,11 @@ class ItineraryViewModel extends ChangeNotifier {
       }
       return ResultInfo.success();
     }
+  }
+
+  void copyItinerarySectionsToBuf() {
+    _editingItinerarySections = List.from(_itinerarySections);
+    notifyListeners();
   }
 
   @override
