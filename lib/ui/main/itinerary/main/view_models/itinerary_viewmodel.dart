@@ -237,8 +237,25 @@ class ItineraryViewModel extends ChangeNotifier {
     }
   }
 
-  void copyItinerarySectionsToBuf() {
+  void copySectionsToBuffer() {
     _editingItinerarySections = List.from(_itinerarySections);
+    notifyListeners();
+  }
+
+  void reorderSection(int oldIndex, int newIndex) {
+    print("reorder called :${oldIndex} ${newIndex}");
+    if (newIndex > oldIndex) {
+      /* 一個removeAtで消えるので一個ずれる？ */
+      newIndex -= 1;
+    }
+    /* removeAtの戻り値は消された要素 */
+    final ItinerarySection item = _editingItinerarySections.removeAt(oldIndex);
+    _editingItinerarySections.insert(newIndex, item);
+    notifyListeners();
+  }
+
+  void removeSection(int index) {
+    _editingItinerarySections.removeAt(index);
     notifyListeners();
   }
 

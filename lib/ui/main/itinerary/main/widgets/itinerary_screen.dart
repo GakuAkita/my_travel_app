@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +67,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                     .switchEditModePreCheckWithNotify(newVal);
                                 if (ret.isSuccess) {
                                   viewModel.setEditMode(newVal);
+                                  viewModel.copySectionsToBuffer();
                                   return newVal;
                                 } else {
                                   print("${ret.error?.errorMessage}");
@@ -91,12 +93,52 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                     Expanded(
                       child:
                           viewModel.editMode
-                              ? ListView(
-                                children: [
-                                  Center(
-                                    child: Text("プランナーモードをOFFにしたときに保存されます"),
-                                  ),
-                                ],
+                              ? ReorderableListView(
+                                onReorder: viewModel.reorderSection,
+                                children:
+                                    viewModel.editingItinerarySections
+                                        .asMap()
+                                        .entries
+                                        .map((entry) {
+                                          /* indexを使いたいのでわざわざMapにする */
+                                          final index = entry.key;
+                                          final section = entry.value;
+                                          return ListTile(
+                                            key: ValueKey(
+                                              '${section.hashCode}_$index',
+                                            ),
+                                            title: Slidable(
+                                              endActionPane: ActionPane(
+                                                motion: const ScrollMotion(),
+                                                children: [
+                                                  SlidableAction(
+                                                    onPressed: (_) {
+                                                      viewModel.removeSection(
+                                                        index,
+                                                      );
+                                                    },
+                                                    backgroundColor:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.error,
+                                                    foregroundColor:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.onError,
+                                                    icon: Icons.delete,
+                                                    label: "delete",
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Text("${section.hashCode}"),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        })
+                                        .toList(),
                               )
                               : RefreshIndicator(
                                 /* 表示用 */
