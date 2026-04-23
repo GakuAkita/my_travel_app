@@ -42,7 +42,12 @@ ItinerarySection _$ItinerarySectionFromJson(
 /// @nodoc
 mixin _$ItinerarySection {
 
-
+ String get id;
+/// Create a copy of ItinerarySection
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ItinerarySectionCopyWith<ItinerarySection> get copyWith => _$ItinerarySectionCopyWithImpl<ItinerarySection>(this as ItinerarySection, _$identity);
 
   /// Serializes this ItinerarySection to a JSON map.
   Map<String, dynamic> toJson();
@@ -50,24 +55,50 @@ mixin _$ItinerarySection {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItinerarySection);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItinerarySection&&(identical(other.id, id) || other.id == id));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,id);
 
 @override
 String toString() {
-  return 'ItinerarySection()';
+  return 'ItinerarySection(id: $id)';
 }
 
 
 }
 
 /// @nodoc
-class $ItinerarySectionCopyWith<$Res>  {
-$ItinerarySectionCopyWith(ItinerarySection _, $Res Function(ItinerarySection) __);
+abstract mixin class $ItinerarySectionCopyWith<$Res>  {
+  factory $ItinerarySectionCopyWith(ItinerarySection value, $Res Function(ItinerarySection) _then) = _$ItinerarySectionCopyWithImpl;
+@useResult
+$Res call({
+ String id
+});
+
+
+
+
+}
+/// @nodoc
+class _$ItinerarySectionCopyWithImpl<$Res>
+    implements $ItinerarySectionCopyWith<$Res> {
+  _$ItinerarySectionCopyWithImpl(this._self, this._then);
+
+  final ItinerarySection _self;
+  final $Res Function(ItinerarySection) _then;
+
+/// Create a copy of ItinerarySection
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
 }
 
 
@@ -155,12 +186,12 @@ return space(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String title,  String content)?  markdown,TResult Function( ItineraryTable tableData)?  table,TResult Function()?  space,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String id,  String title,  String content)?  markdown,TResult Function( String id,  ItineraryTable tableData)?  table,TResult Function( String id)?  space,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MarkdownSection() when markdown != null:
-return markdown(_that.title,_that.content);case TableSection() when table != null:
-return table(_that.tableData);case SpaceSection() when space != null:
-return space();case _:
+return markdown(_that.id,_that.title,_that.content);case TableSection() when table != null:
+return table(_that.id,_that.tableData);case SpaceSection() when space != null:
+return space(_that.id);case _:
   return orElse();
 
 }
@@ -178,12 +209,12 @@ return space();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String title,  String content)  markdown,required TResult Function( ItineraryTable tableData)  table,required TResult Function()  space,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String id,  String title,  String content)  markdown,required TResult Function( String id,  ItineraryTable tableData)  table,required TResult Function( String id)  space,}) {final _that = this;
 switch (_that) {
 case MarkdownSection():
-return markdown(_that.title,_that.content);case TableSection():
-return table(_that.tableData);case SpaceSection():
-return space();case _:
+return markdown(_that.id,_that.title,_that.content);case TableSection():
+return table(_that.id,_that.tableData);case SpaceSection():
+return space(_that.id);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,12 +231,12 @@ return space();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String title,  String content)?  markdown,TResult? Function( ItineraryTable tableData)?  table,TResult? Function()?  space,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String id,  String title,  String content)?  markdown,TResult? Function( String id,  ItineraryTable tableData)?  table,TResult? Function( String id)?  space,}) {final _that = this;
 switch (_that) {
 case MarkdownSection() when markdown != null:
-return markdown(_that.title,_that.content);case TableSection() when table != null:
-return table(_that.tableData);case SpaceSection() when space != null:
-return space();case _:
+return markdown(_that.id,_that.title,_that.content);case TableSection() when table != null:
+return table(_that.id,_that.tableData);case SpaceSection() when space != null:
+return space(_that.id);case _:
   return null;
 
 }
@@ -217,9 +248,10 @@ return space();case _:
 @JsonSerializable()
 
 class MarkdownSection implements ItinerarySection {
-  const MarkdownSection({required this.title, required this.content, final  String? $type}): $type = $type ?? 'markdown';
+  const MarkdownSection({required this.id, required this.title, required this.content, final  String? $type}): $type = $type ?? 'markdown';
   factory MarkdownSection.fromJson(Map<String, dynamic> json) => _$MarkdownSectionFromJson(json);
 
+@override final  String id;
  final  String title;
  final  String content;
 
@@ -229,7 +261,7 @@ final String $type;
 
 /// Create a copy of ItinerarySection
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $MarkdownSectionCopyWith<MarkdownSection> get copyWith => _$MarkdownSectionCopyWithImpl<MarkdownSection>(this, _$identity);
 
@@ -240,16 +272,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MarkdownSection&&(identical(other.title, title) || other.title == title)&&(identical(other.content, content) || other.content == content));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MarkdownSection&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.content, content) || other.content == content));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,title,content);
+int get hashCode => Object.hash(runtimeType,id,title,content);
 
 @override
 String toString() {
-  return 'ItinerarySection.markdown(title: $title, content: $content)';
+  return 'ItinerarySection.markdown(id: $id, title: $title, content: $content)';
 }
 
 
@@ -258,9 +290,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $MarkdownSectionCopyWith<$Res> implements $ItinerarySectionCopyWith<$Res> {
   factory $MarkdownSectionCopyWith(MarkdownSection value, $Res Function(MarkdownSection) _then) = _$MarkdownSectionCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- String title, String content
+ String id, String title, String content
 });
 
 
@@ -277,9 +309,10 @@ class _$MarkdownSectionCopyWithImpl<$Res>
 
 /// Create a copy of ItinerarySection
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? title = null,Object? content = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? content = null,}) {
   return _then(MarkdownSection(
-title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -292,9 +325,10 @@ as String,
 @JsonSerializable()
 
 class TableSection implements ItinerarySection {
-  const TableSection({required this.tableData, final  String? $type}): $type = $type ?? 'table';
+  const TableSection({required this.id, required this.tableData, final  String? $type}): $type = $type ?? 'table';
   factory TableSection.fromJson(Map<String, dynamic> json) => _$TableSectionFromJson(json);
 
+@override final  String id;
  final  ItineraryTable tableData;
 
 @JsonKey(name: 'runtimeType')
@@ -303,7 +337,7 @@ final String $type;
 
 /// Create a copy of ItinerarySection
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $TableSectionCopyWith<TableSection> get copyWith => _$TableSectionCopyWithImpl<TableSection>(this, _$identity);
 
@@ -314,16 +348,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TableSection&&(identical(other.tableData, tableData) || other.tableData == tableData));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TableSection&&(identical(other.id, id) || other.id == id)&&(identical(other.tableData, tableData) || other.tableData == tableData));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tableData);
+int get hashCode => Object.hash(runtimeType,id,tableData);
 
 @override
 String toString() {
-  return 'ItinerarySection.table(tableData: $tableData)';
+  return 'ItinerarySection.table(id: $id, tableData: $tableData)';
 }
 
 
@@ -332,9 +366,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $TableSectionCopyWith<$Res> implements $ItinerarySectionCopyWith<$Res> {
   factory $TableSectionCopyWith(TableSection value, $Res Function(TableSection) _then) = _$TableSectionCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- ItineraryTable tableData
+ String id, ItineraryTable tableData
 });
 
 
@@ -351,9 +385,10 @@ class _$TableSectionCopyWithImpl<$Res>
 
 /// Create a copy of ItinerarySection
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? tableData = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tableData = null,}) {
   return _then(TableSection(
-tableData: null == tableData ? _self.tableData : tableData // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,tableData: null == tableData ? _self.tableData : tableData // ignore: cast_nullable_to_non_nullable
 as ItineraryTable,
   ));
 }
@@ -374,15 +409,20 @@ $ItineraryTableCopyWith<$Res> get tableData {
 @JsonSerializable()
 
 class SpaceSection implements ItinerarySection {
-  const SpaceSection({final  String? $type}): $type = $type ?? 'space';
+  const SpaceSection({required this.id, final  String? $type}): $type = $type ?? 'space';
   factory SpaceSection.fromJson(Map<String, dynamic> json) => _$SpaceSectionFromJson(json);
 
-
+@override final  String id;
 
 @JsonKey(name: 'runtimeType')
 final String $type;
 
 
+/// Create a copy of ItinerarySection
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SpaceSectionCopyWith<SpaceSection> get copyWith => _$SpaceSectionCopyWithImpl<SpaceSection>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
@@ -391,22 +431,51 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpaceSection);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpaceSection&&(identical(other.id, id) || other.id == id));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,id);
 
 @override
 String toString() {
-  return 'ItinerarySection.space()';
+  return 'ItinerarySection.space(id: $id)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class $SpaceSectionCopyWith<$Res> implements $ItinerarySectionCopyWith<$Res> {
+  factory $SpaceSectionCopyWith(SpaceSection value, $Res Function(SpaceSection) _then) = _$SpaceSectionCopyWithImpl;
+@override @useResult
+$Res call({
+ String id
+});
 
 
+
+
+}
+/// @nodoc
+class _$SpaceSectionCopyWithImpl<$Res>
+    implements $SpaceSectionCopyWith<$Res> {
+  _$SpaceSectionCopyWithImpl(this._self, this._then);
+
+  final SpaceSection _self;
+  final $Res Function(SpaceSection) _then;
+
+/// Create a copy of ItinerarySection
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,}) {
+  return _then(SpaceSection(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 // dart format on

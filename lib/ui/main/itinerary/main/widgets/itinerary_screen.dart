@@ -63,8 +63,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                               isEnabled: !viewModel.isEditLoading,
                               /* 複数連続タップ禁止 */
                               onWillChange: (newVal) async {
-                                final ret = await viewModel
-                                    .switchEditModePreCheckWithNotify(newVal);
+                                final ret = await viewModel.switchEditModePreCheckWithNotify(newVal);
                                 if (ret.isSuccess) {
                                   viewModel.setEditMode(newVal);
                                   viewModel.copySectionsToBuffer();
@@ -72,16 +71,9 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                 } else {
                                   print("${ret.error?.errorMessage}");
                                   viewModel.setEditMode(!newVal);
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).clearSnackBars();
+                                  ScaffoldMessenger.of(context).clearSnackBars();
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        ret.error?.errorMessage ??
-                                            "Unknown error",
-                                      ),
-                                    ),
+                                    SnackBar(content: Text(ret.error?.errorMessage ?? "Unknown error")),
                                   );
                                   return !newVal; /* 変更せずの元の状態を保持 */
                                 }
@@ -95,50 +87,42 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           viewModel.editMode
                               ? ReorderableListView(
                                 onReorder: viewModel.reorderSection,
+                                buildDefaultDragHandles: false,
+                                /*  */
                                 children:
-                                    viewModel.editingItinerarySections
-                                        .asMap()
-                                        .entries
-                                        .map((entry) {
-                                          /* indexを使いたいのでわざわざMapにする */
-                                          final index = entry.key;
-                                          final section = entry.value;
-                                          return ListTile(
-                                            key: ValueKey(
-                                              '${section.hashCode}_$index',
-                                            ),
-                                            title: Slidable(
-                                              endActionPane: ActionPane(
-                                                motion: const ScrollMotion(),
-                                                children: [
-                                                  SlidableAction(
-                                                    onPressed: (_) {
-                                                      viewModel.removeSection(
-                                                        index,
-                                                      );
-                                                    },
-                                                    backgroundColor:
-                                                        Theme.of(
-                                                          context,
-                                                        ).colorScheme.error,
-                                                    foregroundColor:
-                                                        Theme.of(
-                                                          context,
-                                                        ).colorScheme.onError,
-                                                    icon: Icons.delete,
-                                                    label: "delete",
-                                                  ),
-                                                ],
+                                    viewModel.editingItinerarySections.asMap().entries.map((entry) {
+                                      /* indexを使いたいのでわざわざMapにする */
+                                      final index = entry.key;
+                                      final section = entry.value;
+                                      return ListTile(
+                                        key: ValueKey('${section.hashCode}_$index'),
+                                        title: Slidable(
+                                          endActionPane: ActionPane(
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (_) {
+                                                  viewModel.removeSection(index);
+                                                },
+                                                backgroundColor: Theme.of(context).colorScheme.error,
+                                                foregroundColor: Theme.of(context).colorScheme.onError,
+                                                icon: Icons.delete,
+                                                label: "delete",
                                               ),
-                                              child: Row(
-                                                children: [
-                                                  Text("${section.hashCode}"),
-                                                ],
+                                            ],
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              ReorderableDragStartListener(
+                                                child: Icon(Icons.drag_handle, size: 50),
+                                                index: index,
                                               ),
-                                            ),
-                                          );
-                                        })
-                                        .toList(),
+                                              Text("${section.hashCode}"),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                               )
                               : RefreshIndicator(
                                 /* 表示用 */
@@ -146,24 +130,14 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                 child: SingleChildScrollView(
                                   physics: AlwaysScrollableScrollPhysics(),
                                   child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 10,
-                                      left: 10,
-                                      right: 10,
-                                    ),
+                                    padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
                                     child: Column(
                                       children: [
                                         if (viewModel.itinerarySections.isEmpty)
-                                          Center(
-                                            child: BasicText(
-                                              text: "しおりが作られていません",
-                                            ),
-                                          )
+                                          Center(child: BasicText(text: "しおりが作られていません"))
                                         else
                                           ...viewModel.itinerarySections.map(
-                                            (sec) => ItinerarySectionDisplay(
-                                              itiSection: sec,
-                                            ),
+                                            (sec) => ItinerarySectionDisplay(itiSection: sec),
                                           ),
                                       ],
                                     ),

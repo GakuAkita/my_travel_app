@@ -7,19 +7,13 @@ class ItineraryMarkdownSectionEdit extends StatefulWidget {
   final int index;
   final void Function(String sectionName, String content) onChanged;
 
-  const ItineraryMarkdownSectionEdit({
-    required this.index,
-    required this.onChanged,
-    super.key,
-  });
+  const ItineraryMarkdownSectionEdit({required this.index, required this.onChanged, super.key});
 
   @override
-  State<ItineraryMarkdownSectionEdit> createState() =>
-      _ItineraryMarkdownSectionEditState();
+  State<ItineraryMarkdownSectionEdit> createState() => _ItineraryMarkdownSectionEditState();
 }
 
-class _ItineraryMarkdownSectionEditState
-    extends State<ItineraryMarkdownSectionEdit> {
+class _ItineraryMarkdownSectionEditState extends State<ItineraryMarkdownSectionEdit> {
   bool previewStatus = false;
   late TextEditingController _titleController;
   late TextEditingController _contentController;
@@ -101,14 +95,9 @@ class _ItineraryMarkdownSectionEditState
           if (previewStatus && _contentController.text.isNotEmpty)
             Container(
               height: 500,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-              ),
+              decoration: BoxDecoration(border: Border.all(color: Colors.white)),
               child: Markdown(
-                data:
-                    _contentController.text.isNotEmpty
-                        ? _contentController.text
-                        : "contentがempty",
+                data: _contentController.text.isNotEmpty ? _contentController.text : "contentがempty",
               ),
             )
           else

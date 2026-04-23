@@ -7,22 +7,22 @@ part 'itinerary_section.g.dart';
 @freezed
 abstract class ItinerarySection with _$ItinerarySection {
   const factory ItinerarySection.markdown({
+    required String id,
     required String title,
     required String content,
   }) = MarkdownSection;
 
-  const factory ItinerarySection.table({required ItineraryTable tableData}) =
+  const factory ItinerarySection.table({required String id, required ItineraryTable tableData}) =
       TableSection;
 
-  const factory ItinerarySection.space() = SpaceSection;
+  const factory ItinerarySection.space({required String id}) = SpaceSection;
 
   /// !!!! 一度通常の書き方でitinerary_section.g.dartを生成してから、
   /// 変換用に書き換える。
   /// freezedはあくまで自動生成だから、ちゃんとフォーマットに従って書かれていないと生成してくれないっぽい。
   /// 新たにfreezedクラスを作った場合でも毎回一度コメントアウトして生成した後作り直さないといけない。
   /// まあしょうがない。
-  // factory ItinerarySection.fromJson(Map<String, dynamic> json) =>
-  //     _$ItinerarySectionFromJson(json);
+  // factory ItinerarySection.fromJson(Map<String, dynamic> json) => _$ItinerarySectionFromJson(json);
 
   // freezed.dartとg.dartが生成されたらこっちを生き返らせる
   factory ItinerarySection.fromJson(Map<String, dynamic> json) {
@@ -42,6 +42,11 @@ abstract class ItinerarySection with _$ItinerarySection {
         break;
       default:
         break;
+    }
+
+    /* idが空のときの対策。既存のデータはidがないものがある。後方互換性 */
+    if (!newJson.containsKey('id')) {
+      newJson['id'] = const Uuid().v4();
     }
 
     return _$ItinerarySectionFromJson(newJson);
