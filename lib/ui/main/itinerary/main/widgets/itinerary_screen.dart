@@ -113,11 +113,12 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                           ),
                                           child: Row(
                                             children: [
-                                              ReorderableDragStartListener(
-                                                child: Icon(Icons.drag_handle, size: 50),
-                                                index: index,
-                                              ),
-                                              Text("${section.hashCode}"),
+                                              if (viewModel.editingItinerarySections.length >= 2)
+                                                ReorderableDragStartListener(
+                                                  child: Icon(Icons.drag_handle, size: 50),
+                                                  index: index,
+                                                ),
+                                              Expanded(child: Text("${section.id}")),
                                             ],
                                           ),
                                         ),

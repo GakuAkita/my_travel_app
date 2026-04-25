@@ -28,8 +28,16 @@ class ItineraryViewModel extends ChangeNotifier {
 
   List<ItinerarySection> _editingItinerarySections = [];
 
-  List<ItinerarySection> get editingItinerarySections =>
-      _editingItinerarySections;
+  List<ItinerarySection> get editingItinerarySections => _editingItinerarySections;
+
+  ItinerarySection? getSectionById(String id) {
+    for (final section in _editingItinerarySections) {
+      if (section.id == id) {
+        return section;
+      }
+    }
+    return null;
+  }
 
   bool get isItineraryLoading => _itineraryStore.itinerarySections.isLoading;
 
@@ -77,8 +85,13 @@ class ItineraryViewModel extends ChangeNotifier {
        _appSession = appSession {
     print("ItineraryViewModel was created. code=${hashCode}");
 
+    _travelSession.addListener(_travelSessionChanged);
     _itineraryStore.addListener(_itinerarySync);
     _travelScopeStore.addListener(_travelScopeSync);
+  }
+
+  void _travelSessionChanged() {
+    /* editModeを強制的にオフにする */
   }
 
   void _itinerarySync() {
@@ -146,9 +159,7 @@ class ItineraryViewModel extends ChangeNotifier {
   /// Switchの状態とViewModelのeditModeはきちんと合わせないとずれる。
   Future<ResultInfo> switchEditModePrecheck(bool newValue) async {
     if (_travelSession.currentTravel == null) {
-      return ResultInfo.failed(
-        error: ErrorInfo(errorMessage: "Travel is not set."),
-      );
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "Travel is not set."));
     }
     final ShownTravelBasic travel = _travelSession.currentTravel!;
 
@@ -163,8 +174,7 @@ class ItineraryViewModel extends ChangeNotifier {
           groupId: travel.groupId!,
           travelId: travel.travelId!,
         );
-        if (onEdit?.onEdit == true &&
-            onEdit?.editor?.uid != _appSession.currentUser!.uid) {
+        if (onEdit?.onEdit == true && onEdit?.editor?.uid != _appSession.currentUser!.uid) {
           /* o自分の編集中が残っている場合はそのままで良い */
           /* 仮にAuthもFirebaseではなくなったらどうするんだろう、、 */
 
@@ -178,9 +188,7 @@ class ItineraryViewModel extends ChangeNotifier {
             final members = _travelScopeStore.allGroupMembers.data!;
             final displayName = members[editorUid]?.displayName;
 
-            return ResultInfo.failed(
-              error: ErrorInfo(errorMessage: "${displayName}が編集中です"),
-            );
+            return ResultInfo.failed(error: ErrorInfo(errorMessage: "${displayName}が編集中です"));
           }
 
           /* 編集者名がちゃんと見つかった場合は上でreturnしている。 */
@@ -190,9 +198,7 @@ class ItineraryViewModel extends ChangeNotifier {
           /* この中でsetOnEditをすると失敗したときに下のcatchに入ってしまうので、次のブロックで行う */
         }
       } catch (e) {
-        return ResultInfo.failed(
-          error: ErrorInfo(errorMessage: "編集状態の取得に失敗しました。: ${e.toString()}"),
-        );
+        return ResultInfo.failed(error: ErrorInfo(errorMessage: "編集状態の取得に失敗しました。: ${e.toString()}"));
       }
 
       /* onEditで誰も編集していなかったときこちらに来る */
@@ -205,17 +211,12 @@ class ItineraryViewModel extends ChangeNotifier {
           travelId: travel.travelId!,
           itineraryOnEdit: ItineraryOnEdit(
             onEdit: true,
-            editor: TravelerCore(
-              uid: uid,
-              email: email ?? "",
-            ) /* emailが空になっていることはないはず、、 */,
+            editor: TravelerCore(uid: uid, email: email ?? "") /* emailが空になっていることはないはず、、 */,
           ),
         );
       } catch (e) {
         print("${e.toString()}");
-        return ResultInfo.failed(
-          error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"),
-        );
+        return ResultInfo.failed(error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"));
       }
       return ResultInfo.success();
     } else {
@@ -229,9 +230,7 @@ class ItineraryViewModel extends ChangeNotifier {
           travelId: travel.travelId!,
         );
       } catch (e) {
-        return ResultInfo.failed(
-          error: ErrorInfo(errorMessage: "編集状態の更新に失敗しました。: ${e.toString()}"),
-        );
+        return ResultInfo.failed(error: ErrorInfo(errorMessage: "編集状態の更新に失敗しました。: ${e.toString()}"));
       }
       return ResultInfo.success();
     }
@@ -263,6 +262,7 @@ class ItineraryViewModel extends ChangeNotifier {
   void dispose() {
     print("ItineraryViewModel was disposed. code=${hashCode}");
 
+    _travelSession.removeListener(_travelSessionChanged);
     _itineraryStore.removeListener(_itinerarySync);
     _travelScopeStore.removeListener(_travelScopeSync);
     // TODO: implement dispose
