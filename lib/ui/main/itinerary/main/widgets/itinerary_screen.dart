@@ -102,7 +102,10 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                             children: [
                                               SlidableAction(
                                                 onPressed: (_) {
-                                                  viewModel.removeSection(index);
+                                                  final ret = viewModel.removeSection(section.id);
+                                                  if (ret < 0) {
+                                                    /* 削除に失敗。ほとんどないけどね。 */
+                                                  }
                                                 },
                                                 backgroundColor: Theme.of(context).colorScheme.error,
                                                 foregroundColor: Theme.of(context).colorScheme.onError,

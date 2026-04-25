@@ -253,9 +253,14 @@ class ItineraryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeSection(int index) {
+  int removeSection(String id) {
+    final index = _editingItinerarySections.indexWhere((element) => element.id == id);
+
+    if (index == -1) return -1;
+
     _editingItinerarySections.removeAt(index);
     notifyListeners();
+    return 0;
   }
 
   @override
