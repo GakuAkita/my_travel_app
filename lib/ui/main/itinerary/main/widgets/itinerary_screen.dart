@@ -95,7 +95,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                       final index = entry.key;
                                       final section = entry.value;
                                       return ListTile(
-                                        key: ValueKey('${section.hashCode}_$index'),
+                                        key: ValueKey(section.id),
                                         title: Slidable(
                                           endActionPane: ActionPane(
                                             motion: const ScrollMotion(),

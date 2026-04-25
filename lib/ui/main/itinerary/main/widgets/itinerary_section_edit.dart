@@ -12,9 +12,11 @@ class ItinerarySectionEdit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final section = context.read<ItineraryViewModel>().editingItinerarySections[index];
-    return switch (section) {
-      MarkdownSection() => Text("これはマークダウン"),
-      TableSection() => Text("これはテーブル"),
-    };
+    switch (section) {
+      case MarkdownSection():
+        return Text("MarkdownSection");
+      case TableSection():
+        return Text("ItinerarySection");
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:my_travel_app/data/model/itinerary_table/itinerary_table.dart';
+import 'package:uuid/uuid.dart';
 
 part 'itinerary_section.freezed.dart';
 part 'itinerary_section.g.dart';
