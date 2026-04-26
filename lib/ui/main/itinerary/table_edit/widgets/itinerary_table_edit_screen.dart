@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
 
+/// @todo これ戻り値みたいにしてItinerary Mainで編集後のデータを受け取ってあっちで保存した法が良い。
 class ItineraryTableEditScreen extends StatefulWidget {
   final String sectionId;
 
@@ -21,14 +22,17 @@ class ItineraryTableEditScreen extends StatefulWidget {
 
 class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
   EditingItineraryTable _editingTable = EditingItineraryTable(header: [], tableCells: [], flexes: []);
+  late ItineraryViewModel _viewModel;
+
+  /* dispose時に保存するとき、この参照先を保持しておく必要がある */
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    final viewModel = context.read<ItineraryViewModel>();
-    final table = viewModel.getTableById(widget.sectionId);
+    _viewModel = context.read<ItineraryViewModel>();
+    final table = _viewModel.getTableById(widget.sectionId);
     if (table == null) {
       return;
     }
@@ -39,9 +43,13 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
 
   @override
   void dispose() {
-    /* 画面から離れるときにViewModelに保存する */
-    final viewModel = context.read<ItineraryViewModel>();
+    final table = _editingTable.toModel();
 
+    /* 画面から離れるときにViewModelに保存する */
+    final ret = _viewModel.updateTable(id: widget.sectionId, table: table, notify: false);
+    if (ret == 0) {
+      print("Table was updated");
+    }
     // TODO: implement dispose
     super.dispose();
   }
@@ -95,41 +103,40 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
                       ),
                     ],
                   ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 45),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Listener(
-                          onPointerDown: (_) {
-                            /* iconに触れた瞬間にフォーカスを外す */
-                            FocusScope.of(context).unfocus();
-                          },
-                          child: ReorderableDragStartListener(
-                            index: rowIndex,
-                            child: Icon(Icons.drag_handle, size: 45),
-                          ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Listener(
+                        onPointerDown: (_) {
+                          /* iconに触れた瞬間にフォーカスを外す */
+                          FocusScope.of(context).unfocus();
+                        },
+                        child: ReorderableDragStartListener(
+                          index: rowIndex,
+                          child: Icon(Icons.drag_handle, size: 45),
                         ),
-                        ...row.asMap().entries.map((colEntry) {
-                          final colIndex = colEntry.key;
-                          final cell = colEntry.value;
-                          return Expanded(
-                            flex: _editingTable.flexes[colIndex],
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Theme.of(context).colorScheme.primary),
-                              ),
-                              child: MultilineTextField(
-                                hintText: "",
-                                initialText: cell,
-                                onChanged: (val) {},
-                                maxLines: 1,
-                              ),
+                      ),
+                      ...row.asMap().entries.map((colEntry) {
+                        final colIndex = colEntry.key;
+                        final cell = colEntry.value;
+                        return Expanded(
+                          flex: _editingTable.flexes[colIndex],
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Theme.of(context).colorScheme.primary),
                             ),
-                          );
-                        }),
-                      ],
-                    ),
+                            child: MultilineTextField(
+                              hintText: "",
+                              initialText: cell,
+                              onChanged: (val) {
+                                _editingTable.tableCells[rowIndex][colIndex] = val;
+                              },
+                              minLines: 1,
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
                   ),
                 );
               },

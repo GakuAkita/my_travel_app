@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/data/model/itinerary_on_edit/itinerary_on_edit.dart';
+import 'package:my_travel_app/data/model/itinerary_table/itinerary_table.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
@@ -333,6 +334,26 @@ class ItineraryViewModel extends ChangeNotifier {
 
     section.tableData.tableCells.add(row);
     notifyListeners();
+    return 0;
+  }
+
+  int updateTable({required String id, required ItineraryTable table, bool notify = false}) {
+    final index = _editingItinerarySections.indexWhere((element) => element.id == id);
+    if (index < 0) {
+      print("Unable to find id and index");
+      return -1;
+    }
+
+    if (_editingItinerarySections[index] is! TableSection) {
+      print("Section was not Table");
+      return -2;
+    }
+    final tableSection = _editingItinerarySections[index] as TableSection;
+    final newTable = tableSection.copyWith(tableData: table);
+    _editingItinerarySections[index] = newTable;
+    if (notify) {
+      notifyListeners();
+    }
     return 0;
   }
 
