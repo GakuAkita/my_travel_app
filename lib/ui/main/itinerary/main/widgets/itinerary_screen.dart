@@ -3,7 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
-import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_section_edit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
@@ -12,6 +11,7 @@ import '../../../../../components/ValidatedSwitch.dart';
 import '../../../../../constants.dart';
 import '../../../../../data/model/itinerary_section/itinerary_section.dart';
 import 'itinerary_section_display.dart';
+import 'itinerary_section_edit.dart';
 
 class ItineraryScreen extends StatefulWidget {
   const ItineraryScreen({super.key});
@@ -89,126 +89,236 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                     Expanded(
                       child:
                           viewModel.editMode
-                              ? Column(
-                                children: [
-                                  Expanded(
-                                    child: ReorderableListView(
-                                      onReorder: viewModel.reorderSection,
-                                      onReorderStart: (_) {
-                                        viewModel.setReordering(true);
-                                      },
-                                      /* sectionのサイズが大きくなっていくとドラッグで順番を変えられなくなる */
-                                      onReorderEnd: (_) {
-                                        viewModel.setReordering(false);
-                                      },
-                                      proxyDecorator: (child, index, animation) {
-                                        final section = viewModel.editingItinerarySections[index];
-                                        return Material(elevation: 6, child: buildDragTile(section));
-                                      },
-                                      buildDefaultDragHandles: false,
-                                      children: [
-                                        ...viewModel.editingItinerarySections.asMap().entries.map((entry) {
-                                          /* indexを使いたいのでわざわざMapにする */
-                                          final index = entry.key;
-                                          final section = entry.value;
-                                          return ListTile(
-                                            key: ValueKey(section.id),
-                                            title:
-                                                viewModel.isReordering
-                                                    ? Text("Dragging...:${section.id}")
-                                                    : Slidable(
-                                                      endActionPane: ActionPane(
-                                                        motion: const ScrollMotion(),
-                                                        children: [
-                                                          SlidableAction(
-                                                            onPressed: (_) {
-                                                              final ret = viewModel.removeSection(section.id);
-                                                              if (ret < 0) {
-                                                                /* 削除に失敗。ほとんどないけどね。 */
-                                                              }
-                                                            },
-                                                            backgroundColor:
-                                                                Theme.of(context).colorScheme.error,
-                                                            foregroundColor:
-                                                                Theme.of(context).colorScheme.onError,
-                                                            icon: Icons.delete,
-                                                            label: "delete",
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          if (viewModel.editingItinerarySections.length >= 2)
-                                                            ReorderableDragStartListener(
-                                                              child: Icon(Icons.drag_handle, size: 50),
-                                                              index: index,
-                                                            ),
-                                                          Expanded(
-                                                            child: ItinerarySectionEdit(id: section.id),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                          );
-                                        }).toList(),
-                                      ],
-                                    ),
+                              ? CustomScrollView(
+                                slivers: [
+                                  SliverReorderableList(
+                                    itemCount: viewModel.editingItinerarySections.length,
+                                    onReorder: viewModel.reorderSection,
+                                    itemBuilder: (context, index) {
+                                      final section = viewModel.editingItinerarySections[index];
+
+                                      return Container(
+                                        key: ValueKey(section.id),
+                                        child: Slidable(
+                                          endActionPane: ActionPane(
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (_) {
+                                                  final ret = viewModel.removeSection(section.id);
+                                                  if (ret < 0) {
+                                                    /* 削除に失敗。ほとんどないけどね。 */
+                                                  }
+                                                },
+                                                backgroundColor: Theme.of(context).colorScheme.error,
+                                                foregroundColor: Theme.of(context).colorScheme.onError,
+                                                icon: Icons.delete,
+                                                label: "delete",
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              if (viewModel.editingItinerarySections.length >= 2)
+                                                ReorderableDragStartListener(
+                                                  child: Icon(Icons.drag_handle, size: 50),
+                                                  index: index,
+                                                ),
+                                              Expanded(child: ItinerarySectionEdit(id: section.id)),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                  CircleIconButton(
-                                    icon: Icons.add,
-                                    onPressed: () async {
-                                      final selectedSection = await showModalBottomSheet<ItinerarySection>(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return DraggableScrollableSheet(
-                                            initialChildSize: 0.5,
-                                            // 最初の高さ（画面の50%）
-                                            minChildSize: 0.2,
-                                            maxChildSize: 0.9,
-                                            // 最大で画面の90%まで引っ張れる
-                                            expand: false,
-                                            builder: (_, scrollController) {
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context).colorScheme.surface,
-                                                  borderRadius: BorderRadius.vertical(
-                                                    top: Radius.circular(20),
-                                                  ),
-                                                ),
-                                                child: ListView(
-                                                  controller: scrollController,
-                                                  children: [
-                                                    ListTile(
-                                                      leading: Icon(Icons.text_fields),
-                                                      title: Text('通常Markdown'),
-                                                      onTap:
-                                                          () => context.pop(ItinerarySection.emptyMarkdown()),
+                                  SliverToBoxAdapter(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4),
+                                      child: CircleIconButton(
+                                        icon: Icons.add,
+                                        onPressed: () async {
+                                          final selectedSection = await showModalBottomSheet<
+                                            ItinerarySection
+                                          >(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            builder: (context) {
+                                              return DraggableScrollableSheet(
+                                                initialChildSize: 0.5,
+                                                // 最初の高さ（画面の50%）
+                                                minChildSize: 0.2,
+                                                maxChildSize: 0.9,
+                                                // 最大で画面の90%まで引っ張れる
+                                                expand: false,
+                                                builder: (_, scrollController) {
+                                                  return Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context).colorScheme.surface,
+                                                      borderRadius: BorderRadius.vertical(
+                                                        top: Radius.circular(20),
+                                                      ),
                                                     ),
-                                                    ListTile(
-                                                      leading: Icon(Icons.table_chart),
-                                                      title: Text('テーブル'),
-                                                      onTap: () => context.pop(ItinerarySection.emptyTable()),
+                                                    child: ListView(
+                                                      controller: scrollController,
+                                                      children: [
+                                                        ListTile(
+                                                          leading: Icon(Icons.text_fields),
+                                                          title: Text('通常Markdown'),
+                                                          onTap:
+                                                              () => context.pop(
+                                                                ItinerarySection.emptyMarkdown(),
+                                                              ),
+                                                        ),
+                                                        ListTile(
+                                                          leading: Icon(Icons.table_chart),
+                                                          title: Text('テーブル'),
+                                                          onTap:
+                                                              () =>
+                                                                  context.pop(ItinerarySection.emptyTable()),
+                                                        ),
+                                                        ListTile(
+                                                          leading: Icon(Icons.space_bar),
+                                                          title: Text('空白行'),
+                                                          onTap:
+                                                              () =>
+                                                                  context.pop(ItinerarySection.emptySpace()),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    ListTile(
-                                                      leading: Icon(Icons.space_bar),
-                                                      title: Text('空白行'),
-                                                      onTap: () => context.pop(ItinerarySection.emptySpace()),
-                                                    ),
-                                                  ],
-                                                ),
+                                                  );
+                                                },
                                               );
                                             },
                                           );
+                                          if (selectedSection != null) {
+                                            viewModel.addSection(selectedSection);
+                                          }
                                         },
-                                      );
-                                      if (selectedSection != null) {
-                                        viewModel.addSection(selectedSection);
-                                      }
-                                    },
+                                      ),
+                                    ),
                                   ),
                                 ],
                               )
+                              // ? Column(
+                              //   children: [
+                              //     Expanded(
+                              //       child: ReorderableListView(
+                              //         onReorder: viewModel.reorderSection,
+                              //         onReorderStart: (_) {
+                              //           viewModel.setReordering(true);
+                              //         },
+                              //         /* sectionのサイズが大きくなっていくとドラッグで順番を変えられなくなる */
+                              //         onReorderEnd: (_) {
+                              //           viewModel.setReordering(false);
+                              //         },
+                              //         proxyDecorator: (child, index, animation) {
+                              //           final section = viewModel.editingItinerarySections[index];
+                              //           return Material(elevation: 6, child: buildDragTile(section));
+                              //         },
+                              //         buildDefaultDragHandles: false,
+                              //         children: [
+                              //           ...viewModel.editingItinerarySections.asMap().entries.map((entry) {
+                              //             /* indexを使いたいのでわざわざMapにする */
+                              //             final index = entry.key;
+                              //             final section = entry.value;
+                              //             return ListTile(
+                              //               key: ValueKey(section.id),
+                              //               title:
+                              //                   viewModel.isReordering
+                              //                       ? Text("Dragging...:${section.id}")
+                              //                       : Slidable(
+                              //                         endActionPane: ActionPane(
+                              //                           motion: const ScrollMotion(),
+                              //                           children: [
+                              //                             SlidableAction(
+                              //                               onPressed: (_) {
+                              //                                 final ret = viewModel.removeSection(section.id);
+                              //                                 if (ret < 0) {
+                              //                                   /* 削除に失敗。ほとんどないけどね。 */
+                              //                                 }
+                              //                               },
+                              //                               backgroundColor:
+                              //                                   Theme.of(context).colorScheme.error,
+                              //                               foregroundColor:
+                              //                                   Theme.of(context).colorScheme.onError,
+                              //                               icon: Icons.delete,
+                              //                               label: "delete",
+                              //                             ),
+                              //                           ],
+                              //                         ),
+                              //                         child: Row(
+                              //                           children: [
+                              //                             if (viewModel.editingItinerarySections.length >= 2)
+                              //                               ReorderableDragStartListener(
+                              //                                 child: Icon(Icons.drag_handle, size: 50),
+                              //                                 index: index,
+                              //                               ),
+                              //                             Expanded(
+                              //                               child: ItinerarySectionEdit(id: section.id),
+                              //                             ),
+                              //                           ],
+                              //                         ),
+                              //                       ),
+                              //             );
+                              //           }).toList(),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //     CircleIconButton(
+                              //       icon: Icons.add,
+                              //       onPressed: () async {
+                              //         final selectedSection = await showModalBottomSheet<ItinerarySection>(
+                              //           context: context,
+                              //           isScrollControlled: true,
+                              //           builder: (context) {
+                              //             return DraggableScrollableSheet(
+                              //               initialChildSize: 0.5,
+                              //               // 最初の高さ（画面の50%）
+                              //               minChildSize: 0.2,
+                              //               maxChildSize: 0.9,
+                              //               // 最大で画面の90%まで引っ張れる
+                              //               expand: false,
+                              //               builder: (_, scrollController) {
+                              //                 return Container(
+                              //                   decoration: BoxDecoration(
+                              //                     color: Theme.of(context).colorScheme.surface,
+                              //                     borderRadius: BorderRadius.vertical(
+                              //                       top: Radius.circular(20),
+                              //                     ),
+                              //                   ),
+                              //                   child: ListView(
+                              //                     controller: scrollController,
+                              //                     children: [
+                              //                       ListTile(
+                              //                         leading: Icon(Icons.text_fields),
+                              //                         title: Text('通常Markdown'),
+                              //                         onTap:
+                              //                             () => context.pop(ItinerarySection.emptyMarkdown()),
+                              //                       ),
+                              //                       ListTile(
+                              //                         leading: Icon(Icons.table_chart),
+                              //                         title: Text('テーブル'),
+                              //                         onTap: () => context.pop(ItinerarySection.emptyTable()),
+                              //                       ),
+                              //                       ListTile(
+                              //                         leading: Icon(Icons.space_bar),
+                              //                         title: Text('空白行'),
+                              //                         onTap: () => context.pop(ItinerarySection.emptySpace()),
+                              //                       ),
+                              //                     ],
+                              //                   ),
+                              //                 );
+                              //               },
+                              //             );
+                              //           },
+                              //         );
+                              //         if (selectedSection != null) {
+                              //           viewModel.addSection(selectedSection);
+                              //         }
+                              //       },
+                              //     ),
+                              //   ],
+                              // )
                               : RefreshIndicator(
                                 /* 表示用 */
                                 onRefresh: () async {},
