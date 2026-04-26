@@ -291,6 +291,51 @@ class ItineraryViewModel extends ChangeNotifier {
     return 0;
   }
 
+  /* ResultInfoのほうがいいか、、 */
+  TableSection? getTableById(String id) {
+    final section = getSectionById(id);
+    if (section == null) {
+      print("Unable to find section by Id =$id");
+      return null;
+    }
+
+    if (section is! TableSection) {
+      print("section was not Table");
+      return null;
+    }
+
+    return section;
+  }
+
+  int addTableNewRow({required String id}) {
+    final section = getTableById(id);
+    if (section == null) {
+      return -1;
+    }
+
+    final columnCnt = section.tableData.header.length;
+    section.tableData.tableCells.add(List.filled(columnCnt, ""));
+    notifyListeners();
+    return 0;
+  }
+
+  /* テーブルに関しての操作 */
+  int addTableRow({required String id, required List<String> row}) {
+    final section = getTableById(id);
+    if (section == null) {
+      return -1;
+    }
+
+    final columnCnt = section.tableData.header.length;
+    if (row.length != columnCnt) {
+      return -3;
+    }
+
+    section.tableData.tableCells.add(row);
+    notifyListeners();
+    return 0;
+  }
+
   @override
   void dispose() {
     print("ItineraryViewModel was disposed. code=${hashCode}");

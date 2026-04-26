@@ -191,7 +191,10 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                             },
                                           );
                                           if (selectedSection != null) {
+                                            print("selectedSection = ${selectedSection.runtimeType}");
                                             viewModel.addSection(selectedSection);
+                                          } else {
+                                            print("add section canceled");
                                           }
                                         },
                                       ),

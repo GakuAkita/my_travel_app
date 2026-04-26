@@ -6,7 +6,7 @@ abstract final class Routes {
   static const expenses = "/expenses";
   static const settings = "/settings";
 
-  static const itinerary_table_edit = "itinerary_table_edit";
+  static const itinerary_table_edit = "/itinerary_table_edit";
   static const expenses_add_edit = "/expenses_add_edit";
   static const expenses_result = "/expenses_result";
   static const settings_profile = "/settings_profile";
