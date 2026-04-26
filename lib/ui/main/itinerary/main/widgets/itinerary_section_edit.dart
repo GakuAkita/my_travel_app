@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
+import 'package:my_travel_app/ui/main/itinerary/main/widgets/section_edit/itinerary_markdown_edit.dart';
 import 'package:provider/provider.dart';
 
 class ItinerarySectionEdit extends StatelessWidget {
@@ -14,7 +15,7 @@ class ItinerarySectionEdit extends StatelessWidget {
     final section = context.read<ItineraryViewModel>().getSectionById(id);
     switch (section) {
       case MarkdownSection():
-        return Text("MarkdownSection");
+        return ItineraryMarkdownEdit(section_id: id);
       case TableSection():
         return Text("ItinerarySection");
       case SpaceSection():

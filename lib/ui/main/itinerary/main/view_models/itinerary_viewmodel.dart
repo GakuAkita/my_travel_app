@@ -263,6 +263,25 @@ class ItineraryViewModel extends ChangeNotifier {
     return 0;
   }
 
+  int addSection(ItinerarySection section) {
+    _editingItinerarySections.add(section);
+    notifyListeners();
+    return 0;
+  }
+
+  int updateItineraryMarkdownSection({
+    required String sectionId,
+    required String title,
+    required String content,
+  }) {
+    final index = _editingItinerarySections.indexWhere((element) => element.id == sectionId);
+    if (index == -1) return -1;
+
+    _editingItinerarySections[index] = MarkdownSection(id: sectionId, title: title, content: content);
+    notifyListeners();
+    return 0;
+  }
+
   @override
   void dispose() {
     print("ItineraryViewModel was disposed. code=${hashCode}");

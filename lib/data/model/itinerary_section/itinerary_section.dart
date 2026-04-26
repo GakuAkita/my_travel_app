@@ -52,4 +52,13 @@ abstract class ItinerarySection with _$ItinerarySection {
 
     return _$ItinerarySectionFromJson(newJson);
   }
+
+  /* staticでemptyを渡せるようにする */
+  static ItinerarySection emptyMarkdown() =>
+      ItinerarySection.markdown(id: const Uuid().v4(), title: '', content: '');
+
+  static ItinerarySection emptyTable() =>
+      ItinerarySection.table(id: const Uuid().v4(), tableData: ItineraryTable());
+
+  static ItinerarySection emptySpace() => ItinerarySection.space(id: const Uuid().v4());
 }

@@ -36,6 +36,16 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<ItineraryViewModel>();
+    void _updateMarkdown() {
+      viewModel.updateItineraryMarkdownSection(
+        sectionId: widget.section_id,
+        title: _titleController.text,
+        content: _contentController.text,
+      );
+    }
+    /* 2回書くから関数化しているだけ */
+
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -47,7 +57,7 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
                 child: TextField(
                   controller: _titleController,
                   onChanged: (newTitle) {
-                    /* editの中に入れておく */
+                    _updateMarkdown();
                   },
                   decoration: InputDecoration(
                     hintText: "タイトル(空でも可)",
@@ -89,10 +99,7 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
               hintText: "Markdown",
               controller: _contentController,
               onChanged: (newContent) {
-                // itinerarySections.updateSectionContent(
-                //   widget.index,
-                //   newContent,
-                // );
+                _updateMarkdown();
               },
             ),
         ],
