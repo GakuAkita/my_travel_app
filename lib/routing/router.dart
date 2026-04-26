@@ -41,6 +41,7 @@ import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expense
 import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/result/widgets/expense_result_screen.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
+import 'package:my_travel_app/ui/main/itinerary/table_edit/widgets/itinerary_table_edit_screen.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/widgets/group_create_screen.dart';
 import 'package:my_travel_app/ui/main/settings/main/widgets/settings_screen.dart';
@@ -102,10 +103,7 @@ GoRouter createRouter(AppSession session) {
         path: Routes.signUp,
         builder:
             (context, state) => ChangeNotifierProvider(
-              create:
-                  (innerContext) => SignInViewModel(
-                    authRepository: innerContext.read<AuthRepository>(),
-                  ),
+              create: (innerContext) => SignInViewModel(authRepository: innerContext.read<AuthRepository>()),
               child: SignUpScreen(),
             ),
       ),
@@ -113,9 +111,7 @@ GoRouter createRouter(AppSession session) {
         path: Routes.signIn,
         builder:
             (context, state) => ChangeNotifierProvider(
-              create:
-                  (innerContext) =>
-                      SignInViewModel(authRepository: innerContext.read()),
+              create: (innerContext) => SignInViewModel(authRepository: innerContext.read()),
               child: SignInScreen(),
             ),
       ),
@@ -123,10 +119,7 @@ GoRouter createRouter(AppSession session) {
       /* サインアウトしたらShellRouteごと死ぬっぽい。それでよい。 */
       ShellRoute(
         builder: (context, state, child) {
-          return MultiProvider(
-            providers: buildLoggedInProviders(context),
-            child: child,
-          );
+          return MultiProvider(providers: buildLoggedInProviders(context), child: child);
         },
         routes: [
           //AppNavigationBarあり
@@ -137,21 +130,11 @@ GoRouter createRouter(AppSession session) {
             branches: [
               StatefulShellBranch(
                 navigatorKey: itineraryNavigatorKey,
-                routes: [
-                  GoRoute(
-                    path: Routes.itinerary,
-                    builder: (context, state) => ItineraryScreen(),
-                  ),
-                ],
+                routes: [GoRoute(path: Routes.itinerary, builder: (context, state) => ItineraryScreen())],
               ),
               StatefulShellBranch(
                 navigatorKey: expensesNavigatorKey,
-                routes: [
-                  GoRoute(
-                    path: Routes.expenses,
-                    builder: (context, state) => ExpensesScreen(),
-                  ),
-                ],
+                routes: [GoRoute(path: Routes.expenses, builder: (context, state) => ExpensesScreen())],
               ),
               StatefulShellBranch(
                 navigatorKey: settingsNavigatorKey,
@@ -172,6 +155,13 @@ GoRouter createRouter(AppSession session) {
                 ],
               ),
             ],
+          ),
+          GoRoute(
+            path: Routes.itinerary_table_edit,
+            builder: (context, state) {
+              final sectionId = state.extra as String? ?? "";
+              return ItineraryTableEditScreen(sectionId: sectionId);
+            },
           ),
           GoRoute(
             path: Routes.expenses_add_edit,
@@ -228,10 +218,7 @@ GoRouter createRouter(AppSession session) {
               );
             },
           ),
-          GoRoute(
-            path: Routes.settings_version_info,
-            builder: (context, state) => VersionInfoScreen(),
-          ),
+          GoRoute(path: Routes.settings_version_info, builder: (context, state) => VersionInfoScreen()),
           GoRoute(
             path: Routes.settings_create_group,
             builder:
@@ -285,9 +272,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     Provider<UserSettingsRepository>(
       create: (innerContext) {
         print("UserSettingsRepository was created");
-        return UserSettingsRepositoryRealtimeDb(
-          database: FirebaseDatabase.instance,
-        );
+        return UserSettingsRepositoryRealtimeDb(database: FirebaseDatabase.instance);
       },
       dispose: (innerContext, repository) {
         print("UserSettingsRepository was disposed");
@@ -298,9 +283,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     Provider<ExpenseRepository>(
       create: (innerContext) {
         print("ExpenseRepository was created");
-        return ExpenseRepositoryRealtimeDb(
-          firebaseDatabase: FirebaseDatabase.instance,
-        );
+        return ExpenseRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance);
       },
       lazy: false,
       dispose: (innerContext, repository) {
@@ -310,9 +293,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     Provider<ItineraryRepository>(
       create: (innerContext) {
         //print("ItineraryRepository was created");
-        return ItineraryRepositoryRealtimeDb(
-          firebaseDatabase: FirebaseDatabase.instance,
-        );
+        return ItineraryRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance);
       },
       lazy: false,
       dispose: (innerContext, repo) {
@@ -349,10 +330,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         }
 
         // print("ParticipantsRepository was created");
-        return ParticipantsRepositoryRealtimeDb(
-          firebaseDatabase: FirebaseDatabase.instance,
-          userId: userId,
-        );
+        return ParticipantsRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance, userId: userId);
       },
       lazy: false,
       dispose: (innerContext, repo) {
@@ -370,9 +348,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         }
 
         // print("GroupMembersRepository was created");
-        return GroupMembersRepositoryRealtimeDb(
-          firebaseDatabase: FirebaseDatabase.instance,
-        );
+        return GroupMembersRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance);
       },
       lazy: false,
       dispose: (innerContext, repo) {
@@ -380,52 +356,29 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       },
     ),
     Provider<JoinedGroupsRepository>(
-      create:
-          (innerContext) => JoinedGroupsRepositoryRealtimeDb(
-            database: FirebaseDatabase.instance,
-          ),
+      create: (innerContext) => JoinedGroupsRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
     Provider<TravelKeysRepository>(
-      create:
-          (innerContext) => TravelKeysRepositoryRealtimedb(
-            database: FirebaseDatabase.instance,
-          ),
+      create: (innerContext) => TravelKeysRepositoryRealtimedb(database: FirebaseDatabase.instance),
     ),
     Provider<TravelRepository>(
-      create:
-          (innerContext) =>
-              TravelRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+      create: (innerContext) => TravelRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
-    Provider<PlannersRepository>(
-      create: (innerContext) => PlannersRepositoryRealtimeDb(),
-    ),
+    Provider<PlannersRepository>(create: (innerContext) => PlannersRepositoryRealtimeDb()),
     Provider<UsersRepository>(
-      create:
-          (innerContext) =>
-              UsersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+      create: (innerContext) => UsersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
     Provider<GroupCreatorRepository>(
-      create:
-          (innerContext) => GroupCreatorRepositoryRealtimeDb(
-            firebaseDatabase: FirebaseDatabase.instance,
-          ),
+      create: (innerContext) => GroupCreatorRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance),
     ),
     Provider<GroupsRepository>(
-      create:
-          (innerContext) =>
-              GroupsRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+      create: (innerContext) => GroupsRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
     Provider<MoneyExchangeRepository>(
-      create:
-          (innerContext) => MoneyExchangeRepositoryRealtimeDb(
-            database: FirebaseDatabase.instance,
-          ),
+      create: (innerContext) => MoneyExchangeRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
     Provider<BalanceInfoRepository>(
-      create:
-          (innerContext) => BalanceInfoRepositoryRealtimeDb(
-            database: FirebaseDatabase.instance,
-          ),
+      create: (innerContext) => BalanceInfoRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
 
     /// UserCases
@@ -456,10 +409,7 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         final session = ShownTravelSession();
         // print("call initialize for ShownTravelSession");
         /* 最初はここでinitする必要がある */
-        session.initialize(
-          appSession.currentUser!.uid,
-          innerContext.read<UserSettingsRepository>(),
-        );
+        session.initialize(appSession.currentUser!.uid, innerContext.read<UserSettingsRepository>());
         return session;
       },
       lazy: false,
@@ -478,18 +428,14 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ChangeNotifierProvider<ExpenseStore>(
       create:
           /// 参照渡しっぽいので、Store内でtravelSessionを参照すれば最新のtravelSessionになる
-          (innerContext) => ExpenseStore(
-            expenseRepository: innerContext.read(),
-            travelSession: innerContext.read(),
-          ),
+          (innerContext) =>
+              ExpenseStore(expenseRepository: innerContext.read(), travelSession: innerContext.read()),
       lazy: false,
     ),
     ChangeNotifierProvider<ItineraryStore>(
       create:
-          (innerContext) => ItineraryStore(
-            itineraryRepository: innerContext.read(),
-            travelSession: innerContext.read(),
-          ),
+          (innerContext) =>
+              ItineraryStore(itineraryRepository: innerContext.read(), travelSession: innerContext.read()),
       lazy: false,
     ),
     ChangeNotifierProvider(
