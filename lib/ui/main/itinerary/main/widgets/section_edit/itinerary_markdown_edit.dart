@@ -46,61 +46,64 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
     }
     /* 2回書くから関数化しているだけ */
 
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: TextField(
-                controller: _titleController,
-                onChanged: (newTitle) {
-                  _updateMarkdown();
-                },
-                decoration: InputDecoration(
-                  hintText: "タイトル(空でも可)",
-                  hintStyle: TextStyle(color: Colors.white38),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: TextField(
+                  controller: _titleController,
+                  onChanged: (newTitle) {
+                    _updateMarkdown();
+                  },
+                  decoration: InputDecoration(
+                    hintText: "タイトル(空でも可)",
+                    hintStyle: TextStyle(color: Colors.white38),
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(child: Text("Preview", overflow: TextOverflow.ellipsis)),
-                  SimpleSwitch(
-                    width: 50,
-                    height: 30,
-                    isEnabled: _contentController.text.isNotEmpty,
-                    onChanged: (status) {
-                      setState(() {
-                        previewStatus = status;
-                      });
-                    },
-                  ),
-                ],
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(child: Text("Preview", overflow: TextOverflow.ellipsis)),
+                    SimpleSwitch(
+                      width: 50,
+                      height: 30,
+                      isEnabled: _contentController.text.isNotEmpty,
+                      onChanged: (status) {
+                        setState(() {
+                          previewStatus = status;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 4),
-        if (previewStatus && _contentController.text.isNotEmpty)
-          Container(
-            height: 500,
-            decoration: BoxDecoration(border: Border.all(color: Colors.white)),
-            child: Markdown(
-              data: _contentController.text.isNotEmpty ? _contentController.text : "contentがempty",
-            ),
-          )
-        else
-          MultilineTextField(
-            hintText: "Markdown",
-            controller: _contentController,
-            onChanged: (newContent) {
-              _updateMarkdown();
-            },
+            ],
           ),
-      ],
+          SizedBox(height: 4),
+          if (previewStatus && _contentController.text.isNotEmpty)
+            Container(
+              height: 500,
+              decoration: BoxDecoration(border: Border.all(color: Colors.white)),
+              child: Markdown(
+                data: _contentController.text.isNotEmpty ? _contentController.text : "contentがempty",
+              ),
+            )
+          else
+            MultilineTextField(
+              hintText: "Markdown",
+              controller: _contentController,
+              onChanged: (newContent) {
+                _updateMarkdown();
+              },
+            ),
+        ],
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/section_edit/itinerary_markdown_edit.dart';
+import 'package:my_travel_app/ui/main/itinerary/main/widgets/section_edit/itinerary_table_edit_button.dart';
 import 'package:provider/provider.dart';
 
 class ItinerarySectionEdit extends StatelessWidget {
@@ -17,9 +18,17 @@ class ItinerarySectionEdit extends StatelessWidget {
       case MarkdownSection():
         return ItineraryMarkdownEdit(section_id: id);
       case TableSection():
-        return Text("ItinerarySection");
+        return ItineraryTableEditButton(
+          onPressed: () {
+            /* idを渡してTableEditScreenを立ち上が得る */
+          },
+        );
       case SpaceSection():
-        return Text("SpaceSection");
+        return Container(
+          height: 40, // 高さを指定（中央寄せしやすく）
+          alignment: Alignment.center, // ← これで中央寄せ
+          child: Text("空白スペース"),
+        );
     }
     return Text("Unknown section type");
   }
