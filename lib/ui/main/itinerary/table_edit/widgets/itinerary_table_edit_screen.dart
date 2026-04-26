@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:my_travel_app/components/MultilineTextField.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
-import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
 import 'package:my_travel_app/data/model/itinerary_table/itinerary_table.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
@@ -39,6 +40,7 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
   @override
   void dispose() {
     /* 画面から離れるときにViewModelに保存する */
+    final viewModel = context.read<ItineraryViewModel>();
 
     // TODO: implement dispose
     super.dispose();
@@ -46,11 +48,6 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<ItineraryViewModel>();
-    final section = viewModel.getSectionById(widget.sectionId) as TableSection;
-    final tableData = section.tableData;
-    final header = tableData.header;
-    final flexes = tableData.flexes;
     return Scaffold(
       appBar: TopAppBar(automaticallyImplyLeading: true),
       body: Column(
@@ -59,10 +56,10 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(width: 25),
-              ...header.map((head) {
+              SizedBox(width: 45),
+              ..._editingTable.header.map((head) {
                 return Expanded(
-                  flex: flexes[header.indexOf(head)],
+                  flex: _editingTable.flexes[_editingTable.header.indexOf(head)],
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Theme.of(context).colorScheme.primary),
@@ -76,11 +73,65 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
           Expanded(
             child: ReorderableListView.builder(
               buildDefaultDragHandles: false,
-              shrinkWrap: true,
-              itemCount: tableData.tableCells.length,
+              itemCount: _editingTable.tableCells.length,
               onReorder: (oldIndex, newIndex) {},
               itemBuilder: (context, rowIndex) {
-                return Text("aa");
+                final row = _editingTable.tableCells[rowIndex];
+                return Slidable(
+                  key: ValueKey('row_$rowIndex'),
+                  endActionPane: ActionPane(
+                    motion: const ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        onPressed: (_) {
+                          setState(() {
+                            _editingTable.tableCells.removeAt(rowIndex);
+                          });
+                        },
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                        foregroundColor: Theme.of(context).colorScheme.onError,
+                        icon: Icons.delete,
+                        label: "この行を削除",
+                      ),
+                    ],
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 45),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Listener(
+                          onPointerDown: (_) {
+                            /* iconに触れた瞬間にフォーカスを外す */
+                            FocusScope.of(context).unfocus();
+                          },
+                          child: ReorderableDragStartListener(
+                            index: rowIndex,
+                            child: Icon(Icons.drag_handle, size: 45),
+                          ),
+                        ),
+                        ...row.asMap().entries.map((colEntry) {
+                          final colIndex = colEntry.key;
+                          final cell = colEntry.value;
+                          return Expanded(
+                            flex: _editingTable.flexes[colIndex],
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Theme.of(context).colorScheme.primary),
+                              ),
+                              child: MultilineTextField(
+                                hintText: "",
+                                initialText: cell,
+                                onChanged: (val) {},
+                                maxLines: 1,
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
           ),
@@ -91,8 +142,11 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
                 child: RoundedButton(
                   title: "行を追加",
                   onPressed: () {
+                    final newRow = List.filled(_editingTable.header.length, "");
                     /* 固定列を追加 */
-                    viewModel.addTableNewRow(id: widget.sectionId);
+                    setState(() {
+                      _editingTable.tableCells.add(newRow);
+                    });
                   },
                 ),
               ),
