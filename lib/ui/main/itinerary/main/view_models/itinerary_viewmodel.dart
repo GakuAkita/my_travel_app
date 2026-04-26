@@ -63,6 +63,15 @@ class ItineraryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isReordering = false;
+
+  bool get isReordering => _isReordering;
+
+  void setReordering(bool value) {
+    _isReordering = value;
+    notifyListeners();
+  }
+
   bool _isEditLoading = false;
 
   bool get isEditLoading => _isEditLoading;

@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/components/CircleIconButton.dart';
-import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
+import 'package:my_travel_app/ui/main/itinerary/main/widgets/itinerary_section_edit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
+import '../../../../../components/CircleIconButton.dart';
 import '../../../../../components/ValidatedSwitch.dart';
 import '../../../../../constants.dart';
+import '../../../../../data/model/itinerary_section/itinerary_section.dart';
 import 'itinerary_section_display.dart';
 
 class ItineraryScreen extends StatefulWidget {
@@ -54,7 +55,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                   children: [
                     if (viewModel.userRole == UserRole.admin)
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -93,46 +94,64 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                   Expanded(
                                     child: ReorderableListView(
                                       onReorder: viewModel.reorderSection,
+                                      onReorderStart: (_) {
+                                        viewModel.setReordering(true);
+                                      },
+                                      /* sectionのサイズが大きくなっていくとドラッグで順番を変えられなくなる */
+                                      onReorderEnd: (_) {
+                                        viewModel.setReordering(false);
+                                      },
+                                      proxyDecorator: (child, index, animation) {
+                                        final section = viewModel.editingItinerarySections[index];
+                                        return Material(elevation: 6, child: buildDragTile(section));
+                                      },
                                       buildDefaultDragHandles: false,
-                                      /*  */
-                                      children:
-                                          viewModel.editingItinerarySections.asMap().entries.map((entry) {
-                                            /* indexを使いたいのでわざわざMapにする */
-                                            final index = entry.key;
-                                            final section = entry.value;
-                                            return ListTile(
-                                              key: ValueKey(section.id),
-                                              title: Slidable(
-                                                endActionPane: ActionPane(
-                                                  motion: const ScrollMotion(),
-                                                  children: [
-                                                    SlidableAction(
-                                                      onPressed: (_) {
-                                                        final ret = viewModel.removeSection(section.id);
-                                                        if (ret < 0) {
-                                                          /* 削除に失敗。ほとんどないけどね。 */
-                                                        }
-                                                      },
-                                                      backgroundColor: Theme.of(context).colorScheme.error,
-                                                      foregroundColor: Theme.of(context).colorScheme.onError,
-                                                      icon: Icons.delete,
-                                                      label: "delete",
-                                                    ),
-                                                  ],
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    if (viewModel.editingItinerarySections.length >= 2)
-                                                      ReorderableDragStartListener(
-                                                        child: Icon(Icons.drag_handle, size: 50),
-                                                        index: index,
+                                      children: [
+                                        ...viewModel.editingItinerarySections.asMap().entries.map((entry) {
+                                          /* indexを使いたいのでわざわざMapにする */
+                                          final index = entry.key;
+                                          final section = entry.value;
+                                          return ListTile(
+                                            key: ValueKey(section.id),
+                                            title:
+                                                viewModel.isReordering
+                                                    ? Text("Dragging...:${section.id}")
+                                                    : Slidable(
+                                                      endActionPane: ActionPane(
+                                                        motion: const ScrollMotion(),
+                                                        children: [
+                                                          SlidableAction(
+                                                            onPressed: (_) {
+                                                              final ret = viewModel.removeSection(section.id);
+                                                              if (ret < 0) {
+                                                                /* 削除に失敗。ほとんどないけどね。 */
+                                                              }
+                                                            },
+                                                            backgroundColor:
+                                                                Theme.of(context).colorScheme.error,
+                                                            foregroundColor:
+                                                                Theme.of(context).colorScheme.onError,
+                                                            icon: Icons.delete,
+                                                            label: "delete",
+                                                          ),
+                                                        ],
                                                       ),
-                                                    Expanded(child: Text("${section.id}")),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          }).toList(),
+                                                      child: Row(
+                                                        children: [
+                                                          if (viewModel.editingItinerarySections.length >= 2)
+                                                            ReorderableDragStartListener(
+                                                              child: Icon(Icons.drag_handle, size: 50),
+                                                              index: index,
+                                                            ),
+                                                          Expanded(
+                                                            child: ItinerarySectionEdit(id: section.id),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                          );
+                                        }).toList(),
+                                      ],
                                     ),
                                   ),
                                   CircleIconButton(
@@ -218,4 +237,12 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
       ),
     );
   }
+}
+
+Widget buildDragTile(ItinerarySection section) {
+  return Container(
+    height: 60,
+    padding: EdgeInsets.all(12),
+    child: Row(children: [Icon(Icons.drag_handle), SizedBox(width: 8), Text("${section.runtimeType}")]),
+  );
 }
