@@ -117,6 +117,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                       /* editingを転写し、データをリモートに上げる */
                                       final ret = await viewModel.saveItinerarySections();
                                       if (ret.isSuccess) {
+                                        /* editingの内容を本番にコピーするのと、 */
+                                        /* onEditを消しに行く */
                                       } else {
                                         /* スナックバーを出す */
                                         ScaffoldMessenger.of(context).clearSnackBars();
