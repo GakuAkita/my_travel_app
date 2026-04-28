@@ -67,19 +67,72 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                               isEnabled: !viewModel.isEditLoading,
                               /* 複数連続タップ禁止 */
                               onWillChange: (newVal) async {
-                                final ret = await viewModel.switchEditModePreCheckWithNotify(newVal);
-                                if (ret.isSuccess) {
-                                  viewModel.setEditMode(newVal);
-                                  viewModel.copySectionsToBuffer();
-                                  return newVal;
+                                if (newVal) {
+                                  /* offからonにするとき */
+                                  final ret = await viewModel.switchEditModePreCheckWithNotify();
+                                  if (ret.isSuccess) {
+                                    viewModel.setEditMode(newVal);
+                                    viewModel.copySectionsToBuffer();
+                                    return newVal;
+                                  } else {
+                                    print("${ret.error?.errorMessage}");
+                                    viewModel.setEditMode(!newVal);
+                                    ScaffoldMessenger.of(context).clearSnackBars();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(ret.error?.errorMessage ?? "Unknown error")),
+                                    );
+                                    return !newVal; /* 変更せずの元の状態を保持 */
+                                  }
                                 } else {
-                                  print("${ret.error?.errorMessage}");
-                                  viewModel.setEditMode(!newVal);
-                                  ScaffoldMessenger.of(context).clearSnackBars();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(ret.error?.errorMessage ?? "Unknown error")),
+                                  /* 保存するか */
+                                  final bool? confirm = await showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder:
+                                        (context) => AlertDialog(
+                                          title: Text("保存しますか？"),
+                                          content: Text("データを保存してから切り替えますか?\n編集を続けたい場合はポップアップ外をタップしてください"),
+                                          actions: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () => context.pop(false),
+                                                  child: Text("保存せずに閉じる"),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () => context.pop(true),
+                                                  child: Text("保存する"),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                   );
-                                  return !newVal; /* 変更せずの元の状態を保持 */
+                                  if (confirm == null) {
+                                    print("switch EditMode Canceled");
+                                    return !newVal;
+                                  } else {
+                                    if (confirm) {
+                                      /* editingを転写し、データをリモートに上げる */
+                                      final ret = await viewModel.saveItinerarySections();
+                                      if (ret.isSuccess) {
+                                      } else {
+                                        /* スナックバーを出す */
+                                        ScaffoldMessenger.of(context).clearSnackBars();
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(ret.error?.errorMessage ?? "Unknown error")),
+                                        );
+                                        return !newVal;
+                                      }
+                                    } else {
+                                      /* 保存せずに閉じるので、editingの内容はそのままにして捨てる */
+                                      print("Switch to editMode off without saving itinerary");
+                                    }
+                                    viewModel.setEditMode(newVal);
+                                    /* onEditを消す */
+                                    return newVal;
+                                  }
                                 }
                               },
                             ),

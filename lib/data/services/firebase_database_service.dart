@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/core/utils/normalize.dart';
 import 'package:my_travel_app/data/model/identifiable.dart';
 import 'package:my_travel_app/data/model/timestamped.dart';
@@ -50,8 +51,7 @@ class FirebaseDatabaseService<T> {
     final snapshot = await _database.ref(path).get();
     if (!snapshot.exists || snapshot.value == null) return null;
 
-    final normalized =
-        normalizeMapStructure(snapshot.value) as Map<String, dynamic>;
+    final normalized = normalizeMapStructure(snapshot.value) as Map<String, dynamic>;
     return fromJson(normalized);
   }
 
@@ -60,8 +60,7 @@ class FirebaseDatabaseService<T> {
     final snapshot = await _database.ref(path).get();
     if (!snapshot.exists || snapshot.value == null) return {};
 
-    final normalized =
-        normalizeMapStructure(snapshot.value) as Map<String, dynamic>;
+    final normalized = normalizeMapStructure(snapshot.value) as Map<String, dynamic>;
 
     return normalized.map((key, value) {
       final item = fromJson(value as Map<String, dynamic>);
@@ -78,10 +77,7 @@ class FirebaseDatabaseService<T> {
     // Listの場合
     if (value is List) {
       /* これ順番守ってくれるかな、、 */
-      return value
-          .where((e) => e != null)
-          .map((e) => fromJson(Map<String, dynamic>.from(e)))
-          .toList();
+      return value.where((e) => e != null).map((e) => fromJson(Map<String, dynamic>.from(e))).toList();
     }
 
     // Mapの場合（Firebaseあるある）
@@ -94,7 +90,7 @@ class FirebaseDatabaseService<T> {
     }
 
     // 想定外
-    return [];
+    throw AppException("Unexpected value type: ${value}");
   }
 
   Future<void> delete() async {
@@ -150,8 +146,7 @@ class FirebaseDatabaseService<T> {
   }
 }
 
-extension FirebaseDatabaseServiceExtension<T extends Identifiable>
-    on FirebaseDatabaseService<T> {
+extension FirebaseDatabaseServiceExtension<T extends Identifiable> on FirebaseDatabaseService<T> {
   Future<T> addAuto(T item) async {
     final ref = _database.ref(path).push();
     final key = ref.key!;

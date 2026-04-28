@@ -31,7 +31,7 @@ TableSection _$TableSectionFromJson(Map<String, dynamic> json) => TableSection(
 Map<String, dynamic> _$TableSectionToJson(TableSection instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'tableData': instance.tableData,
+      'tableData': instance.tableData.toJson(),
       'runtimeType': instance.$type,
     };
 

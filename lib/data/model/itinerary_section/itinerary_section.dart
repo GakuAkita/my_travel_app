@@ -13,6 +13,7 @@ abstract class ItinerarySection with _$ItinerarySection {
     required String content,
   }) = MarkdownSection;
 
+  @JsonSerializable(explicitToJson: true)
   const factory ItinerarySection.table({required String id, required ItineraryTable tableData}) =
       TableSection;
 

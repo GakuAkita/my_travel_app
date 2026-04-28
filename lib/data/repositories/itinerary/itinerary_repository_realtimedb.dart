@@ -1,5 +1,4 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/firebase_database_paths.dart';
 import 'package:my_travel_app/data/model/itinerary_on_edit/itinerary_on_edit.dart';
 import 'package:my_travel_app/data/services/firebase_database_service.dart';
@@ -19,20 +18,14 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
   }) {
     return FirebaseDatabaseService(
       database: _firebaseDatabase,
-      path:
-          FirebaseDatabasePaths.group(
-            groupId,
-          ).travels.travel(travelId).itinerary.sections.toString(),
+      path: FirebaseDatabasePaths.group(groupId).travels.travel(travelId).itinerary.sections.toString(),
       fromJson: ItinerarySection.fromJson,
       toJson: (e) => e.toJson(),
     );
   }
 
   @override
-  Stream<List<ItinerarySection>> watchItinerarySections({
-    required String groupId,
-    required String travelId,
-  }) {
+  Stream<List<ItinerarySection>> watchItinerarySections({required String groupId, required String travelId}) {
     final service = _sectionsService(groupId: groupId, travelId: travelId);
     return service.streamList();
   }
@@ -43,7 +36,8 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
     required String travelId,
   }) async {
     // TODO: implement getItinerarySections
-    throw AppException("Not implemented yet!");
+    final service = _sectionsService(groupId: groupId, travelId: travelId);
+    return service.getList();
   }
 
   @override
@@ -53,7 +47,11 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
     required List<ItinerarySection> sections,
   }) async {
     // TODO: implement saveItinerarySections
-    throw AppException("No implemented yet!");
+    final service = _sectionsService(groupId: groupId, travelId: travelId);
+    /* Firebaseではmapに変換しないとだめ */
+    /* でも、getするときはキーが0,1,...になっていればList扱いにしてくれるっぽい。 */
+    final map = {for (int i = 0; i < sections.length; i++) i.toString(): sections[i]};
+    await service.setAll(map);
   }
 
   FirebaseDatabaseService<ItineraryOnEdit> _onEditService({
@@ -62,20 +60,14 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
   }) {
     return FirebaseDatabaseService(
       database: _firebaseDatabase,
-      path:
-          FirebaseDatabasePaths.group(
-            groupId,
-          ).travels.travel(travelId).itinerary.onEdit.toString(),
+      path: FirebaseDatabasePaths.group(groupId).travels.travel(travelId).itinerary.onEdit.toString(),
       fromJson: ItineraryOnEdit.fromJson,
       toJson: (e) => e.toJson(),
     );
   }
 
   @override
-  Future<ItineraryOnEdit?> getItineraryOnEdit({
-    required String groupId,
-    required String travelId,
-  }) async {
+  Future<ItineraryOnEdit?> getItineraryOnEdit({required String groupId, required String travelId}) async {
     final service = _onEditService(groupId: groupId, travelId: travelId);
     return service.get();
   }
@@ -91,10 +83,7 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
   }
 
   @override
-  Future<void> removeItineraryOnEdit({
-    required String groupId,
-    required String travelId,
-  }) async {
+  Future<void> removeItineraryOnEdit({required String groupId, required String travelId}) async {
     final service = _onEditService(groupId: groupId, travelId: travelId);
     await service.delete();
   }

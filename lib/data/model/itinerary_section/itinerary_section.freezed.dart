@@ -322,8 +322,8 @@ as String,
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class TableSection implements ItinerarySection {
   const TableSection({required this.id, required this.tableData, final  String? $type}): $type = $type ?? 'table';
   factory TableSection.fromJson(Map<String, dynamic> json) => _$TableSectionFromJson(json);
