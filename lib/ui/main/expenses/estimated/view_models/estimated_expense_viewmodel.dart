@@ -28,6 +28,8 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
 
   List<EstimatedExpenseInfo> get estimatedExpenseListFromItinerary => _estimatedExpenseListFromItinerary;
 
+  List<EstimatedExpenseInfo> _estimatedExpenseListFromManual = [];
+
   EstimatedExpenseViewModel({
     required ShownTravelSession travelSession,
     required ItineraryStore itineraryStore,
@@ -105,6 +107,8 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: "Something went wrong with the store"));
     }
   }
+
+  /* Repository */
 
   @override
   void dispose() {
