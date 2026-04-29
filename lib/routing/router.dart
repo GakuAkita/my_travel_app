@@ -208,6 +208,7 @@ GoRouter createRouter(AppSession session) {
                     (innerContext) => TravelSelectViewModel(
                       appSession: innerContext.read(),
                       travelSession: innerContext.read(),
+                      itineraryStore: innerContext.read(),
                       getUserTravelsUseCase: innerContext.read(),
                       userSettingsRepository: innerContext.read(),
                       groupMembersRepository: innerContext.read(),

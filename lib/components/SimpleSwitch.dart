@@ -32,13 +32,13 @@ class _SimpleSwitchState extends State<SimpleSwitch> {
     super.initState();
     _isExternalController = widget.controller != null;
 
-    print("is external controller?? $_isExternalController");
+    //print("is external controller?? $_isExternalController");
 
     if (_isExternalController) {
       //外部コントローラがある場合は、そっちを優先
       _internalController = widget.controller!;
     } else {
-      print("Generate controller!! initialValue:${widget.initialValue}");
+      //print("Generate controller!! initialValue:${widget.initialValue}");
       //外部コントローラがない場合は、パラーメターを優先
       _internalController = ValueNotifier<bool>(widget.initialValue);
     }

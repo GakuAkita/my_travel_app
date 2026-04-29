@@ -55,12 +55,10 @@ class ItineraryViewModel extends ChangeNotifier {
     return _roleState.data;
   }
 
-  bool _editMode = false;
-
-  bool get editMode => _editMode;
+  bool get editMode => _itineraryStore.editMode;
 
   void setEditMode(bool value) {
-    _editMode = value;
+    _itineraryStore.setEditMode(value);
     notifyListeners();
   }
 
@@ -217,7 +215,7 @@ class ItineraryViewModel extends ChangeNotifier {
     }
     try {
       await _itineraryRepository.removeItineraryOnEdit(
-        groupId: _travelSession.currentTravel!.travelId!,
+        groupId: _travelSession.currentTravel!.groupId!,
         travelId: _travelSession.currentTravel!.travelId!,
       );
       return ResultInfo.success();

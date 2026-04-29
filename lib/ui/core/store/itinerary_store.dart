@@ -28,6 +28,14 @@ class ItineraryStore extends ChangeNotifier {
 
   StreamSubscription<List<ItinerarySection>>? _subscription;
 
+  bool _editMode = false;
+
+  bool get editMode => _editMode;
+
+  void setEditMode(bool value) {
+    _editMode = value; /* notifyはViewModelが側でやる */
+  }
+
   String? _groupId;
   String? _travelId;
 

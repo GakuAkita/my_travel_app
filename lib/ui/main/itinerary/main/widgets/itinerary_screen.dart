@@ -118,8 +118,6 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                       final ret = await viewModel.saveItinerarySections();
                                       if (ret.isSuccess) {
                                         /* watchでItineraryStoreで自動で更新される。 */
-
-                                        /* onEditを消しに行く */
                                       } else {
                                         /* スナックバーを出す */
                                         ScaffoldMessenger.of(context).clearSnackBars();
@@ -132,6 +130,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                       /* 保存せずに閉じるので、editingの内容はそのままにして捨てる */
                                       print("Switch to editMode off without saving itinerary");
                                     }
+                                    /* onEditを消しに行く */
+                                    await viewModel.removeItineraryOnEdit(); /* エラーチェックはいいや */
                                     viewModel.setEditMode(newVal);
                                     /* onEditを消す */
                                     return newVal;

@@ -46,7 +46,10 @@ class TravelSelectScreen extends StatelessWidget {
                               if (ret.isSuccess) {
                                 context.pop();
                               } else {
-                                /* Scaffold */
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
                               }
                             },
                           ),
@@ -66,14 +69,9 @@ class TravelSelectScreen extends StatelessWidget {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        final core =
-                            viewModel
-                                .selectableParticipants[index]
-                                .traveler
-                                .core;
+                        final core = viewModel.selectableParticipants[index].traveler.core;
                         return CheckboxListTile(
-                          value:
-                              viewModel.selectableParticipants[index].isChecked,
+                          value: viewModel.selectableParticipants[index].isChecked,
                           onChanged: (val) {
                             viewModel.switchChecked(index);
                           },
@@ -89,17 +87,13 @@ class TravelSelectScreen extends StatelessWidget {
                         final ret = await viewModel.setParticipants();
                         if (ret.isSuccess) {
                           ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text("更新しました")));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("更新しました")));
                           context.pop();
                         } else {
                           ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("${ret.error?.errorMessage}"),
-                            ),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
                         }
                       },
                     ),
@@ -136,19 +130,13 @@ class SelectTravelWidget extends StatelessWidget {
                       ...groupEntry.value.entries.map((travelEntry) {
                         final travelId = travelEntry.key;
                         final travelName = travelEntry.value;
-                        return RadioListTile(
-                          value: travelId,
-                          title: Text(travelName),
-                        );
+                        return RadioListTile(value: travelId, title: Text(travelName));
                       }),
                     ],
                   );
                 }).toList(),
           ),
         )
-        : /* 取れたけどまだ旅行が作られていない */ Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text("旅行が作成されていません。"),
-        );
+        : /* 取れたけどまだ旅行が作られていない */ Padding(padding: const EdgeInsets.all(8.0), child: Text("旅行が作成されていません。"));
   }
 }

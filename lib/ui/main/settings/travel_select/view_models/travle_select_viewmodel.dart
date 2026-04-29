@@ -9,6 +9,7 @@ import 'package:my_travel_app/data/repositories/user_settings/user_settings_repo
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
+import 'package:my_travel_app/ui/core/store/itinerary_store.dart';
 import 'package:my_travel_app/ui/main/expenses/selectable_traveler.dart';
 
 import '../../../../../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
@@ -17,6 +18,7 @@ class TravelSelectViewModel extends ChangeNotifier {
   final GetUserTravelsUseCase _getUserTravelsUseCase;
   final AppSession _appSession;
   final ShownTravelSession _travelSession;
+  final ItineraryStore _itineraryStore;
   final UserSettingsRepository _userSettingsRepository;
   final String? userRole;
   final GroupMembersRepository _groupMembersRepository;
@@ -25,6 +27,7 @@ class TravelSelectViewModel extends ChangeNotifier {
   TravelSelectViewModel({
     required AppSession appSession,
     required ShownTravelSession travelSession,
+    required ItineraryStore itineraryStore,
     required GetUserTravelsUseCase getUserTravelsUseCase,
     required UserSettingsRepository userSettingsRepository,
     required GroupMembersRepository groupMembersRepository,
@@ -33,6 +36,7 @@ class TravelSelectViewModel extends ChangeNotifier {
   }) : _getUserTravelsUseCase = getUserTravelsUseCase,
        _appSession = appSession,
        _travelSession = travelSession,
+       _itineraryStore = itineraryStore,
        _userSettingsRepository = userSettingsRepository,
        _groupMembersRepository = groupMembersRepository,
        _participantsRepository = participantsRepository {
@@ -51,8 +55,7 @@ class TravelSelectViewModel extends ChangeNotifier {
 
   List<SelectableTraveler> _selectableParticipants = [];
 
-  List<SelectableTraveler> get selectableParticipants =>
-      _selectableParticipants;
+  List<SelectableTraveler> get selectableParticipants => _selectableParticipants;
 
   Future<void> initialize() async {
     _selectedTravelId = _travelSession.currentTravel?.travelId;
@@ -69,6 +72,10 @@ class TravelSelectViewModel extends ChangeNotifier {
   }
 
   ResultInfo switchToSelectedTravel() {
+    if (_itineraryStore.editMode) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "しおりがプランナーモードになっています。編集を終わらせてから表示旅行を変えてください"));
+    }
+
     /* 選択されているtravelIdをもつgroupIdを取ってきて、ShownTravelを作る */
     final travelId = _selectedTravelId;
     if (travelId == null) {
@@ -87,21 +94,14 @@ class TravelSelectViewModel extends ChangeNotifier {
       }
     }
     if (groupId == null) {
-      return ResultInfo.failed(
-        error: ErrorInfo(
-          errorMessage: "旅行IDからグループIDを取得できませんでした。おそらくコーディングエラーです。",
-        ),
-      );
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "旅行IDからグループIDを取得できませんでした。おそらくコーディングエラーです。"));
     }
 
     final newTravel = ShownTravelBasic(groupId: groupId, travelId: travelId);
     _travelSession.setShownTravel(newTravel);
 
     /// awaitはしない
-    _userSettingsRepository.setShownTravel(
-      _appSession.currentUser!.uid,
-      newTravel,
-    );
+    _userSettingsRepository.setShownTravel(_appSession.currentUser!.uid, newTravel);
     /* ShownTravelを設定する */
     return ResultInfo.success();
   }
@@ -149,15 +149,12 @@ class TravelSelectViewModel extends ChangeNotifier {
     bool doneNotify = false;
     if (_cachedGroupMembers[groupId] == null) {
       try {
-        _cachedGroupMembers[groupId] = await _groupMembersRepository
-            .getAllGroupMembers(groupId);
+        _cachedGroupMembers[groupId] = await _groupMembersRepository.getAllGroupMembers(groupId);
 
         if (localTravelId == _selectedTravelId) {
           /* 非同期処理中にユーザーが別の旅行を選択してしまった場合はおかしくなるので、ここでチェックをいれる */
           /* 変わっていなかったら値をいれる */
-          _selectableParticipants = createSelectableParticipants(
-            _cachedGroupMembers[groupId]!,
-          );
+          _selectableParticipants = createSelectableParticipants(_cachedGroupMembers[groupId]!);
           doneNotify = true;
           notifyListeners();
         } else {}
@@ -169,25 +166,16 @@ class TravelSelectViewModel extends ChangeNotifier {
       if (!doneNotify) {
         print("All ready loaded ${groupId}");
         /* 初回ですでにnotifyしている場合はいらない */
-        _selectableParticipants = createSelectableParticipants(
-          _cachedGroupMembers[groupId]!,
-        );
+        _selectableParticipants = createSelectableParticipants(_cachedGroupMembers[groupId]!);
         notifyListeners();
       }
     }
   }
 
-  List<SelectableTraveler> createSelectableParticipants(
-    Map<String, TravelerCore> gMembers,
-  ) {
+  List<SelectableTraveler> createSelectableParticipants(Map<String, TravelerCore> gMembers) {
     print("createSelectableParticipants called");
     return gMembers.entries
-        .map(
-          (entry) => SelectableTraveler(
-            traveler: TravelerBasic(core: entry.value),
-            isChecked: true,
-          ),
-        )
+        .map((entry) => SelectableTraveler(traveler: TravelerBasic(core: entry.value), isChecked: true))
         .toList();
   }
 
@@ -200,9 +188,7 @@ class TravelSelectViewModel extends ChangeNotifier {
 
   Future<ResultInfo> setParticipants() async {
     if (_selectableParticipants.length == 0) {
-      return ResultInfo.failed(
-        error: ErrorInfo(errorMessage: "参加者候補リストがロードされていません"),
-      );
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "参加者候補リストがロードされていません"));
     }
 
     if (_selectedTravelId == null) {
@@ -224,9 +210,7 @@ class TravelSelectViewModel extends ChangeNotifier {
         }
       }
       if (participants.isEmpty) {
-        return ResultInfo.failed(
-          error: ErrorInfo(errorMessage: "参加者を選択してください"),
-        );
+        return ResultInfo.failed(error: ErrorInfo(errorMessage: "参加者を選択してください"));
       }
       ;
       await _participantsRepository.saveAllTravelers(
