@@ -57,19 +57,13 @@ class ItineraryStore extends ChangeNotifier {
       }
 
       /* travelIdがnullの場合はここまで来ない */
-      _refreshItinerarySections(
-        travel: _travelSession.currentTravel!,
-        isLoadingNotify: true,
-      );
+      _refreshItinerarySections(travel: _travelSession.currentTravel!, isLoadingNotify: true);
     } catch (e) {
       print("Error in ItineraryStore: ${e.toString()}");
     }
   }
 
-  void _refreshItinerarySections({
-    required ShownTravelBasic travel,
-    bool isLoadingNotify = true,
-  }) async {
+  void _refreshItinerarySections({required ShownTravelBasic travel, bool isLoadingNotify = true}) async {
     if (!checkIsShownTravelValid(travel).isSuccess) {
       _itinerarySections = DataState(
         isLoading: false,
@@ -81,9 +75,7 @@ class ItineraryStore extends ChangeNotifier {
     if (!_subscriptionFirst && _storeInitialized) {
       /* なんでこのブロックが必要か忘れてしまった、、 */
       /* 複数回呼ばれたときの対策か。 */
-      print(
-        "Store is already initialized and subscription doesn't arrive yet.",
-      );
+      print("Store is already initialized and subscription doesn't arrive yet.");
       return;
     }
 
@@ -100,16 +92,14 @@ class ItineraryStore extends ChangeNotifier {
         .watchItinerarySections(groupId: _groupId!, travelId: _travelId!)
         .listen(
           (data) {
+            print("Listened ItineraryRepository data updated.");
             _itinerarySections = DataState(data: data, isLoading: false);
             _subscriptionFirst = true;
             notifyListeners();
           },
           onError: (e) {
             print("Error in ItineraryStore: ${e.toString()}");
-            _itinerarySections = DataState(
-              isLoading: false,
-              error: ErrorInfo(errorMessage: e.toString()),
-            );
+            _itinerarySections = DataState(isLoading: false, error: ErrorInfo(errorMessage: e.toString()));
             _subscriptionFirst = true;
             notifyListeners();
           },

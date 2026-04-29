@@ -102,6 +102,7 @@ class ItineraryViewModel extends ChangeNotifier {
 
   void _travelSessionChanged() {
     /* editModeを強制的にオフにする */
+    setEditMode(false);
   }
 
   void _itinerarySync() {
@@ -109,6 +110,7 @@ class ItineraryViewModel extends ChangeNotifier {
       if (_itineraryStore.itinerarySections.hasError) {
         print("エラーを出したい");
       } else if (_itineraryStore.itinerarySections.hasData) {
+        print("The most recent ItinerarySections are watched.");
         _itinerarySections = _itineraryStore.itinerarySections.data!;
       } else {
         /* エラーでもないけどdataがない */
@@ -132,28 +134,6 @@ class ItineraryViewModel extends ChangeNotifier {
   void _travelScopeSync() {
     try {} finally {
       notifyListeners();
-    }
-  }
-
-  Future<ResultInfo<void>> saveItinerary() async {
-    /* ローカルの中のitineraryを保存する */
-    return ResultInfo.success();
-  }
-
-  Future<ResultInfo<void>> saveItineraryForTravel(
-    String groupId,
-    String travelId,
-    List<ItinerarySection> sections /* dynamicでいいのか？？ */,
-  ) async {
-    try {
-      await _itineraryRepository.saveItinerarySections(
-        groupId: groupId,
-        travelId: travelId,
-        sections: sections,
-      );
-      return ResultInfo.success();
-    } catch (e) {
-      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
 
@@ -228,6 +208,22 @@ class ItineraryViewModel extends ChangeNotifier {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: "編集状態の設定に失敗しました"));
     }
     return ResultInfo.success();
+  }
+
+  Future<ResultInfo> removeItineraryOnEdit() async {
+    if (_travelSession.currentTravel == null) {
+      /* ここに来ることは基本ない */
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "Invalid Travel"));
+    }
+    try {
+      await _itineraryRepository.removeItineraryOnEdit(
+        groupId: _travelSession.currentTravel!.travelId!,
+        travelId: _travelSession.currentTravel!.travelId!,
+      );
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
   }
 
   Future<ResultInfo> saveItinerarySections() async {
