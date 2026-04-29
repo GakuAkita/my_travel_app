@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/top_app_bar.dart';
+
 class EstimatedExpenseScreen extends StatefulWidget {
   const EstimatedExpenseScreen({super.key});
 
@@ -9,7 +11,15 @@ class EstimatedExpenseScreen extends StatefulWidget {
 
 class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    /* 計算する */
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(appBar: TopAppBar(automaticallyImplyLeading: true), body: Column());
   }
 }

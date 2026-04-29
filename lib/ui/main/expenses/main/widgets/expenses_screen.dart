@@ -75,14 +75,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                 title: "費用概算",
                                 onPressed: () {
                                   print("まだ実装されていません");
-                                  // for (final i
-                                  //     in viewModel.allGroupMembers.entries) {
-                                  //   print("${i.value.profile_name}");
-                                  // }
-                                  // Navigator.pushNamed(
-                                  //   context,
-                                  //   EstimatedExpenseScreen.id,
-                                  // );
+                                  context.push(Routes.estimated_expense);
                                 },
                               ),
                             ],
@@ -95,21 +88,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               itemCount: viewModel.allExpensesList().length,
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
-                                final expense =
-                                    viewModel.allExpensesList()[index];
+                                final expense = viewModel.allExpensesList()[index];
                                 return ExpenseTile(
                                   expense: expense,
-                                  members:
-                                      viewModel.allGroupMembers ??
-                                      {} /* viewModel内でStateを監視して取る */,
+                                  members: viewModel.allGroupMembers ?? {} /* viewModel内でStateを監視して取る */,
                                   onTap: () {
-                                    print(
-                                      "onTap called. Expense Id = ${expense.id}",
-                                    );
-                                    context.push(
-                                      Routes.expenses_add_edit,
-                                      extra: expense.id,
-                                    );
+                                    print("onTap called. Expense Id = ${expense.id}");
+                                    context.push(Routes.expenses_add_edit, extra: expense.id);
                                   },
                                 );
                               },
@@ -119,9 +104,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     ],
                   ),
                 )
-                : Center(
-                  child: BasicText(text: "Settings画面より表示旅行を選択してください。"),
-                ) /* travelが選択されていない */,
+                : Center(child: BasicText(text: "Settings画面より表示旅行を選択してください。")) /* travelが選択されていない */,
       ),
     );
   }

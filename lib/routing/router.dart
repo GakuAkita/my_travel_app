@@ -207,6 +207,7 @@ GoRouter createRouter(AppSession session) {
                     (innerContext) => EstimatedExpenseViewModel(
                       travelSession: innerContext.read(),
                       itineraryStore: innerContext.read(),
+                      travelScopeStore: innerContext.read(),
                     ),
                 child: EstimatedExpenseScreen(),
               );
