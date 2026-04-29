@@ -26,8 +26,7 @@ class FirebaseDatabasePaths {
 
   static UserPath user(String userId) => UserPath(users.child(userId));
 
-  static GroupKey groupKey(String groupId) =>
-      GroupKey(groupKeys.child(groupId));
+  static GroupKey groupKey(String groupId) => GroupKey(groupKeys.child(groupId));
 }
 
 class GroupKey extends PathNode {
@@ -105,7 +104,6 @@ class ExpensesPath extends PathNode {
   ExpensesPath(String parentPath) : super("$parentPath/expenses");
 
   final String _exchangesStr = "exchanges";
-  final String _estimatedStr = "estimated";
   final String _dataStr = "data";
 
   String get data => child(_dataStr);
@@ -117,6 +115,8 @@ class ExpensesPath extends PathNode {
   String get exchanges => child("$_exchangesStr/result");
 
   String get lastUpdated => child("$_exchangesStr/lastUpdated");
+
+  String get estimated => child("estimated");
 }
 
 class ItineraryPath extends PathNode {

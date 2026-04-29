@@ -50,8 +50,7 @@ class ItineraryRepositoryRealtimeDb implements ItineraryRepository {
     final service = _sectionsService(groupId: groupId, travelId: travelId);
     /* Firebaseではmapに変換しないとだめ */
     /* でも、getするときはキーが0,1,...になっていればList扱いにしてくれるっぽい。 */
-    final map = {for (int i = 0; i < sections.length; i++) i.toString(): sections[i]};
-    await service.setAll(map);
+    await service.setList(sections);
   }
 
   FirebaseDatabaseService<ItineraryOnEdit> _onEditService({
