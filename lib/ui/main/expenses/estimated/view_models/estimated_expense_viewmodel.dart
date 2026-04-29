@@ -30,6 +30,8 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
 
   List<EstimatedExpenseInfo> _estimatedExpenseListFromManual = [];
 
+  List<EstimatedExpenseInfo> get estimatedExpenseListFromManual => _estimatedExpenseListFromManual;
+
   EstimatedExpenseViewModel({
     required ShownTravelSession travelSession,
     required ItineraryStore itineraryStore,
