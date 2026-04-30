@@ -5,7 +5,7 @@ inputs:
   flutter-version:
     description: 'Flutter version to use'
     required: true
-    default: '3.29.2'
+    default: '3.41.8'
   google-service-json:
     description: 'Base64 encoded Google Services JSON'
     required: true
