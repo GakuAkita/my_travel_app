@@ -2,9 +2,9 @@ name: Build Android App
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
+    # push:
+    #   branches:
+    #     - main
 
 jobs:
   build:
@@ -24,7 +24,6 @@ jobs:
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter
         with:
-          flutter-version: "3.29.2"
           google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           env-file-content: ${{ secrets.ENV_FILE }}
 
@@ -45,5 +44,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: travel_app_${{ steps.version_tag.outputs.build_version }}.apk
-          path: build/app/outputs/flutter-apk/travel_app_${{ steps.version_tag.outputs.build_version }}.apk
+          path: build/app/outputs/flutter-apk/travel_app_${{
+            steps.version_tag.outputs.build_version }}.apk
           retention-days: 1
