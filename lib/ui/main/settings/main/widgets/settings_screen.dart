@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/SettingMenuBar.dart';
 import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/routing/routes.dart';
-import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
+import 'package:my_travel_app/ui/main/settings/main/view_models/settings_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {

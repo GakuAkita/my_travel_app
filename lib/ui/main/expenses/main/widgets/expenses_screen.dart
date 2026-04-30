@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/routing/routes.dart';
-import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
+import 'package:my_travel_app/ui/main/expenses/main/view_models/expenses_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
