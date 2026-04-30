@@ -35,9 +35,6 @@ import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
 import 'package:my_travel_app/ui/core/store/itinerary_store.dart';
-import 'package:my_travel_app/ui/main/Expenses/main/view_models/expenses_viewmodel.dart';
-import 'package:my_travel_app/ui/main/Expenses/main/widgets/expenses_screen.dart';
-import 'package:my_travel_app/ui/main/Settings/main/view_models/settings_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expenses_screen.dart';
 import 'package:my_travel_app/ui/main/expenses/estimated/view_models/estimated_expense_viewmodel.dart';
@@ -68,7 +65,10 @@ import '../data/repositories/money_exchange/money_exchange_repository_realtimedb
 import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/core/store/travel_scope_store.dart';
 import '../ui/main/app_navigation_bar.dart';
+import '../ui/main/expenses/main/view_models/expenses_viewmodel.dart';
+import '../ui/main/expenses/main/widgets/expenses_screen.dart';
 import '../ui/main/itinerary/main/widgets/itinerary_screen.dart';
+import '../ui/main/settings/main/view_models/settings_viewmodel.dart';
 import '../ui/main/settings/travel_create/widgets/travel_create_screen.dart';
 import '../ui/start/sign_in/widgets/sign_in_screen.dart';
 import '../ui/start/start/widgets/start_screen.dart';
@@ -105,19 +105,17 @@ GoRouter createRouter(AppSession session) {
       GoRoute(path: Routes.start, builder: (context, state) => StartScreen()),
       GoRoute(
         path: Routes.signUp,
-        builder:
-            (context, state) => ChangeNotifierProvider(
-              create: (innerContext) => SignInViewModel(authRepository: innerContext.read<AuthRepository>()),
-              child: SignUpScreen(),
-            ),
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (innerContext) => SignInViewModel(authRepository: innerContext.read<AuthRepository>()),
+          child: SignUpScreen(),
+        ),
       ),
       GoRoute(
         path: Routes.signIn,
-        builder:
-            (context, state) => ChangeNotifierProvider(
-              create: (innerContext) => SignInViewModel(authRepository: innerContext.read()),
-              child: SignInScreen(),
-            ),
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (innerContext) => SignInViewModel(authRepository: innerContext.read()),
+          child: SignInScreen(),
+        ),
       ),
       /* ログイン後 */
       /* サインアウトしたらShellRouteごと死ぬっぽい。それでよい。 */
@@ -145,16 +143,14 @@ GoRouter createRouter(AppSession session) {
                 routes: [
                   GoRoute(
                     path: Routes.settings,
-                    builder:
-                        (context, state) => ChangeNotifierProvider(
-                          create:
-                              (innerContext) => SettingsViewModel(
-                                authRepository: innerContext.read(),
-                                userSettingsRepository: innerContext.read(),
-                                appSession: innerContext.read(),
-                              ),
-                          child: SettingsScreen(),
-                        ),
+                    builder: (context, state) => ChangeNotifierProvider(
+                      create: (innerContext) => SettingsViewModel(
+                        authRepository: innerContext.read(),
+                        userSettingsRepository: innerContext.read(),
+                        appSession: innerContext.read(),
+                      ),
+                      child: SettingsScreen(),
+                    ),
                   ),
                 ],
               ),
@@ -172,15 +168,14 @@ GoRouter createRouter(AppSession session) {
             builder: (context, state) {
               final expenseId = state.extra as String?;
               return ChangeNotifierProvider(
-                create:
-                    (innerContext) => AddEditExpenseViewModel(
-                      expenseId: expenseId,
-                      expenseRepository: innerContext.read(),
-                      expenseStore: innerContext.read(),
-                      travelScopeStore: innerContext.read(),
-                      travelSession: innerContext.read(),
-                      appSession: innerContext.read(),
-                    ),
+                create: (innerContext) => AddEditExpenseViewModel(
+                  expenseId: expenseId,
+                  expenseRepository: innerContext.read(),
+                  expenseStore: innerContext.read(),
+                  travelScopeStore: innerContext.read(),
+                  travelSession: innerContext.read(),
+                  appSession: innerContext.read(),
+                ),
                 child: AddEditExpenseScreen(),
               );
             },
@@ -189,14 +184,13 @@ GoRouter createRouter(AppSession session) {
             path: Routes.expenses_result,
             builder: (context, state) {
               return ChangeNotifierProvider(
-                create:
-                    (innerContext) => ExpenseResultViewModel(
-                      expenseStore: innerContext.read(),
-                      travelScopeStore: innerContext.read(),
-                      session: innerContext.read(),
-                      moneyExchangeRepository: innerContext.read(),
-                      balanceInfoRepository: innerContext.read(),
-                    ),
+                create: (innerContext) => ExpenseResultViewModel(
+                  expenseStore: innerContext.read(),
+                  travelScopeStore: innerContext.read(),
+                  session: innerContext.read(),
+                  moneyExchangeRepository: innerContext.read(),
+                  balanceInfoRepository: innerContext.read(),
+                ),
                 child: ExpenseResultScreen(),
               );
             },
@@ -205,13 +199,12 @@ GoRouter createRouter(AppSession session) {
             path: Routes.estimated_expense,
             builder: (context, state) {
               return ChangeNotifierProvider(
-                create:
-                    (innerContext) => EstimatedExpenseViewModel(
-                      travelSession: innerContext.read(),
-                      itineraryStore: innerContext.read(),
-                      travelScopeStore: innerContext.read(),
-                      estimatedExpenseRepository: innerContext.read(),
-                    ),
+                create: (innerContext) => EstimatedExpenseViewModel(
+                  travelSession: innerContext.read(),
+                  itineraryStore: innerContext.read(),
+                  travelScopeStore: innerContext.read(),
+                  estimatedExpenseRepository: innerContext.read(),
+                ),
                 child: EstimatedExpenseScreen(),
               );
             },
@@ -223,17 +216,16 @@ GoRouter createRouter(AppSession session) {
               /* Adminかどうかを引数で渡しておく */
 
               return ChangeNotifierProvider(
-                create:
-                    (innerContext) => TravelSelectViewModel(
-                      appSession: innerContext.read(),
-                      travelSession: innerContext.read(),
-                      itineraryStore: innerContext.read(),
-                      getUserTravelsUseCase: innerContext.read(),
-                      userSettingsRepository: innerContext.read(),
-                      groupMembersRepository: innerContext.read(),
-                      participantsRepository: innerContext.read(),
-                      userRole: role,
-                    ),
+                create: (innerContext) => TravelSelectViewModel(
+                  appSession: innerContext.read(),
+                  travelSession: innerContext.read(),
+                  itineraryStore: innerContext.read(),
+                  getUserTravelsUseCase: innerContext.read(),
+                  userSettingsRepository: innerContext.read(),
+                  groupMembersRepository: innerContext.read(),
+                  participantsRepository: innerContext.read(),
+                  userRole: role,
+                ),
                 child: TravelSelectScreen(userRole: role),
               );
             },
@@ -241,44 +233,38 @@ GoRouter createRouter(AppSession session) {
           GoRoute(path: Routes.settings_version_info, builder: (context, state) => VersionInfoScreen()),
           GoRoute(
             path: Routes.settings_create_group,
-            builder:
-                (context, state) => ChangeNotifierProvider(
-                  create:
-                      (innerContext) => GroupCreateViewModel(
-                        appSession: innerContext.read(),
-                        usersRepository: innerContext.read(),
-                        crudGroupUseCase: innerContext.read(),
-                        joinedGroupRepository: innerContext.read(),
-                      ),
-                  child: GroupCreateScreen(),
-                ),
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (innerContext) => GroupCreateViewModel(
+                appSession: innerContext.read(),
+                usersRepository: innerContext.read(),
+                crudGroupUseCase: innerContext.read(),
+                joinedGroupRepository: innerContext.read(),
+              ),
+              child: GroupCreateScreen(),
+            ),
           ),
           GoRoute(
             path: Routes.settings_create_travel,
-            builder:
-                (context, state) => ChangeNotifierProvider(
-                  create:
-                      (innerContext) => TravelCreateViewModel(
-                        appSession: innerContext.read(),
-                        travelRepository: innerContext.read(),
-                        travelKeysRepository: innerContext.read(),
-                        joinedGroupsRepository: innerContext.read(),
-                        getUserTravelsUseCase: innerContext.read(),
-                      ),
-                  child: TravelCreateScreen(),
-                ),
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (innerContext) => TravelCreateViewModel(
+                appSession: innerContext.read(),
+                travelRepository: innerContext.read(),
+                travelKeysRepository: innerContext.read(),
+                joinedGroupsRepository: innerContext.read(),
+                getUserTravelsUseCase: innerContext.read(),
+              ),
+              child: TravelCreateScreen(),
+            ),
           ),
           GoRoute(
             path: Routes.settings_profile,
-            builder:
-                (context, state) => ChangeNotifierProvider(
-                  create:
-                      (innerContext) => ProfileViewModel(
-                        appSession: innerContext.read(),
-                        userSettingsRepository: innerContext.read(),
-                      ),
-                  child: ProfileScreen(),
-                ),
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (innerContext) => ProfileViewModel(
+                appSession: innerContext.read(),
+                userSettingsRepository: innerContext.read(),
+              ),
+              child: ProfileScreen(),
+            ),
           ),
         ],
       ),
@@ -406,22 +392,20 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
 
     /// UserCases
     Provider<GetUserTravelsUseCase>(
-      create:
-          (innerContext) => GetUserTravelsUseCase(
-            travelKeysRepository: innerContext.read(),
-            joinedGroupsRepository: innerContext.read(),
-            travelRepository: innerContext.read(),
-          ),
+      create: (innerContext) => GetUserTravelsUseCase(
+        travelKeysRepository: innerContext.read(),
+        joinedGroupsRepository: innerContext.read(),
+        travelRepository: innerContext.read(),
+      ),
     ),
     Provider<CrudGroupUseCase>(
-      create:
-          (innerContext) => CrudGroupUseCase(
-            groupCreatorRepository: innerContext.read(),
-            groupMembersRepository: innerContext.read(),
-            joinedGroupsRepository: innerContext.read(),
-            groupsRepository: innerContext.read(),
-            travelKeyRepository: innerContext.read(),
-          ),
+      create: (innerContext) => CrudGroupUseCase(
+        groupCreatorRepository: innerContext.read(),
+        groupMembersRepository: innerContext.read(),
+        joinedGroupsRepository: innerContext.read(),
+        groupsRepository: innerContext.read(),
+        travelKeyRepository: innerContext.read(),
+      ),
     ),
     ChangeNotifierProvider(
       create: (innerContext) {
@@ -438,14 +422,13 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       lazy: false,
     ),
     ChangeNotifierProvider<TravelScopeStore>(
-      create: /* createはほとんど機能しない。すぐ生成しだすから。 */
-          (innerContext) => TravelScopeStore(
-            session: innerContext.read<ShownTravelSession>(),
-            groupMembersRepository: innerContext.read(),
-            participantsRepository: innerContext.read(),
-            userSettingsRepository: innerContext.read(),
-            plannersRepository: innerContext.read(),
-          ),
+      create: /* createはほとんど機能しない。すぐ生成しだすから。 */ (innerContext) => TravelScopeStore(
+        session: innerContext.read<ShownTravelSession>(),
+        groupMembersRepository: innerContext.read(),
+        participantsRepository: innerContext.read(),
+        userSettingsRepository: innerContext.read(),
+        plannersRepository: innerContext.read(),
+      ),
       lazy: false,
     ),
     ChangeNotifierProvider<ExpenseStore>(
@@ -456,30 +439,27 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
       lazy: false,
     ),
     ChangeNotifierProvider<ItineraryStore>(
-      create:
-          (innerContext) =>
-              ItineraryStore(itineraryRepository: innerContext.read(), travelSession: innerContext.read()),
+      create: (innerContext) =>
+          ItineraryStore(itineraryRepository: innerContext.read(), travelSession: innerContext.read()),
       lazy: false,
     ),
     ChangeNotifierProvider(
-      create:
-          (innerContext) => ItineraryViewModel(
-            itineraryRepository: innerContext.read(),
-            userSettingsRepository: innerContext.read(),
-            itineraryStore: innerContext.read(),
-            travelScopeStore: innerContext.read(),
-            travelSession: innerContext.read(),
-            appSession: innerContext.read(),
-          ),
+      create: (innerContext) => ItineraryViewModel(
+        itineraryRepository: innerContext.read(),
+        userSettingsRepository: innerContext.read(),
+        itineraryStore: innerContext.read(),
+        travelScopeStore: innerContext.read(),
+        travelSession: innerContext.read(),
+        appSession: innerContext.read(),
+      ),
       lazy: false,
     ),
     ChangeNotifierProvider(
-      create:
-          (innerContext) => ExpensesViewModel(
-            expenseStore: innerContext.read(),
-            travelScopeStore: innerContext.read(),
-            travelSession: innerContext.read(),
-          ),
+      create: (innerContext) => ExpensesViewModel(
+        expenseStore: innerContext.read(),
+        travelScopeStore: innerContext.read(),
+        travelSession: innerContext.read(),
+      ),
       lazy: false,
     ),
   ];
