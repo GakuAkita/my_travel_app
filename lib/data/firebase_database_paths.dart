@@ -104,6 +104,7 @@ class ExpensesPath extends PathNode {
   ExpensesPath(String parentPath) : super("$parentPath/expenses");
 
   final String _exchangesStr = "exchanges";
+  final String _estimated = "estimated";
   final String _dataStr = "data";
 
   String get data => child(_dataStr);
@@ -116,7 +117,7 @@ class ExpensesPath extends PathNode {
 
   String get lastUpdated => child("$_exchangesStr/lastUpdated");
 
-  String get estimated => child("estimated");
+  String get estimatedData => child("$_exchangesStr/data");
 }
 
 class ItineraryPath extends PathNode {

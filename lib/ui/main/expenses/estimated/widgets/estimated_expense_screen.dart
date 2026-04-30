@@ -21,8 +21,11 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
     super.initState();
 
     /* 計算する */
-    final viewModel = context.read<EstimatedExpenseViewModel>();
-    viewModel.createEstimatedExpensesFromItinerary();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = context.read<EstimatedExpenseViewModel>();
+      viewModel.createEstimatedExpensesFromItinerary(isNotify: true);
+      viewModel.createEstimatedExpenseListFromManual();
+    });
   }
 
   @override
@@ -43,8 +46,28 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
             Text("合計:${viewModel.estimatedExpenseFromItinerary}"),
 
             SizedBox(height: 20),
-            Text("===========手動で入力============"),
-            Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
+            viewModel.isLoading
+                ? CircularProgressIndicator()
+                : Column(
+                  children: [
+                    Text("===========手動で入力============"),
+                    Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
+                    Column(
+                      children: [
+                        ...viewModel.estimatedExpenseListFromManual.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final estimated = entry.value;
+                          return EstimatedExpenseRow(
+                            initialEstimated: estimated,
+                            isAdjustable: true,
+                            onValueChanged: (val) {},
+                            onDelete: (val) {},
+                          );
+                        }),
+                      ],
+                    ),
+                  ],
+                ),
           ],
         ),
       ),

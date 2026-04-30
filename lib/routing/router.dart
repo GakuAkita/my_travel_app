@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository.dart';
 import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository_realtimedb.dart';
+import 'package:my_travel_app/data/repositories/estimated_expense/estimated_expense_repository.dart';
+import 'package:my_travel_app/data/repositories/estimated_expense/estimated_expense_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
 import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
 import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository.dart';
@@ -208,6 +210,7 @@ GoRouter createRouter(AppSession session) {
                       travelSession: innerContext.read(),
                       itineraryStore: innerContext.read(),
                       travelScopeStore: innerContext.read(),
+                      estimatedExpenseRepository: innerContext.read(),
                     ),
                 child: EstimatedExpenseScreen(),
               );
@@ -396,6 +399,9 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     ),
     Provider<BalanceInfoRepository>(
       create: (innerContext) => BalanceInfoRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+    ),
+    Provider<EstimatedExpenseRepository>(
+      create: (innerContext) => EstimatedExpenseRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
 
     /// UserCases

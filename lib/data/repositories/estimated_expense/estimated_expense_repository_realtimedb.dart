@@ -13,7 +13,7 @@ class EstimatedExpenseRepositoryRealtimeDb implements EstimatedExpenseRepository
   FirebaseDatabaseService<EstimatedExpenseInfo> _service(String groupId, String travelId) {
     return FirebaseDatabaseService(
       database: _database,
-      path: FirebaseDatabasePaths.group(groupId).travels.travel(travelId).expenses.estimated.toString(),
+      path: FirebaseDatabasePaths.group(groupId).travels.travel(travelId).expenses.estimatedData.toString(),
       fromJson: EstimatedExpenseInfo.fromJson,
       toJson: (e) => e.toJson(),
     );
