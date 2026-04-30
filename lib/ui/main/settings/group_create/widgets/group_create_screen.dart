@@ -40,7 +40,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("グループ名 [英字のみ、特殊文字禁止]"),
-                  TextField(controller: _groupNameController),
+                  //TextField(controller: _groupNameController),
                   BasicTextField(
                     controller: _groupNameController,
                     hintText: "group id",
@@ -69,8 +69,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     return UserCheckRow(
                       user: viewModel.allUsers.data!.values.elementAt(index),
                       onTap: () {
-                        final traveler = viewModel.allUsers.data!.values
-                            .elementAt(index);
+                        final traveler = viewModel.allUsers.data!.values.elementAt(index);
                         print("tapped :${traveler.traveler.core.email}");
                         viewModel.switchChecked(traveler.traveler.core.uid);
                       },
@@ -87,20 +86,16 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               onPressed: () async {
                 if (_groupNameController.text.isEmpty) {
                   ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text("グループ名を入力してください")));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("グループ名を入力してください")));
                 }
-                final ret = await viewModel.createGroup(
-                  _groupNameController.text,
-                );
+                final ret = await viewModel.createGroup(_groupNameController.text);
                 if (ret.isSuccess) {
                   context.pop();
                 } else {
                   ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("${ret.error?.errorMessage}")),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
                 }
               },
             ),
@@ -115,14 +110,9 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     child: DropdownButton(
                       isExpanded: true,
                       items:
-                          viewModel.joinedGroups.data!
-                              .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value, maxLines: 1),
-                                );
-                              })
-                              .toList(),
+                          viewModel.joinedGroups.data!.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(value: value, child: Text(value, maxLines: 1));
+                          }).toList(),
                       value: viewModel.selectedGroupId,
                       onChanged: (String? value) {
                         viewModel.selectGroup(value);
@@ -141,9 +131,9 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     context.pop();
                   } else {
                     ScaffoldMessenger.of(context).clearSnackBars();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("${ret.error?.errorMessage}")),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
                   }
                 },
               ),
@@ -168,10 +158,7 @@ class UserCheckRow extends StatelessWidget {
       child: Row(
         children: [
           Checkbox(value: user.isChecked, onChanged: (_) {}),
-          Expanded(
-            flex: 1,
-            child: Text("${user.traveler.core.email}", maxLines: 1),
-          ),
+          Expanded(flex: 1, child: Text("${user.traveler.core.email}", maxLines: 1)),
           Expanded(flex: 1, child: Text("${user.traveler.core.uid}")),
         ],
       ),
