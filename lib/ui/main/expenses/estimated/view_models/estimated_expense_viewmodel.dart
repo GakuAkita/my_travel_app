@@ -19,25 +19,33 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  double _estimatedExpense = 0.0;
+  bool _isSavingLoading = false;
 
-  double get estimatedExpense => _estimatedExpense;
-
-  double _estimatedExpenseFromManual = 0.0;
-
-  double get estimatedExpenseFromManual => _estimatedExpenseFromManual;
-
-  double _estimatedExpenseFromItinerary = 0.0;
-
-  double get estimatedExpenseFromItinerary => _estimatedExpenseFromItinerary;
+  bool get isSavingLoading => _isSavingLoading;
 
   List<EstimatedExpenseInfo> _estimatedExpenseListFromItinerary = [];
 
   List<EstimatedExpenseInfo> get estimatedExpenseListFromItinerary => _estimatedExpenseListFromItinerary;
 
+  double sumFromItinerary() {
+    double sum = 0;
+    for (final est in _estimatedExpenseListFromItinerary) {
+      sum += (est.amount / est.reimbursedByCnt);
+    }
+    return sum;
+  }
+
   List<EstimatedExpenseInfo> _estimatedExpenseListFromManual = [];
 
   List<EstimatedExpenseInfo> get estimatedExpenseListFromManual => _estimatedExpenseListFromManual;
+
+  double sumFromManual() {
+    double sum = 0;
+    for (final est in _estimatedExpenseListFromManual) {
+      sum += (est.amount / est.reimbursedByCnt);
+    }
+    return sum;
+  }
 
   EstimatedExpenseViewModel({
     required ShownTravelSession travelSession,
@@ -56,7 +64,6 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
       final ret = await getEstimatedExpenses();
       if (ret.isSuccess) {
         final data = ret.data!;
-        print("${data}");
         if (data.isEmpty) {
           /* 何泊かは、テーブルの数で判断 */
           double day = 0;
@@ -97,10 +104,10 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
             ),
           ];
         } else {
+          print("Saved data already exist");
           _estimatedExpenseListFromManual = data;
         }
         notifyListeners();
-        _estimatedExpenseListFromManual.map((e) {});
         return ResultInfo.success();
       } else {
         print("Failed ${ret.toString()}");
@@ -110,6 +117,23 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void removeEstimatedExpenseFromManualAt(int index) {
+    _estimatedExpenseListFromManual.removeAt(index);
+    notifyListeners();
+  }
+
+  void addEStimatedExpenseFromManual() {
+    _estimatedExpenseListFromManual.add(
+      EstimatedExpenseInfo(id: Uuid().v4(), expenseItem: "", amount: 0, reimbursedByCnt: 1),
+    );
+    notifyListeners();
+  }
+
+  void updateEstimatedExpense({required int index, required EstimatedExpenseInfo estimated}) {
+    _estimatedExpenseListFromManual[index] = estimated;
+    notifyListeners();
   }
 
   Future<ResultInfo<List<EstimatedExpenseInfo>>> getEstimatedExpenses() async {
@@ -157,7 +181,10 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
                 print("${match.group(0)} | ${match.group(1)} | ${match.group(2)}");
 
                 final amount = double.parse(match.group(1)!);
-                final peopleCnt = int.parse(match.group(2) ?? "1");
+                int peopleCnt = int.parse(match.group(2) ?? "1");
+                if (peopleCnt == 0) {
+                  peopleCnt = 1; /* 0割防止 */
+                }
                 String firstLine = row[1].toString().split('\n').first; /* 同じ行の1列目(0スタート)を項目名とする */
 
                 // Markdownのリンク表示 `[text](url)` から text のみを抽出
@@ -184,10 +211,6 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
           }
         });
       }
-
-      for (final est in _estimatedExpenseListFromItinerary) {
-        _estimatedExpenseFromItinerary += (est.amount / est.reimbursedByCnt);
-      }
       if (isNotify) {
         notifyListeners();
       }
@@ -200,7 +223,47 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
     }
   }
 
-  /* Repository */
+  ResultInfo saveEstimatedExpensesListFromManualPreCheck() {
+    return _saveEstimatedExpensesListPreCheck(_estimatedExpenseListFromManual);
+  }
+
+  ResultInfo _saveEstimatedExpensesListPreCheck(List<EstimatedExpenseInfo> estimates) {
+    for (final est in estimates) {
+      if (est.amount < 0) {
+        return ResultInfo.failed(error: ErrorInfo(errorMessage: "金額が負の値になっています。${est.amount}"));
+      }
+
+      if (est.reimbursedByCnt < 1) {
+        return ResultInfo.failed(error: ErrorInfo(errorMessage: "人数が正しくありません。${est.reimbursedByCnt}"));
+      }
+    }
+    return ResultInfo.success();
+  }
+
+  Future<ResultInfo> saveEstimatedExpensesListFromManual() async {
+    if (_travelSession.currentTravel == null) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "travel is null"));
+    }
+
+    _isSavingLoading = true;
+    notifyListeners();
+    try {
+      final groupId = _travelSession.currentTravel!.groupId!;
+      final travelId = _travelSession.currentTravel!.travelId!;
+      await _estimatedExpenseRepository.saveEstimatedExpenses(
+        groupId: groupId,
+        travelId: travelId,
+        expenses: _estimatedExpenseListFromManual,
+      );
+
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    } finally {
+      _isSavingLoading = false;
+      notifyListeners();
+    }
+  }
 
   @override
   void dispose() {

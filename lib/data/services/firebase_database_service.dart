@@ -35,8 +35,12 @@ class FirebaseDatabaseService<T> {
   }
 
   Future<void> setList(List<T> items) async {
-    final map = {for (int i = 0; i < items.length; i++) MapEntry(i.toString(), toJson(items[i]))};
-    await _database.ref(path).set(map);
+    if (items.isEmpty) {
+      await _database.ref(path).set(null);
+    } else {
+      //print(items.map((e) => toJson(e)).toList());
+      await _database.ref(path).set(items.map((e) => toJson(e)).toList());
+    }
   }
 
   /// データを更新（部分更新）

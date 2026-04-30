@@ -74,7 +74,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               RoundedButton(
                                 title: "費用概算",
                                 onPressed: () {
-                                  print("まだ実装されていません");
                                   context.push(Routes.estimated_expense);
                                 },
                               ),

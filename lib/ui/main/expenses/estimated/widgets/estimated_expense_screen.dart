@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_travel_app/components/CircleIconButton.dart';
+import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/main/expenses/estimated/view_models/estimated_expense_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +45,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                 onValueChanged: (estimated) {},
               );
             }),
-            Text("合計:${viewModel.estimatedExpenseFromItinerary}"),
+            Text("合計:${viewModel.sumFromItinerary()}"),
 
             SizedBox(height: 20),
             viewModel.isLoading
@@ -60,10 +62,57 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
                           return EstimatedExpenseRow(
                             initialEstimated: estimated,
                             isAdjustable: true,
-                            onValueChanged: (val) {},
-                            onDelete: (val) {},
+                            onValueChanged: (val) {
+                              viewModel.updateEstimatedExpense(index: index, estimated: val);
+                            },
+                            onDelete: (val) {
+                              viewModel.removeEstimatedExpenseFromManualAt(index);
+                            },
                           );
                         }),
+
+                        Padding(
+                          padding: const EdgeInsetsGeometry.all(8.0),
+                          child: CircleIconButton(
+                            icon: Icons.add,
+                            onPressed: () {
+                              viewModel.addEStimatedExpenseFromManual();
+                            },
+                          ),
+                        ),
+
+                        Text("手動合計:${viewModel.sumFromManual()}"),
+
+                        Text("============================="),
+                        Text("すべての合計=${viewModel.sumFromItinerary() + viewModel.sumFromManual()}"),
+                        viewModel.isSavingLoading
+                            ? CircularProgressIndicator()
+                            : RoundedButton(
+                              title: "保存",
+                              onPressed: () async {
+                                final precheck = viewModel.saveEstimatedExpensesListFromManualPreCheck();
+                                if (!precheck.isSuccess) {
+                                  ScaffoldMessenger.of(context).clearSnackBars();
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text(precheck.error?.errorMessage ?? "")));
+                                  return;
+                                }
+                                print("precheck OK");
+
+                                final ret = await viewModel.saveEstimatedExpensesListFromManual();
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                if (ret.isSuccess) {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text("保存に成功しました")));
+                                } else {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
+                                }
+                              },
+                            ),
                       ],
                     ),
                   ],
