@@ -10,6 +10,8 @@ class BasicTextField extends StatelessWidget {
     this.keyboardType,
     this.initialValue,
     this.focusNode,
+    this.enabled = true,
+    this.readOnly = false,
     required this.hintText,
     required this.onChanged,
     super.key,
@@ -24,6 +26,8 @@ class BasicTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? initialValue;
   final FocusNode? focusNode;
+  final bool enabled;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +48,8 @@ class BasicTextField extends StatelessWidget {
       obscureText: obscureText,
       onChanged: onChanged,
       focusNode: focusNode,
+      enabled: enabled,
+      readOnly: readOnly,
     );
   }
 }

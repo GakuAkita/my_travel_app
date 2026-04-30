@@ -1,0 +1,19 @@
+import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
+import 'package:my_travel_app/data/repositories/auth/auth_repository_firebase.dart';
+import 'package:my_travel_app/state/session/app_session.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+
+/**
+ * These live throughout the app.
+ */
+List<SingleChildWidget> get providers {
+  return [
+    Provider<AuthRepository>(create: (_) => AuthRepositoryFirebase()),
+    ChangeNotifierProvider(
+      create:
+          (context) =>
+              AppSession(authRepository: context.read<AuthRepository>()),
+    ),
+  ];
+}

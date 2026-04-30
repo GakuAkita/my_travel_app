@@ -14,3 +14,4 @@ key.properties
 **/*.jks
 
 /app/google-services.json
+/app/local.properties
