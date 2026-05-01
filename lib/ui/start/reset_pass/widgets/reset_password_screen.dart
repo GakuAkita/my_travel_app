@@ -6,16 +6,16 @@ import 'package:provider/provider.dart';
 import '../../../../components/BasicTextField.dart';
 import '../../../../components/RoundedButton.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ResetPasswordScreen extends StatefulWidget {
   final String initialEmail;
 
-  const ForgotPasswordScreen({required this.initialEmail, super.key});
+  const ResetPasswordScreen({required this.initialEmail, super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   late TextEditingController _emailController;
 
   @override
@@ -51,6 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<ResetPasswordViewModel>();
     return Scaffold(
       appBar: TopAppBar(automaticallyImplyLeading: true),
       body: Center(
@@ -61,38 +62,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             children: [
               Text("Reset your password", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
-              BasicTextField(hintText: "Email", controller: _emailController, onChanged: (value) => {}),
+              BasicTextField(
+                hintText: "Email",
+                controller: _emailController,
+                onChanged: (value) {
+                  viewModel.updateEmail(value);
+                },
+              ),
               const SizedBox(height: 20),
               RoundedButton(
                 title: "パスワード再設定メール送信",
                 onPressed: () async {
-                  // final result = await _authService.sendResetPassword(
-                  //   _emailController.text,
-                  // );
+                  final result = await viewModel.sendResetPassword();
 
-                  // if (result.isSuccess) {
-                  //   /* 成功した場合 */
-                  //   showSnackBar("パスワード再設定メールを送信しました\n(ユーザー登録していない場合は送られません)");
-                  // } else {
-                  //   var message = "";
-                  //   switch (result.error?.errorCode) {
-                  //     case FirebaseAuthErrorCodes.invalidEmail:
-                  //     case FirebaseAuthErrorCodes.tooManyRequests:
-                  //       final errorMsg = result.error?.errorMessage;
-                  //       if (errorMsg == null) {
-                  //         message = "エラーメッセージが空です";
-                  //       } else {
-                  //         message = result.error!.errorMessage!;
-                  //       }
-                  //       break;
-                  //
-                  //     default:
-                  //       message = "再設定メール送信に失敗しました";
-                  //       break;
-                  //   }
-                  //   print(message);
-                  //   showSnackBar(message);
-                  // }
+                  if (result.isSuccess) {
+                    /* 成功した場合 */
+                    showSnackBar("パスワード再設定メールを送信しました\n(ユーザー登録していない場合は送られません)");
+                  } else {
+                    showSnackBar(result.error?.errorMessage ?? "不明なエラ－");
+                  }
                 },
                 textStyle: TextStyle(fontSize: 15),
               ),

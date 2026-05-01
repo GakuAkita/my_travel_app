@@ -1,7 +1,9 @@
 abstract final class Routes {
   static const start = "/start";
-  static const signIn = "/sign_in";
-  static const signUp = "/sign_up";
+  static const sign_in = "/sign_in";
+  static const sign_up = "/sign_up";
+  static const reset_password = "/reset_password";
+
   static const itinerary = "/itinerary";
   static const expenses = "/expenses";
   static const settings = "/settings";
@@ -17,5 +19,5 @@ abstract final class Routes {
   static const settings_create_travel = "/settings_create_travel";
 
   //認証不要なルートのリスト
-  static const publicRoutes = [start, signIn, signUp];
+  static const publicRoutes = [start, sign_in, sign_up, reset_password];
 }

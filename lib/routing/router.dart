@@ -52,6 +52,8 @@ import 'package:my_travel_app/ui/main/settings/software_version/widgets/version_
 import 'package:my_travel_app/ui/main/settings/travel_create/view_models/travel_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_select_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/travel_select/widgets/travel_select_screen.dart';
+import 'package:my_travel_app/ui/start/reset_pass/view_models/reset_password_viewmodel.dart';
+import 'package:my_travel_app/ui/start/reset_pass/widgets/reset_password_screen.dart';
 import 'package:my_travel_app/ui/start/sign_in/view_models/sign_in_viewmodel.dart';
 import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
@@ -104,18 +106,28 @@ GoRouter createRouter(AppSession session) {
     routes: [
       GoRoute(path: Routes.start, builder: (context, state) => StartScreen()),
       GoRoute(
-        path: Routes.signUp,
+        path: Routes.sign_up,
         builder: (context, state) => ChangeNotifierProvider(
           create: (innerContext) => SignInViewModel(authRepository: innerContext.read<AuthRepository>()),
           child: SignUpScreen(),
         ),
       ),
       GoRoute(
-        path: Routes.signIn,
+        path: Routes.sign_in,
         builder: (context, state) => ChangeNotifierProvider(
           create: (innerContext) => SignInViewModel(authRepository: innerContext.read()),
           child: SignInScreen(),
         ),
+      ),
+      GoRoute(
+        path: Routes.reset_password,
+        builder: (context, state) {
+          final email = state as String ?? "";
+          return ChangeNotifierProvider(
+            create: (innerContext) => ResetPasswordViewModel(authRepository: innerContext.read()),
+            child: ResetPasswordScreen(initialEmail: email),
+          );
+        },
       ),
       /* ログイン後 */
       /* サインアウトしたらShellRouteごと死ぬっぽい。それでよい。 */
