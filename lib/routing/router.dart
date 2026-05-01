@@ -1,7 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository.dart';
 import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/estimated_expense/estimated_expense_repository.dart';
@@ -108,14 +107,14 @@ GoRouter createRouter(AppSession session) {
       GoRoute(
         path: Routes.sign_up,
         builder: (context, state) => ChangeNotifierProvider(
-          create: (innerContext) => SignInViewModel(authRepository: innerContext.read<AuthRepository>()),
+          create: (innerContext) => SignInViewModel(emailAuthRepository: innerContext.read()),
           child: SignUpScreen(),
         ),
       ),
       GoRoute(
         path: Routes.sign_in,
         builder: (context, state) => ChangeNotifierProvider(
-          create: (innerContext) => SignInViewModel(authRepository: innerContext.read()),
+          create: (innerContext) => SignInViewModel(emailAuthRepository: innerContext.read()),
           child: SignInScreen(),
         ),
       ),
@@ -124,7 +123,7 @@ GoRouter createRouter(AppSession session) {
         builder: (context, state) {
           final String email = state.extra as String? ?? "";
           return ChangeNotifierProvider(
-            create: (innerContext) => ResetPasswordViewModel(authRepository: innerContext.read()),
+            create: (innerContext) => ResetPasswordViewModel(emailAuthRepository: innerContext.read()),
             child: ResetPasswordScreen(initialEmail: email),
           );
         },

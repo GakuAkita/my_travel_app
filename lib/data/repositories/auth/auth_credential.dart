@@ -1,7 +1,5 @@
-abstract class AppAuthCredential {}
-
 // Emailとパスワードによる認証情報
-class EmailAppCredential extends AppAuthCredential {
+class EmailAppCredential {
   final String email;
   final String password;
 
@@ -9,7 +7,7 @@ class EmailAppCredential extends AppAuthCredential {
 }
 
 // Google認証情報
-class GoogleAppCredential extends AppAuthCredential {
+class GoogleAppCredential {
   final String email;
 
   GoogleAppCredential({required this.email});

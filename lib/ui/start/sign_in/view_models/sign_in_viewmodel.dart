@@ -1,12 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
-import 'package:my_travel_app/data/repositories/auth/auth_credential.dart';
-import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
+import 'package:my_travel_app/data/repositories/email_auth/email_auth_repository.dart';
 
 import '../../../../CommonClass/ErrorInfo.dart';
 
 class SignInViewModel extends ChangeNotifier {
-  final AuthRepository _authRepository;
+  final EmailAuthRepository _emailAuthRepository;
 
   @override
   void dispose() {
@@ -15,8 +14,8 @@ class SignInViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  SignInViewModel({required AuthRepository authRepository})
-    : _authRepository = authRepository;
+  SignInViewModel({required EmailAuthRepository emailAuthRepository})
+    : _emailAuthRepository = emailAuthRepository;
 
   /* isLoadingの部分を分離してもいいかもな */
   bool _isLoading = false;
@@ -26,10 +25,7 @@ class SignInViewModel extends ChangeNotifier {
   /**
    * メールアドレスでログインする
    */
-  Future<ResultInfo<void>> signInWithEmail(
-    String email,
-    String password,
-  ) async {
+  Future<ResultInfo<void>> signInWithEmail(String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
@@ -40,36 +36,25 @@ class SignInViewModel extends ChangeNotifier {
     return result;
   }
 
-  Future<ResultInfo<void>> _signInWithEmail(
-    String email,
-    String password,
-  ) async {
-    final credential = EmailAppCredential(email: email, password: password);
+  Future<ResultInfo<void>> _signInWithEmail(String email, String password) async {
     try {
-      await _authRepository.signIn(credential);
+      await _emailAuthRepository.signIn(email: email, password: password);
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
 
-  Future<ResultInfo<void>> _signUpWithEmail(
-    String email,
-    String password,
-  ) async {
-    final credential = EmailAppCredential(email: email, password: password);
+  Future<ResultInfo<void>> _signUpWithEmail(String email, String password) async {
     try {
-      await _authRepository.signUp(credential);
+      await _emailAuthRepository.signUp(email: email, password: password);
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     }
   }
 
-  Future<ResultInfo<void>> signUpAndSignInWithEmail(
-    String email,
-    String password,
-  ) async {
+  Future<ResultInfo<void>> signUpAndSignInWithEmail(String email, String password) async {
     _isLoading = true;
     notifyListeners();
     final result = await _signUpWithEmail(email, password);
