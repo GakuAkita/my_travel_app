@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 
-import '../../components/BasicTextField.dart';
-import '../../components/RoundedButton.dart';
+import '../../../../components/BasicTextField.dart';
+import '../../../../components/RoundedButton.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   final String initialEmail;
@@ -32,6 +32,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -55,16 +56,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "Reset your password",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              Text("Reset your password", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
-              BasicTextField(
-                hintText: "Email",
-                controller: _emailController,
-                onChanged: (value) => {},
-              ),
+              BasicTextField(hintText: "Email", controller: _emailController, onChanged: (value) => {}),
               const SizedBox(height: 20),
               RoundedButton(
                 title: "パスワード再設定メール送信",

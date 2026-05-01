@@ -10,4 +10,6 @@ abstract class AuthRepository {
   Future<void> signUp(AppAuthCredential credential);
 
   Future<void> signOut();
+
+  Future<void> sendResetPassword(String email);
 }
