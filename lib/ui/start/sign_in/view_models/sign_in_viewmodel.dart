@@ -79,9 +79,7 @@ class SignInViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      Future.delayed(Duration(seconds: 5));
       await _googleAuthRepository.signIn();
-      print("SignIn ended");
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));

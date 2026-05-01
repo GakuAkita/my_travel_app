@@ -38,9 +38,9 @@ class _SignInScreenState extends State<SignInScreen> {
             }
           },
           onGoogleTap: () async {
-            print("tapped");
-            await viewModel.signInWithGoogle();
-            print("Google has ended");
+            viewModel.signInWithGoogle().then((_) {
+              print("signin with ");
+            });
           },
           onForgotPassword: (email) {
             /* 引数を渡す */
