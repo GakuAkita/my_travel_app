@@ -82,6 +82,7 @@ class SignInViewModel extends ChangeNotifier {
       await _googleAuthRepository.signIn();
       return ResultInfo.success();
     } catch (e) {
+      print(e.toString());
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     } finally {
       _isLoading = false;

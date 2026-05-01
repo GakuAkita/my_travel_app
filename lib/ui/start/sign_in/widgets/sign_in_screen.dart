@@ -38,9 +38,13 @@ class _SignInScreenState extends State<SignInScreen> {
             }
           },
           onGoogleTap: () async {
-            viewModel.signInWithGoogle().then((_) {
-              print("signin with ");
-            });
+            final ret = await viewModel.signInWithGoogle();
+            if (!ret.isSuccess) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("${ret.error?.errorMessage}"), duration: Duration(seconds: 2)),
+              );
+            }
           },
           onForgotPassword: (email) {
             /* 引数を渡す */

@@ -12,16 +12,13 @@ class GoogleAuthRepositoryFirebase implements GoogleAuthRepository {
   @override
   Future<void> signIn() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
-      if (googleUser == null) {
-        /* コードを作ったほうがいいか？ */
-        throw AppException("Google sign in failed");
-      }
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
-
       final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
 
       await _firebaseAuth.signInWithCredential(credential);
+    } on GoogleSignInException catch (e) {
+      throw AppException(e.toString());
     } catch (e) {
       throw AppException(e.toString());
     }
