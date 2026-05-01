@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/ui/start/reset_pass/auth_error_codes.dart';
@@ -8,6 +9,8 @@ import 'auth_credential.dart';
 
 class AuthRepositoryFirebase implements AuthRepository {
   final FirebaseAuth _firebaseAuth;
+
+  List<String> scopes = <String>['https://www.googleapis.com/auth/contacts.readonly'];
 
   AuthRepositoryFirebase({FirebaseAuth? firebaseAuth})
     : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
@@ -33,6 +36,11 @@ class AuthRepositoryFirebase implements AuthRepository {
           email: credential.email,
           password: credential.password,
         );
+      } else if (credential is GoogleAppCredential) {
+        // https://firebase.google.com/docs/auth/flutter/federated-auth?hl=ja
+        /* Google認証 */
+        final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
+        final GoogleSignInAuthentication? googleAuth = googleUser?.authentication;
       } else {
         //他の認証方法
         /* ここには来ない。ちゃんと実装してくれ。 */

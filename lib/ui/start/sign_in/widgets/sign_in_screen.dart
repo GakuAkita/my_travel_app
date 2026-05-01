@@ -12,8 +12,6 @@ import '../view_models/sign_in_viewmodel.dart';
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
-  static const String id = "login_screen";
-
   @override
   State<SignInScreen> createState() => _SignInScreenState();
 }

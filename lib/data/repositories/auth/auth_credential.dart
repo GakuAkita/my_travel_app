@@ -7,3 +7,10 @@ class EmailAppCredential extends AppAuthCredential {
 
   EmailAppCredential({required this.email, required this.password});
 }
+
+// Google認証情報
+class GoogleAppCredential extends AppAuthCredential {
+  final String email;
+
+  GoogleAppCredential({required this.email});
+}
