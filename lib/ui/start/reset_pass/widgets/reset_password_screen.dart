@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
+import 'package:my_travel_app/ui/start/reset_pass/view_models/reset_password_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../components/BasicTextField.dart';
 import '../../../../components/RoundedButton.dart';
@@ -8,8 +10,6 @@ class ForgotPasswordScreen extends StatefulWidget {
   final String initialEmail;
 
   const ForgotPasswordScreen({required this.initialEmail, super.key});
-
-  static const String id = "forgot_password";
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -23,6 +23,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.initState();
     // 初期値として受け取った email をセット
     _emailController = TextEditingController(text: widget.initialEmail);
+
+    final viewModel = context.read<ResetPasswordViewModel>();
+    viewModel.updateEmail(_emailController.text);
   }
 
   @override

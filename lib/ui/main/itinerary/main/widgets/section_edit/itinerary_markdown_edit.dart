@@ -35,6 +35,14 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ItineraryViewModel>();
     void _updateMarkdown() {
