@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class BasicTextField extends StatelessWidget {
+class BasicTextField extends StatefulWidget {
   const BasicTextField({
     this.autofocus = false,
     this.obscureText = false,
@@ -30,26 +30,60 @@ class BasicTextField extends StatelessWidget {
   final bool readOnly;
 
   @override
-  Widget build(BuildContext context) {
-    final effectiveController =
-        controller ?? TextEditingController(text: initialValue);
+  State<BasicTextField> createState() => _BasicTextFieldState();
+}
 
+class _BasicTextFieldState extends State<BasicTextField> {
+  late TextEditingController _controller;
+  late bool _isExternal;
+
+  @override
+  void initState() {
+    super.initState();
+    _isExternal = widget.controller != null;
+
+    _controller = widget.controller ?? TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    if (!_isExternal) {
+      _controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant BasicTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.controller != widget.controller) {
+      if (!_isExternal) {
+        _controller.dispose();
+      }
+
+      _isExternal = widget.controller != null;
+      _controller = widget.controller ?? TextEditingController(text: widget.initialValue);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return TextField(
-      controller: effectiveController,
-      keyboardType: keyboardType ?? TextInputType.text,
-      inputFormatters:
-          inputFormatters ?? [FilteringTextInputFormatter.allow(RegExp(r'.*'))],
+      controller: _controller,
+      keyboardType: widget.keyboardType ?? TextInputType.text,
+      inputFormatters: widget.inputFormatters ?? [FilteringTextInputFormatter.allow(RegExp(r'.*'))],
       decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey),
-        border: OutlineInputBorder(),
+        hintText: widget.hintText,
+        hintStyle: const TextStyle(color: Colors.grey),
+        border: const OutlineInputBorder(),
       ),
-      autofocus: autofocus,
-      obscureText: obscureText,
-      onChanged: onChanged,
-      focusNode: focusNode,
-      enabled: enabled,
-      readOnly: readOnly,
+      autofocus: widget.autofocus,
+      obscureText: widget.obscureText,
+      onChanged: widget.onChanged,
+      focusNode: widget.focusNode,
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
     );
   }
 }
