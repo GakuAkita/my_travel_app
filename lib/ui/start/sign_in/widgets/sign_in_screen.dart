@@ -41,6 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
           },
           onForgotPassword: (email) {
             /* 引数を渡す */
+            print("$email pushed");
             context.push(Routes.reset_password, extra: email);
           },
         ),

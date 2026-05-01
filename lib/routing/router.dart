@@ -122,7 +122,7 @@ GoRouter createRouter(AppSession session) {
       GoRoute(
         path: Routes.reset_password,
         builder: (context, state) {
-          final email = state as String ?? "";
+          final String email = state.extra as String? ?? "";
           return ChangeNotifierProvider(
             create: (innerContext) => ResetPasswordViewModel(authRepository: innerContext.read()),
             child: ResetPasswordScreen(initialEmail: email),
