@@ -7,12 +7,14 @@ import 'RoundedButton.dart';
 class AuthForm extends StatefulWidget {
   final SCREEN_TYPE screenType;
   final Function(String email, String password) onSubmit;
+  final VoidCallback? onGoogleTap;
   final Function(String email)? onForgotPassword;
   final bool isLoading;
 
   const AuthForm({
     required this.screenType,
     required this.onSubmit,
+    this.onGoogleTap,
     this.onForgotPassword,
     this.isLoading = false,
     super.key,
@@ -34,6 +36,13 @@ class _AuthFormState extends State<AuthForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            GestureDetector(
+              onTap: () {
+                print("start login with Google");
+              },
+              child: Image(image: AssetImage("assets/images/android_light_rd_ctn4x.png"), width: 250),
+            ),
+            SizedBox(height: 50),
             BasicTextField(hintText: "Email", autofocus: true, onChanged: (value) => email = value),
             SizedBox(height: 30),
             BasicTextField(hintText: "Password", obscureText: true, onChanged: (value) => password = value),

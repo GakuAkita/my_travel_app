@@ -69,4 +69,17 @@ class SignInViewModel extends ChangeNotifier {
     notifyListeners();
     return signInResult;
   }
+
+  Future<ResultInfo> signInWithGoogle() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      return ResultInfo.success();
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

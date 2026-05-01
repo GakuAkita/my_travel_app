@@ -37,6 +37,7 @@ class _SignInScreenState extends State<SignInScreen> {
               );
             }
           },
+          onGoogleTap: () {},
           onForgotPassword: (email) {
             /* 引数を渡す */
             print("$email pushed");
