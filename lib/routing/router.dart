@@ -107,14 +107,20 @@ GoRouter createRouter(AppSession session) {
       GoRoute(
         path: Routes.sign_up,
         builder: (context, state) => ChangeNotifierProvider(
-          create: (innerContext) => SignInViewModel(emailAuthRepository: innerContext.read()),
+          create: (innerContext) => SignInViewModel(
+            emailAuthRepository: innerContext.read(),
+            googleAuthRepository: innerContext.read(),
+          ),
           child: SignUpScreen(),
         ),
       ),
       GoRoute(
         path: Routes.sign_in,
         builder: (context, state) => ChangeNotifierProvider(
-          create: (innerContext) => SignInViewModel(emailAuthRepository: innerContext.read()),
+          create: (innerContext) => SignInViewModel(
+            emailAuthRepository: innerContext.read(),
+            googleAuthRepository: innerContext.read(),
+          ),
           child: SignInScreen(),
         ),
       ),

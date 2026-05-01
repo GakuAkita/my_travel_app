@@ -37,7 +37,9 @@ class _SignInScreenState extends State<SignInScreen> {
               );
             }
           },
-          onGoogleTap: () {},
+          onGoogleTap: () {
+            viewModel.signInWithGoogle();
+          },
           onForgotPassword: (email) {
             /* 引数を渡す */
             print("$email pushed");

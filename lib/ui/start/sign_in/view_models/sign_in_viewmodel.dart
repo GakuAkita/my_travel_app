@@ -1,11 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
 import 'package:my_travel_app/data/repositories/email_auth/email_auth_repository.dart';
+import 'package:my_travel_app/data/repositories/google_auth/google_auth_repository.dart';
 
 import '../../../../CommonClass/ErrorInfo.dart';
 
 class SignInViewModel extends ChangeNotifier {
   final EmailAuthRepository _emailAuthRepository;
+  final GoogleAuthRepository _googleAuthRepository;
 
   @override
   void dispose() {
@@ -14,8 +16,11 @@ class SignInViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  SignInViewModel({required EmailAuthRepository emailAuthRepository})
-    : _emailAuthRepository = emailAuthRepository;
+  SignInViewModel({
+    required EmailAuthRepository emailAuthRepository,
+    required GoogleAuthRepository googleAuthRepository,
+  }) : _emailAuthRepository = emailAuthRepository,
+       _googleAuthRepository = googleAuthRepository;
 
   /* isLoadingの部分を分離してもいいかもな */
   bool _isLoading = false;
@@ -74,6 +79,7 @@ class SignInViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      await _googleAuthRepository.signIn();
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
