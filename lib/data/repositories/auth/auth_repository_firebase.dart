@@ -40,7 +40,17 @@ class AuthRepositoryFirebase implements AuthRepository {
         // https://firebase.google.com/docs/auth/flutter/federated-auth?hl=ja
         /* Google認証 */
         final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
-        final GoogleSignInAuthentication? googleAuth = googleUser?.authentication;
+        if (googleUser == null) {
+          throw AppException("Googleアカウントの認証に失敗しました");
+        }
+
+        final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+
+        await _firebaseAuth.signInWithCredential(credential);
+
+        /* サインインして、 */
       } else {
         //他の認証方法
         /* ここには来ない。ちゃんと実装してくれ。 */
