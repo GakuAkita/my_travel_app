@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/components/AuthForm.dart';
 import 'package:my_travel_app/constants.dart';
+import 'package:my_travel_app/routing/routes.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -33,29 +35,14 @@ class _SignInScreenState extends State<SignInScreen> {
             } else {
               ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("${result.error?.errorMessage}"),
-                  duration: Duration(seconds: 2),
-                ),
+                SnackBar(content: Text("${result.error?.errorMessage}"), duration: Duration(seconds: 2)),
               );
             }
           },
           onForgotPassword: (email) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("実装忘れ。秋田さんに連絡"),
-                duration: Duration(seconds: 2),
-              ),
-            );
             /* 引数を渡す */
-            //context.push();
-
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => ForgotPasswordScreen(initialEmail: email),
-            //   ),
-            // );
+            print("$email pushed");
+            context.push(Routes.reset_password, extra: email);
           },
         ),
       ),

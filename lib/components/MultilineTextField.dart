@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MultilineTextField extends StatelessWidget {
+class MultilineTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String initialText;
   final String hintText;
@@ -11,35 +11,57 @@ class MultilineTextField extends StatelessWidget {
   final void Function(String content) onChanged;
 
   const MultilineTextField({
-    Key? key,
+    super.key,
     this.controller,
     this.initialText = '',
+    /* コントローラが渡されている場合はinitialTextは無視 */
     this.hintText = '',
     this.maxLines,
     this.minLines,
     this.focusNode,
     this.border = const OutlineInputBorder(),
     required this.onChanged,
-  }) : super(key: key);
+  });
+
+  @override
+  State<MultilineTextField> createState() => _MultilineTextFieldState();
+}
+
+class _MultilineTextFieldState extends State<MultilineTextField> {
+  late final TextEditingController _controller;
+  late final bool _isExternal;
+
+  @override
+  void initState() {
+    super.initState();
+    _isExternal = widget.controller != null;
+
+    _controller = widget.controller ?? TextEditingController(text: widget.initialText);
+  }
+
+  @override
+  void dispose() {
+    if (!_isExternal) {
+      _controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final effectiveController =
-        controller ?? TextEditingController(text: initialText);
-
     return TextField(
-      controller: effectiveController,
-      maxLines: maxLines,
-      minLines: minLines ?? 2,
+      controller: _controller,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines ?? 2,
       keyboardType: TextInputType.multiline,
-      onChanged: onChanged,
+      onChanged: widget.onChanged,
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: widget.hintText,
         hintStyle: const TextStyle(color: Colors.white38),
-        border: border,
+        border: widget.border,
         contentPadding: const EdgeInsets.all(12),
       ),
-      focusNode: focusNode,
+      focusNode: widget.focusNode,
     );
   }
 }

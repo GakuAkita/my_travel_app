@@ -18,10 +18,7 @@ class StartScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                '精神的なこと、これも技術のうち。',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              Text('精神的なこと、これも技術のうち。', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               SizedBox(height: 48),
               Row(
                 spacing: 50,
@@ -37,7 +34,7 @@ class StartScreen extends StatelessWidget {
                   RoundedButton(
                     title: "Login",
                     onPressed: () {
-                      context.push(Routes.signIn);
+                      context.push(Routes.sign_in);
                     },
                   ),
                 ],

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:my_travel_app/core/exceptions/app_exception.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
+import 'package:my_travel_app/ui/start/reset_pass/auth_error_codes.dart';
 
 import '../../model/app_user/app_user.dart';
 import 'auth_credential.dart';
@@ -55,6 +56,29 @@ class AuthRepositoryFirebase implements AuthRepository {
       }
     } on FirebaseAuthException catch (e) {
       throw AppException("Firebase Auth Error: ${e.message}");
+    }
+  }
+
+  @override
+  Future<void> sendResetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case AuthErrorCodes.invalidEmail:
+          throw AppException("メールアドレスの形式が正しくありません", code: e.code);
+
+        case AuthErrorCodes.userNotFound:
+          throw AppException("指定されたメールアドレスのユーザーが存在しません", code: e.code);
+
+        case AuthErrorCodes.tooManyRequests:
+          throw AppException("リクエストが多すぎます。しばらく待ってからお試しください", code: e.code);
+
+        default:
+          throw AppException("Firebase:不明なエラーが発生しました", code: e.code);
+      }
+    } catch (e) {
+      throw AppException("不明なエラーが発生しました", code: AuthErrorCodes.unknown);
     }
   }
 
