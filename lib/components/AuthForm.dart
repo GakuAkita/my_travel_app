@@ -37,9 +37,7 @@ class _AuthFormState extends State<AuthForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: () {
-                print("start login with Google");
-              },
+              onTap: widget.onGoogleTap,
               child: Image(image: AssetImage("assets/images/android_light_rd_ctn4x.png"), width: 250),
             ),
             SizedBox(height: 50),
