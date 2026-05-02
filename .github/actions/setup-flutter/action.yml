@@ -18,10 +18,12 @@ inputs:
     default: null
   key_properties:
     description: "Base64 encoded key.properties"
-    required: true
+    required: false
+    default: null
   jks:
     description: "Base64 encoded .jks"
-    required: true
+    required: false
+    default: null
 
 runs:
   using: "composite"

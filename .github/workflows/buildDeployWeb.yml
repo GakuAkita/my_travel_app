@@ -27,8 +27,6 @@ jobs:
           google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           env-file-content: ${{ secrets.ENV_FILE }}
           firebase-json: ${{ secrets.FIREBASE_JSON }}
-          key_properties: ${{ secrets.KEY_PROPERTIES }}
-          jks: ${{ secrets.RELEASE_JKS }}
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
