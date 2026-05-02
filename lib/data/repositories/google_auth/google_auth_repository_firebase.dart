@@ -32,7 +32,7 @@ class GoogleAuthRepositoryFirebase implements GoogleAuthRepository {
         /* 明示的にリンクしなくても、勝手にリンクしてくれるらしい */
         await _firebaseAuth.signInWithCredential(credential);
       } else {
-        throw AppException("Not implemeneted yet");
+        throw AppException("Not implemented yet");
       }
     } on GoogleSignInException catch (e) {
       throw AppException(e.description ?? "Unknown", code: e.code.toString());
