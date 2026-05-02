@@ -1,15 +1,15 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
-
-import '../../../../data/repositories/auth/auth_repository.dart';
+import 'package:my_travel_app/data/repositories/email_auth/email_auth_repository.dart';
 
 class ResetPasswordViewModel extends ChangeNotifier {
-  final AuthRepository _authRepository;
+  final EmailAuthRepository _emailAuthRepository;
 
   String _email = "";
 
-  ResetPasswordViewModel({required AuthRepository authRepository}) : _authRepository = authRepository;
+  ResetPasswordViewModel({required EmailAuthRepository emailAuthRepository})
+    : _emailAuthRepository = emailAuthRepository;
 
   void updateEmail(String email) {
     _email = email;
@@ -19,7 +19,7 @@ class ResetPasswordViewModel extends ChangeNotifier {
   Future<ResultInfo> sendResetPassword() async {
     try {
       print(_email);
-      await _authRepository.sendResetPassword(_email);
+      await _emailAuthRepository.sendResetPassword(_email);
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));

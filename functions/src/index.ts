@@ -50,3 +50,12 @@ export const onExpenseDataChange = onValueWritten(
     return null;
   }
 );
+
+const functions = require("firebase-functions/v1");
+export const onUserCreate = functions.auth.user().onCreate(async (user) => {
+  const { uid, email } = user;
+  await admin.database().ref(`/users/${uid}`).update({
+    email: email ?? "null_address@gmail.com",
+    role: "normal",
+  });
+});

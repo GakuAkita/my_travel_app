@@ -7,12 +7,14 @@ import 'RoundedButton.dart';
 class AuthForm extends StatefulWidget {
   final SCREEN_TYPE screenType;
   final Function(String email, String password) onSubmit;
+  final VoidCallback? onGoogleTap;
   final Function(String email)? onForgotPassword;
   final bool isLoading;
 
   const AuthForm({
     required this.screenType,
     required this.onSubmit,
+    this.onGoogleTap,
     this.onForgotPassword,
     this.isLoading = false,
     super.key,
@@ -34,28 +36,22 @@ class _AuthFormState extends State<AuthForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BasicTextField(
-              hintText: "Email",
-              autofocus: true,
-              onChanged: (value) => email = value,
+            GestureDetector(
+              onTap: widget.onGoogleTap,
+              child: Image(image: AssetImage("assets/images/android_light_rd_ctn4x.png"), width: 250),
             ),
+            SizedBox(height: 50),
+            BasicTextField(hintText: "Email", autofocus: true, onChanged: (value) => email = value),
             SizedBox(height: 30),
-            BasicTextField(
-              hintText: "Password",
-              obscureText: true,
-              onChanged: (value) => password = value,
-            ),
+            BasicTextField(hintText: "Password", obscureText: true, onChanged: (value) => password = value),
             SizedBox(height: 40),
             RoundedButton(
-              title:
-                  widget.screenType == SCREEN_TYPE.LOGIN ? "Login" : "Sign Up",
+              title: widget.screenType == SCREEN_TYPE.LOGIN ? "Login" : "Sign Up",
               onPressed: () async {
                 await widget.onSubmit(email, password);
               },
               textStyle: TextStyle(fontSize: 15),
-              buttonStyle: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 100),
-              ),
+              buttonStyle: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 100)),
             ),
             if (widget.screenType == SCREEN_TYPE.LOGIN) ...[
               SizedBox(height: 20),
@@ -65,10 +61,7 @@ class _AuthFormState extends State<AuthForm> {
                 },
                 child: Text(
                   "Forgot your password?",
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontSize: 18,
-                  ),
+                  style: TextStyle(decoration: TextDecoration.underline, fontSize: 18),
                 ),
               ),
             ],
