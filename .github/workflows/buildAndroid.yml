@@ -26,6 +26,8 @@ jobs:
         with:
           google-service-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           env-file-content: ${{ secrets.ENV_FILE }}
+          key_properties: ${{ secrets.KEY_PROPERTIES }}
+          jks: ${{ secrets.RELEASE_JKS }}
 
       # minSdkVersionが低いとビルドエラーになる。強制的に置き換える。
       # 本当はflutter.minSdkVersionの本来の値を変更できるのが一番いいが、、

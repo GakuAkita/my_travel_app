@@ -1,24 +1,32 @@
-name: 'Setup Flutter'
-description: 'Setup Flutter environment and dependencies'
+name: "Setup Flutter"
+description: "Setup Flutter environment and dependencies"
 
 inputs:
   flutter-version:
-    description: 'Flutter version to use'
+    description: "Flutter version to use"
     required: true
-    default: '3.41.8'
+    default: "3.41.8"
   google-service-json:
-    description: 'Base64 encoded Google Services JSON'
+    description: "Base64 encoded Google Services JSON"
     required: true
   env-file-content:
-    description: 'Base64 encoded ENV file content'
+    description: "Base64 encoded ENV file content"
     required: true
   firebase-json:
-    description: 'Base64 encoded Firebase JSON'
+    description: "Base64 encoded Firebase JSON"
+    required: false
+    default: null
+  key_properties:
+    description: "Base64 encoded key.properties"
+    required: false
+    default: null
+  jks:
+    description: "Base64 encoded .jks"
     required: false
     default: null
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
@@ -31,14 +39,28 @@ runs:
 
     - name: copy google-service
       shell: bash
-      run: echo "${{ inputs.google-service-json }}" | base64 --decode --ignore-garbage > ./android/app/google-services.json
+      run: echo "${{ inputs.google-service-json }}" | base64 --decode --ignore-garbage
+        > ./android/app/google-services.json
 
     - name: copy .env
       shell: bash
-      run: echo "${{ inputs.env-file-content }}" | base64 --decode --ignore-garbage > ./env
+      run: echo "${{ inputs.env-file-content }}" | base64 --decode --ignore-garbage >
+        ./env
 
     - name: copy firebase.json
       if: inputs.firebase-json != '' && inputs.firebase-json != 'null'
       shell: bash
-      run: echo "${{ inputs.firebase-json }}" | base64 --decode --ignore-garbage > ./firebase.json
+      run: echo "${{ inputs.firebase-json }}" | base64 --decode --ignore-garbage >
+        ./firebase.json
 
+    - name: copy key.properties
+      if: inputs.key_properties != ''
+      shell: bash
+      run: echo "${{ inputs.key_properties }}" | base64 --decode --ignore-garbage >
+        ./android/key.properties
+
+    - name: copy jks
+      if: inputs.jks != ''
+      shell: bash
+      run: echo "${{ inputs.jks }}" | base64 --decode --ignore-garbage >
+        ./android/app/akita_release.jks
