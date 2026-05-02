@@ -48,7 +48,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   if (!ret.isSuccess) {
                     ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("${ret.error?.errorMessage}"), duration: Duration(seconds: 2)),
+                      SnackBar(content: Text("${ret.error?.errorMessage}"), duration: Duration(seconds: 5)),
                     );
                   }
                 },
