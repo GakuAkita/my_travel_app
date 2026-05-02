@@ -5,6 +5,8 @@ import 'package:my_travel_app/data/repositories/planners/planners_repository.dar
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
 
+import '../../../../../CommonClass/ErrorInfo.dart';
+
 class PlannerSelectViewModel extends ChangeNotifier {
   final ShownTravelSession _travelSession;
   final TravelScopeStore _travelScopeStore;
@@ -31,7 +33,8 @@ class PlannerSelectViewModel extends ChangeNotifier {
 
   Future<ResultInfo> savePlanners(String groupId, String travelId, Map<String, TravelerCore> planners) async {
     try {
-      await _plannersRepository.se
+      await _plannersRepository.savePlanners(groupId, travelId, planners);
+      /* TravelScopeではTravelScopeStoreで取得のコールだけする */
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
