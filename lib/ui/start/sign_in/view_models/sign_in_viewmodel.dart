@@ -4,6 +4,7 @@ import 'package:my_travel_app/data/repositories/email_auth/email_auth_repository
 import 'package:my_travel_app/data/repositories/google_auth/google_auth_repository.dart';
 
 import '../../../../CommonClass/ErrorInfo.dart';
+import '../../../../core/exceptions/app_exception.dart';
 
 class SignInViewModel extends ChangeNotifier {
   final EmailAuthRepository _emailAuthRepository;
@@ -81,8 +82,10 @@ class SignInViewModel extends ChangeNotifier {
     try {
       await _googleAuthRepository.signIn();
       return ResultInfo.success();
+    } on AppException catch (e) {
+      print("${e.code} | ${e.toString()}");
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     } catch (e) {
-      print(e.toString());
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
     } finally {
       _isLoading = false;

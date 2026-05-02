@@ -24,33 +24,42 @@ class _SignInScreenState extends State<SignInScreen> {
       appBar: TopAppBar(automaticallyImplyLeading: true),
       body: LoadingOverlay(
         isLoading: viewModel.isLoading,
-        child: AuthForm(
-          screenType: SCREEN_TYPE.LOGIN,
-          onSubmit: (email, password) async {
-            final result = await viewModel.signInWithEmail(email, password);
-            if (result.isSuccess) {
-              print("success");
-            } else {
-              ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("${result.error?.errorMessage}"), duration: Duration(seconds: 2)),
-              );
-            }
-          },
-          onGoogleTap: () async {
-            final ret = await viewModel.signInWithGoogle();
-            if (!ret.isSuccess) {
-              ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("${ret.error?.errorMessage}"), duration: Duration(seconds: 2)),
-              );
-            }
-          },
-          onForgotPassword: (email) {
-            /* 引数を渡す */
-            print("$email pushed");
-            context.push(Routes.reset_password, extra: email);
-          },
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: AuthForm(
+                screenType: SCREEN_TYPE.LOGIN,
+                onSubmit: (email, password) async {
+                  final result = await viewModel.signInWithEmail(email, password);
+                  if (result.isSuccess) {
+                    print("success");
+                  } else {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("${result.error?.errorMessage}"),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                },
+                onGoogleTap: () async {
+                  final ret = await viewModel.signInWithGoogle();
+                  if (!ret.isSuccess) {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("${ret.error?.errorMessage}"), duration: Duration(seconds: 2)),
+                    );
+                  }
+                },
+                onForgotPassword: (email) {
+                  /* 引数を渡す */
+                  print("$email pushed");
+                  context.push(Routes.reset_password, extra: email);
+                },
+              ),
+            ),
+          ),
         ),
       ),
     );

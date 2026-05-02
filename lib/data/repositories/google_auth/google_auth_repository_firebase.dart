@@ -25,8 +25,7 @@ class GoogleAuthRepositoryFirebase implements GoogleAuthRepository {
       /* 明示的にリンクしなくても、勝手にリンクしてくれるらしい */
       await _firebaseAuth.signInWithCredential(credential);
     } on GoogleSignInException catch (e) {
-      print("${e.code} | ${e.description} | ${e.details}");
-      throw AppException(e.toString());
+      throw AppException(e.description ?? "Unknown", code: e.code.toString());
     } catch (e) {
       throw AppException(e.toString());
     }
