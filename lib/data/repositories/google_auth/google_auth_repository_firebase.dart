@@ -12,12 +12,20 @@ class GoogleAuthRepositoryFirebase implements GoogleAuthRepository {
   @override
   Future<void> signIn() async {
     try {
-      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
+      //https://github.com/flutter/flutter/issues/172073
+      final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+      await googleSignIn.initialize(); /* 最初にinitializeをしないとだめ。 */
+
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
+
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
       final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
 
+      /* 明示的にリンクしなくても、勝手にリンクしてくれるらしい */
       await _firebaseAuth.signInWithCredential(credential);
     } on GoogleSignInException catch (e) {
+      print("${e.code} | ${e.description} | ${e.details}");
       throw AppException(e.toString());
     } catch (e) {
       throw AppException(e.toString());

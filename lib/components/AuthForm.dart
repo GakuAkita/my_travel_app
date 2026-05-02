@@ -30,42 +30,44 @@ class _AuthFormState extends State<AuthForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: widget.onGoogleTap,
-              child: Image(image: AssetImage("assets/images/android_light_rd_ctn4x.png"), width: 250),
-            ),
-            SizedBox(height: 50),
-            BasicTextField(hintText: "Email", autofocus: true, onChanged: (value) => email = value),
-            SizedBox(height: 30),
-            BasicTextField(hintText: "Password", obscureText: true, onChanged: (value) => password = value),
-            SizedBox(height: 40),
-            RoundedButton(
-              title: widget.screenType == SCREEN_TYPE.LOGIN ? "Login" : "Sign Up",
-              onPressed: () async {
-                await widget.onSubmit(email, password);
-              },
-              textStyle: TextStyle(fontSize: 15),
-              buttonStyle: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 100)),
-            ),
-            if (widget.screenType == SCREEN_TYPE.LOGIN) ...[
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  widget.onForgotPassword?.call(email);
-                },
-                child: Text(
-                  "Forgot your password?",
-                  style: TextStyle(decoration: TextDecoration.underline, fontSize: 18),
-                ),
+    return SingleChildScrollView(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: widget.onGoogleTap,
+                child: Image(image: AssetImage("assets/images/android_light_rd_ctn4x.png"), width: 250),
               ),
+              SizedBox(height: 50),
+              BasicTextField(hintText: "Email", autofocus: true, onChanged: (value) => email = value),
+              SizedBox(height: 30),
+              BasicTextField(hintText: "Password", obscureText: true, onChanged: (value) => password = value),
+              SizedBox(height: 40),
+              RoundedButton(
+                title: widget.screenType == SCREEN_TYPE.LOGIN ? "Login" : "Sign Up",
+                onPressed: () async {
+                  await widget.onSubmit(email, password);
+                },
+                textStyle: TextStyle(fontSize: 15),
+                buttonStyle: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 100)),
+              ),
+              if (widget.screenType == SCREEN_TYPE.LOGIN) ...[
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    widget.onForgotPassword?.call(email);
+                  },
+                  child: Text(
+                    "Forgot your password?",
+                    style: TextStyle(decoration: TextDecoration.underline, fontSize: 18),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
