@@ -98,6 +98,8 @@ class TravelPath extends PathNode {
   ItineraryPath get itinerary => ItineraryPath(path);
 
   String get travelers => child("travelers");
+
+  String get planners => child("planners");
 }
 
 class ExpensesPath extends PathNode {
