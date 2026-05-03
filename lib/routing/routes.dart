@@ -17,6 +17,7 @@ abstract final class Routes {
   static const settings_version_info = "/settings_version_info";
   static const settings_create_group = "/settings_create_group";
   static const settings_create_travel = "/settings_create_travel";
+  static const settings_planners = "/settings_planners";
 
   //認証不要なルートのリスト
   static const publicRoutes = [start, sign_in, sign_up, reset_password];
