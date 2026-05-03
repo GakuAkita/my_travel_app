@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:my_travel_app/CommonClass/ErrorInfo.dart';
+import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/data/model/itinerary_on_edit/itinerary_on_edit.dart';
 import 'package:my_travel_app/data/model/itinerary_table/itinerary_table.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
@@ -53,6 +54,19 @@ class ItineraryViewModel extends ChangeNotifier {
       return null;
     }
     return _roleState.data;
+  }
+
+  /* 保持しておくplanners */
+  Map<String, TravelerCore> _planners = {};
+
+  Map<String, TravelerCore> get planners => _planners;
+
+  bool isPlanner() {
+    return _planners.containsKey(_appSession.currentUser!.uid);
+  }
+
+  bool canEdit() {
+    return isPlanner() || userRole == UserRole.admin;
   }
 
   bool get editMode => _itineraryStore.editMode;
@@ -130,7 +144,14 @@ class ItineraryViewModel extends ChangeNotifier {
   }
 
   void _travelScopeSync() {
-    try {} finally {
+    try {
+      if (_travelScopeStore.planners.hasData && !_travelScopeStore.planners.hasError) {
+        _planners = _travelScopeStore.planners.data!;
+      } else {
+        /* 何もしない */
+      }
+      print("planners = ${_planners}");
+    } finally {
       notifyListeners();
     }
   }
