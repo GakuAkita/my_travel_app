@@ -79,10 +79,32 @@ class PlannerSelectViewModel extends ChangeNotifier {
     }
   }
 
-  Future<ResultInfo> savePlanners(String groupId, String travelId, Map<String, TravelerCore> planners) async {
+  Future<ResultInfo> savePlanners() async {
+    try {
+      final groupId = _travelSession.currentTravel!.groupId!;
+      final travelId = _travelSession.currentTravel!.travelId!;
+
+      Map<String, TravelerCore> data = {};
+      for (final traveler in _selectablePlanners.entries) {
+        if (traveler.value.isChecked) {
+          data[traveler.key] = traveler.value.traveler.core;
+        }
+      }
+      return await _savePlanners(groupId, travelId, data);
+    } catch (e) {
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
+    }
+  }
+
+  Future<ResultInfo> _savePlanners(
+    String groupId,
+    String travelId,
+    Map<String, TravelerCore> planners,
+  ) async {
     try {
       await _plannersRepository.savePlanners(groupId, travelId, planners);
       /* TravelScopeではTravelScopeStoreで取得のコールだけする */
+      _travelScopeStore.refreshPlanners();
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
@@ -46,7 +47,22 @@ class _PlannerSelectScreenState extends State<PlannerSelectScreen> {
                     },
                   ),
                 ),
-                RoundedButton(title: "プランナー保存", onPressed: () {}),
+                RoundedButton(
+                  title: "プランナー保存",
+                  onPressed: () async {
+                    final ret = await viewModel.savePlanners();
+                    if (ret.isSuccess) {
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("プランナーを設定しました")));
+                      context.pop();
+                    } else {
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
+                    }
+                  },
+                ),
               ],
             ),
           ),
