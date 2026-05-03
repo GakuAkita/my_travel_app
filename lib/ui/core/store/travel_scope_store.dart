@@ -41,9 +41,7 @@ class TravelScopeStore extends ChangeNotifier {
   }
 
   void _refresh() async {
-    print(
-      "TravelScopeStore detected change in ShownTravelSession.${_session.currentTravel.toString()}",
-    );
+    print("TravelScopeStore detected change in ShownTravelSession.${_session.currentTravel.toString()}");
     if (!_session.initialized) {
       /**
        * travelSessionはログアウトしない限りは作り直されることはないので、
@@ -56,11 +54,7 @@ class TravelScopeStore extends ChangeNotifier {
     try {
       /* ここに来た時点でTravelSessionは初期化されている */
       await Future.wait([
-        _refreshAllGroupMembers(
-          isLastNotify: false,
-          isLoadingNotify: true,
-          isGetProfileName: true,
-        ),
+        _refreshAllGroupMembers(isLastNotify: false, isLoadingNotify: true, isGetProfileName: true),
         refreshParticipants(isLastNotify: false, isLoadingNotify: true),
         _refreshPlanners(isLastNotify: false, isLoadingNotify: true),
       ]);
@@ -112,19 +106,13 @@ class TravelScopeStore extends ChangeNotifier {
   }) async {
     try {
       if (_session.currentTravel == null) {
-        _allGroupMembers = const DataState(
-          data: {},
-          isLoading: false,
-          error: null,
-        );
+        _allGroupMembers = const DataState(data: {}, isLoading: false, error: null);
         return;
       }
       if (!checkIsShownTravelValid(_session.currentTravel!).isSuccess) {
         _allGroupMembers = DataState(
           isLoading: false,
-          error: ErrorInfo(
-            errorMessage: "Invalid shown travel. Probably Coding error.",
-          ),
+          error: ErrorInfo(errorMessage: "Invalid shown travel. Probably Coding error."),
         );
         return;
       }
@@ -133,9 +121,7 @@ class TravelScopeStore extends ChangeNotifier {
         notifyListeners();
       }
 
-      final _data = await _groupMembersRepository.getAllGroupMembers(
-        _session.currentTravel!.groupId!,
-      );
+      final _data = await _groupMembersRepository.getAllGroupMembers(_session.currentTravel!.groupId!);
 
       Map<String, TravelerBasic> data = _data.toTravelerBasicMap();
       /* getPutMembersProfileNameでは_allGroupMembersを見るのでここで一度入れておかないとだめ */
@@ -143,8 +129,7 @@ class TravelScopeStore extends ChangeNotifier {
       if (isGetProfileName) {
         await Future.wait([
           /* getPutMembersProfileNAmesにawaitしたら並行処理の意味ない */
-          for (final uid in data.keys)
-            getPutMembersProfileName(uid, isLastNotify: false),
+          for (final uid in data.keys) getPutMembersProfileName(uid, isLastNotify: false),
         ]);
       }
 
@@ -168,21 +153,15 @@ class TravelScopeStore extends ChangeNotifier {
   }
 
   /* グループメンバーを変えずにメンバーのプロフィール名だけ更新したいとき */
-  Future<ResultInfo> getPutMembersProfileName(
-    String uid, {
-    bool isLastNotify = true,
-  }) async {
+  Future<ResultInfo> getPutMembersProfileName(String uid, {bool isLastNotify = true}) async {
     if (_allGroupMembers.hasError) {
       return ResultInfo.failed(error: _allGroupMembers.error!);
     }
 
     try {
       final profileName = await _userSettingsRepository.getProfileName(uid);
-      if (_allGroupMembers.data != null &&
-          _allGroupMembers.data![uid] != null) {
-        _allGroupMembers.data![uid] = _allGroupMembers.data![uid]!.copyWith(
-          profile_name: profileName,
-        );
+      if (_allGroupMembers.data != null && _allGroupMembers.data![uid] != null) {
+        _allGroupMembers.data![uid] = _allGroupMembers.data![uid]!.copyWith(profile_name: profileName);
       }
       return ResultInfo.success();
     } catch (e) {
@@ -194,26 +173,17 @@ class TravelScopeStore extends ChangeNotifier {
     }
   }
 
-  Future<void> refreshParticipants({
-    bool isLastNotify = true,
-    bool isLoadingNotify = true,
-  }) async {
+  Future<void> refreshParticipants({bool isLastNotify = true, bool isLoadingNotify = true}) async {
     try {
       if (_session.currentTravel == null) {
-        _participants = const DataState(
-          data: {},
-          isLoading: false,
-          error: null,
-        );
+        _participants = const DataState(data: {}, isLoading: false, error: null);
         return;
       }
 
       if (!checkIsShownTravelValid(_session.currentTravel!).isSuccess) {
         _participants = DataState(
           isLoading: false,
-          error: ErrorInfo(
-            errorMessage: "Invalid Travel. Probably coding error",
-          ),
+          error: ErrorInfo(errorMessage: "Invalid Travel. Probably coding error"),
         );
         return;
       }
@@ -225,10 +195,7 @@ class TravelScopeStore extends ChangeNotifier {
 
       final groupId = _session.currentTravel!.groupId!;
       final travelId = _session.currentTravel!.travelId!;
-      final data = await _participantsRepository.getAllTravelers(
-        groupId,
-        travelId,
-      );
+      final data = await _participantsRepository.getAllTravelers(groupId, travelId);
       _participants = DataState(data: data, isLoading: false, error: null);
     } finally {
       if (isLastNotify) {
@@ -237,10 +204,11 @@ class TravelScopeStore extends ChangeNotifier {
     }
   }
 
-  Future<void> _refreshPlanners({
-    bool isLoadingNotify = true,
-    bool isLastNotify = true,
-  }) async {
+  Future<void> refreshPlanners({bool isLoadingNotify = true, bool isLastNotify = true}) async {
+    await _refreshPlanners(isLoadingNotify: isLoadingNotify, isLastNotify: isLastNotify);
+  }
+
+  Future<void> _refreshPlanners({bool isLoadingNotify = true, bool isLastNotify = true}) async {
     try {
       if (_session.currentTravel == null) {
         _planners = const DataState(data: {}, isLoading: false, error: null);
@@ -248,10 +216,7 @@ class TravelScopeStore extends ChangeNotifier {
       }
 
       if (!checkIsShownTravelValid(_session.currentTravel!).isSuccess) {
-        _planners = DataState(
-          isLoading: false,
-          error: ErrorInfo(errorMessage: "Invalid Travel"),
-        );
+        _planners = DataState(isLoading: false, error: ErrorInfo(errorMessage: "Invalid Travel"));
         return;
       }
 

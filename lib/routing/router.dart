@@ -45,6 +45,8 @@ import 'package:my_travel_app/ui/main/itinerary/table_edit/widgets/itinerary_tab
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/widgets/group_create_screen.dart';
 import 'package:my_travel_app/ui/main/settings/main/widgets/settings_screen.dart';
+import 'package:my_travel_app/ui/main/settings/planner_select/view_models/planner_select_viewmodel.dart';
+import 'package:my_travel_app/ui/main/settings/planner_select/widgets/planner_select_screen.dart';
 import 'package:my_travel_app/ui/main/settings/profile/view_models/profile_viewmodel.dart';
 import 'package:my_travel_app/ui/main/settings/profile/widgets/profile_screen.dart';
 import 'package:my_travel_app/ui/main/settings/software_version/widgets/version_info_screen.dart';
@@ -283,6 +285,17 @@ GoRouter createRouter(AppSession session) {
               child: ProfileScreen(),
             ),
           ),
+          GoRoute(
+            path: Routes.settings_planners,
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (innerContext) => PlannerSelectViewModel(
+                travelSession: innerContext.read(),
+                travelScopeStore: innerContext.read(),
+                plannersRepository: innerContext.read(),
+              ),
+              child: PlannerSelectScreen(),
+            ),
+          ),
         ],
       ),
     ],
@@ -387,7 +400,9 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
     Provider<TravelRepository>(
       create: (innerContext) => TravelRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),
-    Provider<PlannersRepository>(create: (innerContext) => PlannersRepositoryRealtimeDb()),
+    Provider<PlannersRepository>(
+      create: (innerContext) => PlannersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
+    ),
     Provider<UsersRepository>(
       create: (innerContext) => UsersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
     ),

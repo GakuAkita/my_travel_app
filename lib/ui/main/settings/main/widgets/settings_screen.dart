@@ -35,10 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 final role = viewModel.roleState.data;
                 context.push(Routes.settings_travel_select, extra: role);
               },
-              menuName:
-                  viewModel.roleState.data == UserRole.admin
-                      ? "表示旅行選択(参加者決定)"
-                      : "表示旅行選択",
+              menuName: viewModel.roleState.data == UserRole.admin ? "表示旅行選択(参加者決定)" : "表示旅行選択",
             ),
 
             if (viewModel.roleState.data == UserRole.admin) ...[
@@ -54,6 +51,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context.push(Routes.settings_create_group);
                 },
                 menuName: "グループ作成/削除",
+              ),
+              SettingMenubar(
+                onPressed: () {
+                  context.push(Routes.settings_planners);
+                },
+                menuName: "プランナー選択",
               ),
             ], //adminだったらこちらを表示
             SettingMenubar(

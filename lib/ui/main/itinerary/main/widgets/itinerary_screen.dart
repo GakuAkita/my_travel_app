@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../../../../../components/BasicText.dart';
 import '../../../../../components/CircleIconButton.dart';
 import '../../../../../components/ValidatedSwitch.dart';
-import '../../../../../constants.dart';
 import '../../../../../data/model/itinerary_section/itinerary_section.dart';
 import 'itinerary_section_display.dart';
 import 'itinerary_section_edit.dart';
@@ -51,101 +50,101 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
               : viewModel.travel == null
               ? Center(child: BasicText(text: "Settingsから表示旅行を設定してください"))
               : Expanded(
-                child: Column(
-                  children: [
-                    if (viewModel.userRole == UserRole.admin)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            BasicText(text: "プランナーモード"),
-                            /* 編集モードと同義 */
-                            SizedBox(width: 10),
-                            ValidatedSwitch(
-                              initialStatus: viewModel.editMode,
-                              isEnabled: !viewModel.isEditLoading,
-                              /* 複数連続タップ禁止 */
-                              onWillChange: (newVal) async {
-                                if (newVal) {
-                                  /* offからonにするとき */
-                                  final ret = await viewModel.switchEditModePreCheckWithNotify();
-                                  if (ret.isSuccess) {
-                                    viewModel.setEditMode(newVal);
-                                    viewModel.copySectionsToBuffer();
-                                    return newVal;
-                                  } else {
-                                    print("${ret.error?.errorMessage}");
-                                    viewModel.setEditMode(!newVal);
-                                    ScaffoldMessenger.of(context).clearSnackBars();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(ret.error?.errorMessage ?? "Unknown error")),
-                                    );
-                                    return !newVal; /* 変更せずの元の状態を保持 */
-                                  }
-                                } else {
-                                  /* 保存するか */
-                                  final bool? confirm = await showDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder:
-                                        (context) => AlertDialog(
-                                          title: Text("保存しますか？"),
-                                          content: Text("データを保存してから切り替えますか?\n編集を続けたい場合はポップアップ外をタップしてください"),
-                                          actions: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                TextButton(
-                                                  onPressed: () => context.pop(false),
-                                                  child: Text("保存せずに閉じる"),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () => context.pop(true),
-                                                  child: Text("保存する"),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                  );
-                                  if (confirm == null) {
-                                    print("switch EditMode Canceled");
-                                    return !newVal;
-                                  } else {
-                                    if (confirm) {
-                                      /* editingを転写し、データをリモートに上げる */
-                                      final ret = await viewModel.saveItinerarySections();
-                                      if (ret.isSuccess) {
-                                        /* watchでItineraryStoreで自動で更新される。 */
-                                      } else {
-                                        /* スナックバーを出す */
-                                        ScaffoldMessenger.of(context).clearSnackBars();
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(ret.error?.errorMessage ?? "Unknown error")),
-                                        );
-                                        return !newVal;
-                                      }
+                  child: Column(
+                    children: [
+                      if (viewModel.canEdit())
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              BasicText(text: "プランナーモード"),
+                              /* 編集モードと同義 */
+                              SizedBox(width: 10),
+                              ValidatedSwitch(
+                                initialStatus: viewModel.editMode,
+                                isEnabled: !viewModel.isEditLoading,
+                                /* 複数連続タップ禁止 */
+                                onWillChange: (newVal) async {
+                                  if (newVal) {
+                                    /* offからonにするとき */
+                                    final ret = await viewModel.switchEditModePreCheckWithNotify();
+                                    if (ret.isSuccess) {
+                                      viewModel.setEditMode(newVal);
+                                      viewModel.copySectionsToBuffer();
+                                      return newVal;
                                     } else {
-                                      /* 保存せずに閉じるので、editingの内容はそのままにして捨てる */
-                                      print("Switch to editMode off without saving itinerary");
+                                      print("${ret.error?.errorMessage}");
+                                      viewModel.setEditMode(!newVal);
+                                      ScaffoldMessenger.of(context).clearSnackBars();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(ret.error?.errorMessage ?? "Unknown error")),
+                                      );
+                                      return !newVal; /* 変更せずの元の状態を保持 */
                                     }
-                                    /* onEditを消しに行く */
-                                    await viewModel.removeItineraryOnEdit(); /* エラーチェックはいいや */
-                                    viewModel.setEditMode(newVal);
-                                    /* onEditを消す */
-                                    return newVal;
+                                  } else {
+                                    /* 保存するか */
+                                    final bool? confirm = await showDialog(
+                                      context: context,
+                                      barrierDismissible: true,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("保存しますか？"),
+                                        content: Text("データを保存してから切り替えますか?\n編集を続けたい場合はポップアップ外をタップしてください"),
+                                        actions: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () => context.pop(false),
+                                                child: Text("保存せずに閉じる"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () => context.pop(true),
+                                                child: Text("保存する"),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (confirm == null) {
+                                      print("switch EditMode Canceled");
+                                      return !newVal;
+                                    } else {
+                                      if (confirm) {
+                                        /* editingを転写し、データをリモートに上げる */
+                                        final ret = await viewModel.saveItinerarySections();
+                                        if (ret.isSuccess) {
+                                          /* watchでItineraryStoreで自動で更新される。 */
+                                        } else {
+                                          /* スナックバーを出す */
+                                          ScaffoldMessenger.of(context).clearSnackBars();
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(ret.error?.errorMessage ?? "Unknown error"),
+                                            ),
+                                          );
+                                          return !newVal;
+                                        }
+                                      } else {
+                                        /* 保存せずに閉じるので、editingの内容はそのままにして捨てる */
+                                        print("Switch to editMode off without saving itinerary");
+                                      }
+                                      /* onEditを消しに行く */
+                                      await viewModel.removeItineraryOnEdit(); /* エラーチェックはいいや */
+                                      viewModel.setEditMode(newVal);
+                                      /* onEditを消す */
+                                      return newVal;
+                                    }
                                   }
-                                }
-                              },
-                            ),
-                          ],
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    Expanded(
-                      child:
-                          viewModel.editMode
-                              ? CustomScrollView(
+                      Expanded(
+                        child: viewModel.editMode
+                            ? CustomScrollView(
                                 slivers: [
                                   SliverReorderableList(
                                     itemCount: viewModel.editingItinerarySections.length,
@@ -193,59 +192,55 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                       child: CircleIconButton(
                                         icon: Icons.add,
                                         onPressed: () async {
-                                          final selectedSection = await showModalBottomSheet<
-                                            ItinerarySection
-                                          >(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            builder: (context) {
-                                              return DraggableScrollableSheet(
-                                                initialChildSize: 0.5,
-                                                // 最初の高さ（画面の50%）
-                                                minChildSize: 0.2,
-                                                maxChildSize: 0.9,
-                                                // 最大で画面の90%まで引っ張れる
-                                                expand: false,
-                                                builder: (_, scrollController) {
-                                                  return Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Theme.of(context).colorScheme.surface,
-                                                      borderRadius: BorderRadius.vertical(
-                                                        top: Radius.circular(20),
-                                                      ),
-                                                    ),
-                                                    child: ListView(
-                                                      controller: scrollController,
-                                                      children: [
-                                                        ListTile(
-                                                          leading: Icon(Icons.text_fields),
-                                                          title: Text('通常Markdown'),
-                                                          onTap:
-                                                              () => context.pop(
+                                          final selectedSection =
+                                              await showModalBottomSheet<ItinerarySection>(
+                                                context: context,
+                                                isScrollControlled: true,
+                                                builder: (context) {
+                                                  return DraggableScrollableSheet(
+                                                    initialChildSize: 0.5,
+                                                    // 最初の高さ（画面の50%）
+                                                    minChildSize: 0.2,
+                                                    maxChildSize: 0.9,
+                                                    // 最大で画面の90%まで引っ張れる
+                                                    expand: false,
+                                                    builder: (_, scrollController) {
+                                                      return Container(
+                                                        decoration: BoxDecoration(
+                                                          color: Theme.of(context).colorScheme.surface,
+                                                          borderRadius: BorderRadius.vertical(
+                                                            top: Radius.circular(20),
+                                                          ),
+                                                        ),
+                                                        child: ListView(
+                                                          controller: scrollController,
+                                                          children: [
+                                                            ListTile(
+                                                              leading: Icon(Icons.text_fields),
+                                                              title: Text('通常Markdown'),
+                                                              onTap: () => context.pop(
                                                                 ItinerarySection.emptyMarkdown(),
                                                               ),
-                                                        ),
-                                                        ListTile(
-                                                          leading: Icon(Icons.table_chart),
-                                                          title: Text('テーブル'),
-                                                          onTap:
-                                                              () =>
+                                                            ),
+                                                            ListTile(
+                                                              leading: Icon(Icons.table_chart),
+                                                              title: Text('テーブル'),
+                                                              onTap: () =>
                                                                   context.pop(ItinerarySection.emptyTable()),
-                                                        ),
-                                                        ListTile(
-                                                          leading: Icon(Icons.space_bar),
-                                                          title: Text('空白行'),
-                                                          onTap:
-                                                              () =>
+                                                            ),
+                                                            ListTile(
+                                                              leading: Icon(Icons.space_bar),
+                                                              title: Text('空白行'),
+                                                              onTap: () =>
                                                                   context.pop(ItinerarySection.emptySpace()),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
+                                                      );
+                                                    },
                                                   );
                                                 },
                                               );
-                                            },
-                                          );
                                           if (selectedSection != null) {
                                             print("selectedSection = ${selectedSection.runtimeType}");
                                             viewModel.addSection(selectedSection);
@@ -258,7 +253,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                   ),
                                 ],
                               )
-                              : RefreshIndicator(
+                            : RefreshIndicator(
                                 /* 表示用 */
                                 onRefresh: () async {},
                                 child: SingleChildScrollView(
@@ -278,10 +273,10 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                                   ),
                                 ),
                               ),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
         ],
       ),
     );
