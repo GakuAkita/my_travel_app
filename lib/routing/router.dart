@@ -24,7 +24,6 @@ import 'package:my_travel_app/data/repositories/travel/travel_repository_realtim
 import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository.dart';
 import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
-import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository_realtimedb.dart';
 import 'package:my_travel_app/data/repositories/users/users_repository.dart';
 import 'package:my_travel_app/data/repositories/users/users_repository_realtimedb.dart';
 import 'package:my_travel_app/domain/use_cases/crud_group_use_case.dart';
@@ -305,17 +304,6 @@ GoRouter createRouter(AppSession session) {
 /* サインアウトで死ぬインスタンス */
 List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
   return [
-    Provider<UserSettingsRepository>(
-      create: (innerContext) {
-        print("UserSettingsRepository was created");
-        return UserSettingsRepositoryRealtimeDb(database: FirebaseDatabase.instance);
-      },
-      dispose: (innerContext, repository) {
-        print("UserSettingsRepository was disposed");
-      },
-      lazy: false,
-    ),
-
     Provider<ExpenseRepository>(
       create: (innerContext) {
         print("ExpenseRepository was created");
