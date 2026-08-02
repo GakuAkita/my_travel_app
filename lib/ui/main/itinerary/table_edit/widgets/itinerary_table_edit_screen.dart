@@ -82,11 +82,23 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
             child: ReorderableListView.builder(
               buildDefaultDragHandles: false,
               itemCount: _editingTable.tableCells.length,
-              onReorder: (oldIndex, newIndex) {},
+              onReorder: (oldIndex, newIndex) {
+                print("reorder called :${oldIndex} ${newIndex}");
+                if (newIndex > oldIndex) {
+                  /* 一個removeAtで消えるので一個ずれる？ */
+                  newIndex -= 1;
+                }
+                print("Remove : index=${oldIndex}");
+                final row = _editingTable.tableCells.removeAt(oldIndex);
+                _editingTable.tableCells.insert(newIndex, row);
+                print("Finished reordering");
+                setState(() {});
+              },
               itemBuilder: (context, rowIndex) {
                 final row = _editingTable.tableCells[rowIndex];
                 return Slidable(
-                  key: ValueKey('row_$rowIndex'),
+                  // key: ValueKey('row_$rowIndex'),
+                  key: ObjectKey(row),
                   endActionPane: ActionPane(
                     motion: const ScrollMotion(),
                     children: [
