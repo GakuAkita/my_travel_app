@@ -34,8 +34,17 @@ runs:
       id: version
       shell: bash
       run: |
-        # 最新のタグを取得(vで始まるタグのみ)
-        LATEST_TAG=$(git describe --tags --match "v*" --abbrev=0 2>/dev/null || echo "")
+        if [ "$GITHUB_REF_TYPE" == "tag" ]; then
+          # タグを選択して実行された場合はそのタグをそのまま使う
+          if [[ "$GITHUB_REF_NAME" != v* ]]; then
+            echo "::error::Selected tag '$GITHUB_REF_NAME' does not match v* format"
+            exit 1
+          fi
+          LATEST_TAG="$GITHUB_REF_NAME"
+        else
+          # 最新のタグを取得(vで始まるタグのみ)
+          LATEST_TAG=$(git describe --tags --match "v*" --abbrev=0 2>/dev/null || echo "")
+        fi
         
         if [ -z "$LATEST_TAG" ]; then
           # タグが存在しない場合はv1.0.0から開始
@@ -67,8 +76,12 @@ runs:
       shell: bash
       run: |
         LATEST_TAG="${{ steps.version.outputs.latest_tag }}"
-        
-        if [ -z "$LATEST_TAG" ]; then
+
+        if [ "$GITHUB_REF_TYPE" == "tag" ]; then
+          # タグを選択して実行された場合は新しいバージョンを作成しない
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+          echo "Triggered on tag $LATEST_TAG, building existing version without creating a new tag"
+        elif [ -z "$LATEST_TAG" ]; then
           # タグが存在しない場合は変更ありとみなす
           echo "has_changes=true" >> $GITHUB_OUTPUT
           echo "No previous tag found, building new version"
