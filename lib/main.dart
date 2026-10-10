@@ -32,7 +32,7 @@ void main() async {
       print("Firebase Emulator connection failed: $e");
     }
   }
-  runApp(MultiProvider(providers: providers, child: MyApp()));
+  runApp(MultiProvider(providers: appProviders(), child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
