@@ -75,8 +75,10 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
   void initPayer() {
     final viewModel = context.read<AddEditExpenseViewModel>();
     _payerOption = viewModel.groupMembers;
+    /* 編集時は元の支払者、新規追加時は自分 */
+    final payerUid = viewModel.initialExpense?.payer.uid ?? viewModel.uid;
     for (var member in _payerOption) {
-      if (member.core.uid == viewModel.uid) {
+      if (member.core.uid == payerUid) {
         _payer = member;
       }
     }
