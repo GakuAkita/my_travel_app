@@ -1,31 +1,7 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository.dart';
-import 'package:my_travel_app/data/repositories/balance_info/balance_info_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/estimated_expense/estimated_expense_repository.dart';
-import 'package:my_travel_app/data/repositories/estimated_expense/estimated_expense_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/expenses/expense_repository.dart';
-import 'package:my_travel_app/data/repositories/general_manager/general_manager_repository.dart';
-import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository.dart';
-import 'package:my_travel_app/data/repositories/group_creator/group_creator_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/group_members/group_members_repository.dart';
-import 'package:my_travel_app/data/repositories/groups/groups_repository.dart';
-import 'package:my_travel_app/data/repositories/groups/groups_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/itinerary/itinerary_repository.dart';
-import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository.dart';
-import 'package:my_travel_app/data/repositories/joined_groups/joined_groups_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/money_exchange/money_exchange_repository.dart';
-import 'package:my_travel_app/data/repositories/participants/participants_repository.dart';
-import 'package:my_travel_app/data/repositories/planners/planners_repository.dart';
-import 'package:my_travel_app/data/repositories/planners/planners_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/travel/travel_repository.dart';
-import 'package:my_travel_app/data/repositories/travel/travel_repository_realtimedb.dart';
-import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository.dart';
-import 'package:my_travel_app/data/repositories/travel_keys/travel_keys_repository_realtimedb.dart';
+import 'package:my_travel_app/config/dependencies.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
-import 'package:my_travel_app/data/repositories/users/users_repository.dart';
-import 'package:my_travel_app/data/repositories/users/users_repository_realtimedb.dart';
 import 'package:my_travel_app/domain/use_cases/crud_group_use_case.dart';
 import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/routing/routes.dart';
@@ -59,12 +35,6 @@ import 'package:my_travel_app/ui/start/sign_up/widgets/sign_up_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-import '../data/repositories/expenses/expense_repository_realtimedb.dart';
-import '../data/repositories/general_manager/general_manager_repository_realtimedb.dart';
-import '../data/repositories/group_members/group_members_repository_realtimedb.dart';
-import '../data/repositories/itinerary/itinerary_repository_realtimedb.dart';
-import '../data/repositories/money_exchange/money_exchange_repository_realtimedb.dart';
-import '../data/repositories/participants/participants_repository_realtimedb.dart';
 import '../ui/core/store/travel_scope_store.dart';
 import '../ui/main/app_navigation_bar.dart';
 import '../ui/main/expenses/main/view_models/expenses_viewmodel.dart';
@@ -304,111 +274,7 @@ GoRouter createRouter(AppSession session) {
 /* サインアウトで死ぬインスタンス */
 List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
   return [
-    Provider<ExpenseRepository>(
-      create: (innerContext) {
-        print("ExpenseRepository was created");
-        return ExpenseRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance);
-      },
-      lazy: false,
-      dispose: (innerContext, repository) {
-        //print("ExpenseRepository was disposed");
-      },
-    ),
-    Provider<ItineraryRepository>(
-      create: (innerContext) {
-        //print("ItineraryRepository was created");
-        return ItineraryRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance);
-      },
-      lazy: false,
-      dispose: (innerContext, repo) {
-        // print("ItineraryRepository was disposed");
-      },
-    ),
-    Provider<GeneralManagerRepository>(
-      create: (innerContext) {
-        final appSession = innerContext.read<AppSession>();
-        final userId = appSession.currentUser?.uid;
-        if (userId == null) {
-          print("Warning!!! userId is null");
-          throw Exception("userId is null");
-        }
-
-        // print("GeneralManagerRepository was created");
-        return GeneralManagerRepositoryRealtimeDb(
-          firebaseDatabase: FirebaseDatabase.instance,
-          userId: userId,
-        );
-      },
-      lazy: false,
-      dispose: (innerContext, repo) {
-        // print("GeneralManagerRepository was disposed");
-      },
-    ),
-    Provider<ParticipantsRepository>(
-      create: (innerContext) {
-        final appSession = innerContext.read<AppSession>();
-        final userId = appSession.currentUser?.uid;
-        if (userId == null) {
-          print("Warning!!! userId is null");
-          throw Exception("userId is null");
-        }
-
-        // print("ParticipantsRepository was created");
-        return ParticipantsRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance, userId: userId);
-      },
-      lazy: false,
-      dispose: (innerContext, repo) {
-        // print("ParticipantsRepository was disposed");
-      },
-    ),
-    Provider<GroupMembersRepository>(
-      create: (innerContext) {
-        final appSession = innerContext.read<AppSession>();
-        final userId = appSession.currentUser?.uid;
-
-        if (userId == null) {
-          print("Warning!!! userId is null");
-          throw Exception("userId is null");
-        }
-
-        // print("GroupMembersRepository was created");
-        return GroupMembersRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance);
-      },
-      lazy: false,
-      dispose: (innerContext, repo) {
-        // print("GroupMembersRepository was disposed");
-      },
-    ),
-    Provider<JoinedGroupsRepository>(
-      create: (innerContext) => JoinedGroupsRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
-    Provider<TravelKeysRepository>(
-      create: (innerContext) => TravelKeysRepositoryRealtimedb(database: FirebaseDatabase.instance),
-    ),
-    Provider<TravelRepository>(
-      create: (innerContext) => TravelRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
-    Provider<PlannersRepository>(
-      create: (innerContext) => PlannersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
-    Provider<UsersRepository>(
-      create: (innerContext) => UsersRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
-    Provider<GroupCreatorRepository>(
-      create: (innerContext) => GroupCreatorRepositoryRealtimeDb(firebaseDatabase: FirebaseDatabase.instance),
-    ),
-    Provider<GroupsRepository>(
-      create: (innerContext) => GroupsRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
-    Provider<MoneyExchangeRepository>(
-      create: (innerContext) => MoneyExchangeRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
-    Provider<BalanceInfoRepository>(
-      create: (innerContext) => BalanceInfoRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
-    Provider<EstimatedExpenseRepository>(
-      create: (innerContext) => EstimatedExpenseRepositoryRealtimeDb(database: FirebaseDatabase.instance),
-    ),
+    ...loggedInRepositoryProviders(context),
 
     /// UserCases
     Provider<GetUserTravelsUseCase>(
