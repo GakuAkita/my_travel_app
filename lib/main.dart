@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ void main() async {
   if (kDebugMode) {
     /* デバッグモードだったらエミュレータに接続する */
     try {
+      FirebaseAuth.instance.useAuthEmulator("localhost", 9099);
+
       /// まじで意味わからないが、
       /// java.lang.IllegalStateException: Cannot call useEmulator() after instance has already been initialized.
       /// こういうエラーが出る。
