@@ -26,7 +26,10 @@ class AppSession extends ChangeNotifier {
         _currentUser = user;
         print("${currentUser?.uid}");
         notifyListeners();
-        _userSettingsRepository.setLastLogin(_currentUser!.uid, DateTime.now().toUtc().toIso8601String());
+        /* サインアウト時(user == null)は記録しない */
+        if (user != null) {
+          _userSettingsRepository.setLastLogin(user.uid, DateTime.now().toUtc().toIso8601String());
+        }
       }
     });
   }

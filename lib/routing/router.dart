@@ -137,7 +137,8 @@ GoRouter createRouter(AppSession session) {
                         userSettingsRepository: innerContext.read(),
                         appSession: innerContext.read(),
                       ),
-                      child: SettingsScreen(),
+                      /* Providerはライフサイクル管理だけ。ViewModelはコンストラクタで渡す */
+                      builder: (innerContext, _) => SettingsScreen(viewModel: innerContext.read()),
                     ),
                   ),
                 ],
