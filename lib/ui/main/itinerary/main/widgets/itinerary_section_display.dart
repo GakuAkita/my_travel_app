@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../components/BasicText.dart';
 import '../../../../../components/WhiteMarkdownBody.dart';
 import '../../../../../data/model/itinerary_section/itinerary_section.dart';
 
@@ -71,84 +70,90 @@ class ItinerarySectionDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     switch (itiSection) {
       case MarkdownSection():
         final markdown = itiSection as MarkdownSection;
-        return Column(
-          children: [
-            if (markdown.title != "")
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      markdown.title,
-                      style: TextStyle(fontSize: 25),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (markdown.title != "")
+                Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(left: 10),
+                  decoration: BoxDecoration(
+                    border: Border(left: BorderSide(color: colorScheme.primary, width: 4)),
                   ),
-                ],
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: WhiteMarkdownBody(
-                    data: markdown.content,
-                    onTapLink:
-                        (text, href, title) => _handleLinkTap(context, href),
-                  ),
+                  child: Text(markdown.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
                 ),
-              ],
-            ),
-          ],
+              if (markdown.content != "")
+                WhiteMarkdownBody(
+                  data: markdown.content,
+                  onTapLink: (text, href, title) => _handleLinkTap(context, href),
+                ),
+            ],
+          ),
         );
 
       case TableSection():
         final table = itiSection as TableSection;
-        return Table(
-          columnWidths: {
-            for (int i = 0; i < table.tableData.flexes.length; i++)
-              i: FlexColumnWidth(table.tableData.flexes[i].toDouble()),
-          },
-          border: TableBorder.all(color: Theme.of(context).colorScheme.primary),
-          children: [
-            // ヘッダー行
-            TableRow(
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              border: Border.all(color: colorScheme.primary.withValues(alpha: 0.6)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Table(
+              columnWidths: {
+                for (int i = 0; i < table.tableData.flexes.length; i++)
+                  i: FlexColumnWidth(table.tableData.flexes[i].toDouble()),
+              },
+              border: TableBorder.symmetric(inside: BorderSide(color: colorScheme.primary.withValues(alpha: 0.3))),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                for (int i = 0; i < table.tableData.header.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Center(
-                      child: BasicText(text: table.tableData.header[i]),
-                    ),
+                // ヘッダー行
+                TableRow(
+                  decoration: BoxDecoration(color: colorScheme.primary.withValues(alpha: 0.15)),
+                  children: [
+                    for (int i = 0; i < table.tableData.header.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                        child: Text(
+                          table.tableData.header[i],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.w700, color: colorScheme.primary),
+                        ),
+                      ),
+                  ],
+                ),
+                // データ行
+                for (final row in table.tableData.tableCells)
+                  TableRow(
+                    children: [
+                      for (int i = 0; i < table.tableData.header.length; i++)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          child: WhiteMarkdownBody(
+                            data: row.length > i ? row[i] : '',
+                            onTapLink: (text, href, title) => _handleLinkTap(context, href),
+                          ),
+                        ),
+                    ],
                   ),
               ],
             ),
-            // データ行
-            for (final row in table.tableData.tableCells)
-              TableRow(
-                children: [
-                  for (int i = 0; i < table.tableData.header.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: WhiteMarkdownBody(
-                        data: row.length > i ? row[i] : '',
-                        onTapLink:
-                            (text, href, title) =>
-                                _handleLinkTap(context, href),
-                      ),
-                    ),
-                ],
-              ),
-          ],
+          ),
         );
 
       case SpaceSection():
-        final space = itiSection as SpaceSection;
-        return SizedBox(height: 30);
+        return const SizedBox(height: 30);
 
       default:
-        return Text("Invalid");
+        return const Text("Invalid");
     }
   }
 }

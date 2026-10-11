@@ -1,22 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:my_travel_app/components/SimpleTextButton.dart';
 
 class ItineraryTableEditButton extends StatelessWidget {
-  VoidCallback? onPressed;
+  final VoidCallback? onPressed;
 
-  ItineraryTableEditButton({this.onPressed, super.key});
+  const ItineraryTableEditButton({this.onPressed, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: SimpleTextButton(
-        onPressed: onPressed,
-        child: Container(
-          decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.primary)),
-          height: 100,
-          child: Center(
-            child: Text("テーブル\nタップして編集", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+    final colorScheme = Theme.of(context).colorScheme;
+    return Material(
+      color: colorScheme.primary.withValues(alpha: 0.08),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.6)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Icon(Icons.table_chart_outlined, color: colorScheme.primary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "テーブル",
+                      style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.w600),
+                    ),
+                    Text("タップして編集", style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: colorScheme.primary),
+            ],
           ),
         ),
       ),

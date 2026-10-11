@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/data/model/travel/shown_travel_basic/shown_travel_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_core/traveler_core.dart';
+import 'package:my_travel_app/constants.dart';
+import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
+import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/ui/core/store/expense_store.dart';
 import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
 
@@ -12,6 +15,8 @@ class ExpensesViewModel extends ChangeNotifier {
   final ExpenseStore _expenseStore;
   final TravelScopeStore _travelScopeStore;
   final ShownTravelSession _travelSession;
+  final AppSession _appSession;
+  final UserSettingsRepository _userSettingsRepository;
 
   bool get isExpensesLoading => _expenseStore.allExpenses.isLoading;
 
@@ -63,6 +68,17 @@ class ExpensesViewModel extends ChangeNotifier {
 
   ShownTravelBasic? get currentTravel => _travelSession.currentTravel;
 
+  String? _userRole;
+
+  bool _disposed = false;
+
+  /* 費用概算はプランナーとAdminだけが見れる */
+  bool canViewEstimatedExpense() {
+    final uid = _appSession.currentUser?.uid;
+    final isPlanner = uid != null && (_allPlanners?.containsKey(uid) ?? false);
+    return isPlanner || _userRole == UserRole.admin;
+  }
+
   /**
    * 旅行がスイッチされるたびにViewModelが再生成される。
    */
@@ -70,9 +86,13 @@ class ExpensesViewModel extends ChangeNotifier {
     required ExpenseStore expenseStore,
     required TravelScopeStore travelScopeStore,
     required ShownTravelSession travelSession,
+    required AppSession appSession,
+    required UserSettingsRepository userSettingsRepository,
   }) : _expenseStore = expenseStore,
        _travelScopeStore = travelScopeStore,
-       _travelSession = travelSession {
+       _travelSession = travelSession,
+       _appSession = appSession,
+       _userSettingsRepository = userSettingsRepository {
     /**
      * UI側でviewModel.travelSession.currentTravelと書いてしまうと、
      * UIがTravelSessionに直接依存することになる。それはよくない。
@@ -82,6 +102,7 @@ class ExpensesViewModel extends ChangeNotifier {
 
     _expenseStore.addListener(_expenseSync);
     _travelScopeStore.addListener(_travelsSync);
+    _fetchUserRole();
 
     /* subscriptionして追加があったら更新する */
   }
@@ -154,6 +175,20 @@ class ExpensesViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> _fetchUserRole() async {
+    final uid = _appSession.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      _userRole = await _userSettingsRepository.getUserRole(uid);
+    } catch (e) {
+      /* 取れなかった場合はAdminではない扱いにする */
+      print("fetch user role error=${e.toString()}");
+    }
+    if (!_disposed) {
+      notifyListeners();
+    }
+  }
+
   void refreshExpenses({bool isLoadingNotify = true}) async {
     _expenseStore.refreshExpenses(isLoadingNotify: isLoadingNotify);
   }
@@ -167,6 +202,7 @@ class ExpensesViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _expenseStore.removeListener(_expenseSync);
     _travelScopeStore.removeListener(_travelsSync);
     print("ExpenseViewModel was disposed. code=${hashCode}");

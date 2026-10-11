@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../core/utils/UidColorHelper.dart';
+import '../../../../../core/utils/currency_format.dart';
 import '../../../../../data/model/expense/expense_info.dart';
 import '../../../../../data/model/traveler/traveler_basic.dart';
 
@@ -9,7 +11,7 @@ class ExpenseTile extends StatelessWidget {
   final Map<String, TravelerBasic> members;
   final VoidCallback? onTap;
 
-  ExpenseTile({
+  const ExpenseTile({
     required this.expense,
     required this.members,
     this.onTap,
@@ -20,118 +22,121 @@ class ExpenseTile extends StatelessWidget {
     if (members[uid] == null) {
       return "*"; /*uidが見つからなかった時*/
     }
-    String nameShown = members[uid]!.profile_name ?? members[uid]!.core.email;
-
-    return nameShown;
+    return members[uid]!.displayName;
   }
 
-  List<Widget> _buildReimbursedBadges(BuildContext context) {
+  /* 名前の先頭2文字 */
+  String _nameHead(String uid) {
+    final name = getProfileNameFromUid(uid);
+    return name.length >= 2 ? name.substring(0, 2) : name;
+  }
+
+  /* 支払った人 · 日付 */
+  String _subtitle() {
+    final payerName = getProfileNameFromUid(expense.payer.uid);
+    final createdAt = expense.createdAt;
+    if (createdAt == null) return "$payerName が支払い";
+    final date = DateFormat('M/d').format(DateTime.fromMillisecondsSinceEpoch(createdAt));
+    return "$payerName が支払い · $date";
+  }
+
+  Widget _badge({required String text, required Color background, required Color foreground}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(12)),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: foreground),
+      ),
+    );
+  }
+
+  List<Widget> _buildReimbursedBadges(BuildContext context, Map<String, int> uidColorIndexMap) {
     final List<String> uids = expense.reimbursedBy.keys.toList();
     if (uids.isEmpty) return [];
 
-    // members全体でのUIDの順序を取得
-    final Map<String, int> uidColorIndexMap =
-        UidColorHelper.getUidColorIndexMap(members);
+    /* グループメンバー全員で割る場合はまとめて表示する */
+    final isEveryone = members.isNotEmpty && members.keys.every(expense.reimbursedBy.containsKey);
+    if (isEveryone) {
+      final colorScheme = Theme.of(context).colorScheme;
+      return [
+        _badge(
+          text: "全員 (${uids.length}人)",
+          background: colorScheme.primary.withValues(alpha: 0.2),
+          foreground: colorScheme.primary,
+        ),
+      ];
+    }
 
     return uids.map((uid) {
-      String head = getProfileNameFromUid(uid);
-      if (head.length >= 2) {
-        head = head.substring(0, 2);
-      }
-
-      final badgeColor = UidColorHelper.getColorForUid(uid, uidColorIndexMap);
-      final textColor = UidColorHelper.getTextColorForUid(
-        uid,
-        uidColorIndexMap,
-      );
-
-      return Container(
-        margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: badgeColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          head,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: textColor,
-          ),
-        ),
+      return _badge(
+        text: _nameHead(uid),
+        background: UidColorHelper.getColorForUid(uid, uidColorIndexMap),
+        foreground: UidColorHelper.getTextColorForUid(uid, uidColorIndexMap),
       );
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    // members全体でのUIDの順序を取得
+    final Map<String, int> uidColorIndexMap = UidColorHelper.getUidColorIndexMap(members);
+    final payerUid = expense.payer.uid;
+    final splitCount = expense.reimbursedBy.length;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Left section: Item name and payer info
+              // 支払った人のアバター
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: UidColorHelper.getColorForUid(payerUid, uidColorIndexMap),
+                child: Text(
+                  _nameHead(payerUid),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: UidColorHelper.getTextColorForUid(payerUid, uidColorIndexMap),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
               Expanded(
-                flex: 5,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Expense item name
                     Text(
                       expense.expenseItem,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
-                      ),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
-                    // Payer info
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.account_circle_outlined,
-                          size: 16,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            getProfileNameFromUid(expense.payer.uid),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 2),
+                    Text(
+                      _subtitle(),
+                      style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    // Reimbursed badges
+                    // 割り勘する人
                     if (expense.reimbursedBy.isNotEmpty) ...[
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Icon(
-                            Icons.arrow_forward,
-                            size: 14,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 4),
-                          ..._buildReimbursedBadges(context),
+                          Icon(Icons.group_outlined, size: 16, color: colorScheme.onSurfaceVariant),
+                          ..._buildReimbursedBadges(context, uidColorIndexMap),
                         ],
                       ),
                     ],
@@ -139,25 +144,20 @@ class ExpenseTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              // Right section: Amount
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.inverseSurface,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  /* @TODO 円の場合はこれでいいが、外貨も対応するとなると、設定に応じて円なのかそれ以外なのかでわけないといけない!! */
-                  "¥${expense.expense.round().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onInverseSurface,
+              // 金額
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    formatYen(expense.expense),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                ),
+                  if (splitCount >= 2)
+                    Text(
+                      "1人 ${formatYen(expense.expense / splitCount)}",
+                      style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+                    ),
+                ],
               ),
             ],
           ),
