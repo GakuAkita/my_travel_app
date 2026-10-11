@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
 
 import '../../../../../../components/MultilineTextField.dart';
-import '../../../../../../components/SimpleSwitch.dart';
+import '../../../../../../components/WhiteMarkdownBody.dart';
 
 class ItineraryMarkdownEdit extends StatefulWidget {
   final MarkdownSection section;
@@ -40,71 +39,67 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
     super.dispose();
   }
 
+  /* 2回書くから関数化しているだけ */
+  void _updateMarkdown() {
+    widget.onChanged(_titleController.text, _contentController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
-    void _updateMarkdown() {
-      widget.onChanged(_titleController.text, _contentController.text);
-    }
-    /* 2回書くから関数化しているだけ */
+    final colorScheme = Theme.of(context).colorScheme;
+    final hasContent = _contentController.text.isNotEmpty;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: TextField(
-                  controller: _titleController,
-                  onChanged: (newTitle) {
-                    _updateMarkdown();
-                  },
-                  decoration: InputDecoration(
-                    hintText: "タイトル(空でも可)",
-                    hintStyle: TextStyle(color: Colors.white38),
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _titleController,
+                onChanged: (newTitle) {
+                  _updateMarkdown();
+                },
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                decoration: const InputDecoration(
+                  hintText: "タイトル(空でも可)",
+                  hintStyle: TextStyle(color: Colors.white38),
+                  isDense: true,
                 ),
               ),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(child: Text("Preview", overflow: TextOverflow.ellipsis)),
-                    SimpleSwitch(
-                      width: 50,
-                      height: 30,
-                      isEnabled: _contentController.text.isNotEmpty,
-                      onChanged: (status) {
-                        setState(() {
-                          previewStatus = status;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4),
-          if (previewStatus && _contentController.text.isNotEmpty)
-            Container(
-              height: 500,
-              decoration: BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Markdown(
-                data: _contentController.text.isNotEmpty ? _contentController.text : "contentがempty",
-              ),
-            )
-          else
-            MultilineTextField(
-              hintText: "Markdown",
-              controller: _contentController,
-              onChanged: (newContent) {
-                _updateMarkdown();
-              },
             ),
-        ],
-      ),
+            const SizedBox(width: 4),
+            IconButton(
+              tooltip: previewStatus ? "編集に戻る" : "プレビュー",
+              isSelected: previewStatus,
+              onPressed: hasContent ? () => setState(() => previewStatus = !previewStatus) : null,
+              icon: const Icon(Icons.visibility_outlined),
+              selectedIcon: const Icon(Icons.edit_outlined),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (previewStatus && hasContent)
+          Container(
+            constraints: const BoxConstraints(minHeight: 80),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border.all(color: colorScheme.outlineVariant),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: WhiteMarkdownBody(data: _contentController.text, selectable: false),
+          )
+        else
+          MultilineTextField(
+            hintText: "本文(Markdown)",
+            controller: _contentController,
+            onChanged: (newContent) {
+              _updateMarkdown();
+              /* プレビューボタンの有効/無効を更新する */
+              setState(() {});
+            },
+          ),
+      ],
     );
   }
 }

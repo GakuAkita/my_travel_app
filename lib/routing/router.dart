@@ -360,6 +360,8 @@ List<SingleChildWidget> buildLoggedInProviders(BuildContext context) {
         expenseStore: innerContext.read(),
         travelScopeStore: innerContext.read(),
         travelSession: innerContext.read(),
+        appSession: innerContext.read(),
+        userSettingsRepository: innerContext.read(),
       ),
       lazy: false,
     ),

@@ -32,6 +32,10 @@ final ThemeData customDarkBlueTheme = ThemeData(
     // セカンダリカラー上の文字色（黒）
     onSurface: Colors.white,
     // 背景色上の文字色（白）
+    onSurfaceVariant: Colors.white70,
+    // 補足テキストの色（少し暗い白）
+    outlineVariant: Colors.grey[700],
+    // M3のDividerなどの線の色（灰色）
     onError: Colors.white, // エラー色上の文字色（白）
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(

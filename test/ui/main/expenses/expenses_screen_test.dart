@@ -36,6 +36,13 @@ void main() {
     expect(find.text("費用概算"), findsOneWidget);
   });
 
+  testWidgets('プランナーでもadminでもない(bob)には費用概算が表示されない', (tester) async {
+    await pumpExpenses(tester, email: FakeBackend.bob.email);
+
+    expect(find.text("割り勘確認"), findsOneWidget);
+    expect(find.text("費用概算"), findsNothing);
+  });
+
   testWidgets('+を押すと費用を追加・まとめて追加が展開される', (tester) async {
     await pumpExpenses(tester);
 

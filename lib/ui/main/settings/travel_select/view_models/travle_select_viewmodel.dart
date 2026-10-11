@@ -51,6 +51,16 @@ class TravelSelectViewModel extends ChangeNotifier {
 
   String? get selectedTravelId => _selectedTravelId;
 
+  /* 現在表示中の旅行 */
+  String? get currentTravelId => _travelSession.currentTravel?.travelId;
+
+  String? get selectedTravelName {
+    final travelId = _selectedTravelId;
+    if (travelId == null) return null;
+    final groupId = getGroupIdFromTravel(travelId);
+    return groupId == null ? null : _userTravels![groupId]![travelId];
+  }
+
   Map<String, Map<String, TravelerCore>> _cachedGroupMembers = {};
 
   List<SelectableTraveler> _selectableParticipants = [];
@@ -62,6 +72,8 @@ class TravelSelectViewModel extends ChangeNotifier {
 
     final uid = _appSession.currentUser!.uid;
     _userTravels = await _getUserTravelsUseCase.getUserTravelsWithNames(uid);
+    /* 生成時にまだ表示旅行がロードされていなかった場合に備えてもう一度見る */
+    _selectedTravelId ??= _travelSession.currentTravel?.travelId;
     notifyListeners();
     setTravelers();
   }
@@ -79,7 +91,7 @@ class TravelSelectViewModel extends ChangeNotifier {
     /* 選択されているtravelIdをもつgroupIdを取ってきて、ShownTravelを作る */
     final travelId = _selectedTravelId;
     if (travelId == null) {
-      return ResultInfo.failed(error: ErrorInfo(errorMessage: "旅行が選択され愛知ません"));
+      return ResultInfo.failed(error: ErrorInfo(errorMessage: "旅行が選択されていません"));
     }
 
     if (_userTravels == null) {

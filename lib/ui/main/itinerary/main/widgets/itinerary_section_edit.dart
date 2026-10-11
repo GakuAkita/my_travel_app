@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/section_edit/itinerary_markdown_edit.dart';
@@ -28,10 +28,17 @@ class ItinerarySectionEdit extends StatelessWidget {
           },
         );
       case SpaceSection():
-        return Container(
-          height: 40, // 高さを指定（中央寄せしやすく）
-          alignment: Alignment.center, // ← これで中央寄せ
-          child: Text("空白スペース"),
+        final color = Theme.of(context).colorScheme.onSurfaceVariant;
+        return SizedBox(
+          height: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.space_bar, size: 18, color: color),
+              const SizedBox(width: 8),
+              Text("空白スペース", style: TextStyle(color: color)),
+            ],
+          ),
         );
     }
     return Text("Unknown section type");
