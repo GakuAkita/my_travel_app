@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_travel_app/CommonClass/ResultInfo.dart';
+import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/data/repositories/auth/auth_repository.dart';
 import 'package:my_travel_app/data/repositories/user_settings/user_settings_repository.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
@@ -16,6 +17,8 @@ class SettingsViewModel extends ChangeNotifier {
   DataState<String?> _roleState = DataState();
 
   DataState<String?> get roleState => _roleState;
+
+  bool get isAdmin => _roleState.data == UserRole.admin;
 
   SettingsViewModel({
     required AppSession appSession,
