@@ -28,25 +28,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
           appBar: TopAppBar(automaticallyImplyLeading: true),
           body: LoadingOverlay(
             isLoading: viewModel.isLoading,
-            child: AuthForm(
-              screenType: SCREEN_TYPE.SIGNUP,
-              onSubmit: (email, password) async {
-                final result = await viewModel.signUpAndSignInWithEmail(
-                  email,
-                  password,
-                );
-                if (result.isSuccess) {
-                  /* createRouterで検知して遷移する */
-                } else {
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("${result.error?.errorMessage}"),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                }
-              },
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: AuthForm(
+                    screenType: SCREEN_TYPE.SIGNUP,
+                    onSubmit: (email, password) async {
+                      final result = await viewModel.signUpAndSignInWithEmail(email, password);
+                      if (result.isSuccess) {
+                        /* createRouterで検知して遷移する */
+                      } else {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("${result.error?.errorMessage}"), duration: Duration(seconds: 2)),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
             ),
           ),
         );

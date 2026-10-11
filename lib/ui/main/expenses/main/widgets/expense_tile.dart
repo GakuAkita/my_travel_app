@@ -11,12 +11,7 @@ class ExpenseTile extends StatelessWidget {
   final Map<String, TravelerBasic> members;
   final VoidCallback? onTap;
 
-  const ExpenseTile({
-    required this.expense,
-    required this.members,
-    this.onTap,
-    super.key,
-  });
+  const ExpenseTile({required this.expense, required this.members, this.onTap, super.key});
 
   String getProfileNameFromUid(String uid) {
     if (members[uid] == null) {
@@ -87,7 +82,6 @@ class ExpenseTile extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -148,10 +142,7 @@ class ExpenseTile extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    formatYen(expense.expense),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  Text(formatYen(expense.expense), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   if (splitCount >= 2)
                     Text(
                       "1人 ${formatYen(expense.expense / splitCount)}",

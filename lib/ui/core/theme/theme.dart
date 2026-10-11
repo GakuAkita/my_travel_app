@@ -36,6 +36,8 @@ final ThemeData customDarkBlueTheme = ThemeData(
     // 補足テキストの色（少し暗い白）
     outlineVariant: Colors.grey[700],
     // M3のDividerなどの線の色（灰色）
+    outline: Colors.grey[600],
+    // OutlinedButtonなどの枠線の色（灰色）
     onError: Colors.white, // エラー色上の文字色（白）
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -64,6 +66,49 @@ final ThemeData customDarkBlueTheme = ThemeData(
         // 特定のスタイルのみ色を上書き
         titleLarge: TextStyle(color: Colors.lightBlueAccent), // タイトル（青）
       ),
+  inputDecorationTheme: InputDecorationTheme(
+    // 入力欄は少し明るい背景の角丸
+    filled: true,
+    fillColor: Colors.grey[850],
+    hintStyle: TextStyle(color: Colors.white38),
+    contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey[700]!),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2),
+    ),
+    disabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey[800]!),
+    ),
+  ),
+  cardTheme: CardThemeData(
+    color: Colors.grey[850],
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(color: Colors.grey[800]!),
+    ),
+  ),
+  snackBarTheme: SnackBarThemeData(behavior: SnackBarBehavior.floating),
+  // 選択中のチップとナビゲーションバーは、シアンではなく薄い青で目立たせる
+  chipTheme: ChipThemeData(
+    selectedColor: Colors.lightBlueAccent.withValues(alpha: 0.25),
+    checkmarkColor: Colors.lightBlueAccent,
+    labelStyle: TextStyle(color: Colors.white, fontFamily: baseFontFamily),
+    secondaryLabelStyle: TextStyle(color: Colors.white, fontFamily: baseFontFamily),
+    side: BorderSide(color: Colors.grey[700]!),
+  ),
+  navigationBarTheme: NavigationBarThemeData(
+    indicatorColor: Colors.lightBlueAccent.withValues(alpha: 0.25),
+    iconTheme: WidgetStateProperty.resolveWith(
+      (states) => IconThemeData(color: states.contains(WidgetState.selected) ? Colors.lightBlueAccent : Colors.white70),
+    ),
+  ),
   splashColor: Colors.transparent,
   // 波紋の非表示
   iconTheme: IconThemeData(color: Colors.lightBlueAccent),

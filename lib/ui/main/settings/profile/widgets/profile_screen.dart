@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/BasicTextField.dart';
-import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/settings/profile/view_models/profile_viewmodel.dart';
 
@@ -42,70 +41,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListenableBuilder(
       listenable: viewModel,
       builder: (context, _) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final name = _profileNameController.text;
+        final initial = (name.isNotEmpty ? name : viewModel.email).characters.firstOrNull ?? "?";
         return Scaffold(
           appBar: TopAppBar(title: "Profile", automaticallyImplyLeading: true),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(children: [Text("Email: ${viewModel.email}")]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 10,
-                        child: BasicTextField(
-                          controller: _profileNameController,
-                          hintText: "プロフィール名",
-                          readOnly: !viewModel.editMode,
-                          enabled: viewModel.editMode,
-                          onChanged: (name) {},
-                        ),
-                      ),
-                      viewModel.isLoading
-                          ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: CircularProgressIndicator(),
-                          )
-                          : Expanded(
-                            flex: 5,
-                            child: RoundedButton(
-                              title: viewModel.editMode ? "保存" : "変更",
-                              onPressed: () async {
-                                if (viewModel.editMode) {
-                                  /* 保存する */
-                                  final ret = await viewModel.updateProfileName(
-                                    _profileNameController.text,
-                                  );
-                                  if (ret.isSuccess) {
-                                    viewModel.switchEditMode();
-                                    ScaffoldMessenger.of(context).clearSnackBars();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("プロフィール名を保存しました")),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).clearSnackBars();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text("${ret.error?.errorMessage}"),
-                                      ),
-                                    );
-                                  }
-                                } else {
-                                  /* プロフィール名が変更できないとき */
-                                  viewModel.switchEditMode();
-                                }
-                              },
-                            ),
-                          ),
-                    ],
+          body: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              const SizedBox(height: 8),
+              Center(
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: colorScheme.primary.withValues(alpha: 0.2),
+                  child: Text(
+                    initial.toUpperCase(),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colorScheme.primary),
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+              Card(
+                margin: EdgeInsets.zero,
+                child: ListTile(
+                  leading: Icon(Icons.mail_outline, color: colorScheme.primary),
+                  title: Text("Email", style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+                  subtitle: Text(viewModel.email, style: const TextStyle(fontSize: 16)),
+                ),
+              ),
+              const SizedBox(height: 24),
+              BasicTextField(
+                controller: _profileNameController,
+                labelText: "プロフィール名",
+                hintText: "みんなに表示される名前",
+                prefixIcon: const Icon(Icons.badge_outlined),
+                readOnly: !viewModel.editMode,
+                enabled: viewModel.editMode,
+                onChanged: (name) {},
+              ),
+              const SizedBox(height: 16),
+              if (viewModel.isLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (viewModel.editMode)
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                  icon: const Icon(Icons.check),
+                  label: const Text("保存"),
+                  onPressed: () async {
+                    /* 保存する */
+                    final ret = await viewModel.updateProfileName(_profileNameController.text);
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    if (ret.isSuccess) {
+                      viewModel.switchEditMode();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("プロフィール名を保存しました")));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
+                    }
+                  },
+                )
+              else
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                  icon: const Icon(Icons.edit_outlined),
+                  label: const Text("変更"),
+                  onPressed: () {
+                    viewModel.switchEditMode();
+                  },
+                ),
+            ],
           ),
         );
       },

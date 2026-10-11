@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/components/BasicTextField.dart';
-import 'package:my_travel_app/components/RoundedButton.dart';
+import 'package:my_travel_app/ui/core/ui/confirm_dialog.dart';
+import 'package:my_travel_app/ui/core/ui/section_header.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/settings/group_create/view_models/group_create_viewmodel.dart';
 
@@ -33,117 +34,148 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
     return ListenableBuilder(
       listenable: viewModel,
       builder: (context, _) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final allUsers = viewModel.allUsers;
+        final checkedCount = allUsers.data?.values.where((u) => u.isChecked).length ?? 0;
+        final joinedGroups = viewModel.joinedGroups.data ?? [];
+
+        void showSnackBar(String message) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        }
+
         return Scaffold(
           appBar: TopAppBar(title: 'Create Group', automaticallyImplyLeading: true),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("グループ名 [英字のみ、特殊文字禁止]"),
-                      //TextField(controller: _groupNameController),
-                      BasicTextField(
-                        controller: _groupNameController,
-                        hintText: "group id",
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'[a-zA-Z0-9_\-@.]+'), // ← 使用を許可する文字だけ
-                          ),
-                        ],
-                        onChanged: (val) {},
-                      ),
-                    ],
-                  ),
-                ),
-                /* ユーザーを全部表示 */
-                if (viewModel.allUsers.hasData)
-                  if (viewModel.allUsers.data!.isEmpty)
-                    Text("ユーザーがいません")
-                  else
-                    /* チェックを変えるたびに全部再描画しているからくっそ遅い!!!! */
-                    /* @TODO おれしか使わないからいいが、将来的には直す!!! */
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: viewModel.allUsers.data!.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return UserCheckRow(
-                          user: viewModel.allUsers.data!.values.elementAt(index),
-                          onTap: () {
-                            final traveler = viewModel.allUsers.data!.values.elementAt(index);
-                            print("tapped :${traveler.traveler.core.email}");
-                            viewModel.switchChecked(traveler.traveler.core.uid);
-                          },
-                        );
-                      },
-                    )
-                else if (viewModel.allUsers.hasError)
-                  Text("エラーが出ています。${viewModel.allUsers.error?.errorMessage}")
-                else
-                  Text("loading??"),
-
-                RoundedButton(
-                  title: "グループ作成",
-                  onPressed: () async {
-                    if (_groupNameController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("グループ名を入力してください")));
-                    }
-                    final ret = await viewModel.createGroup(_groupNameController.text);
-                    if (ret.isSuccess) {
-                      context.pop();
-                    } else {
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
-                    }
-                  },
-                ),
-
-                SizedBox(height: 40),
-                if (viewModel.joinedGroups.hasData) ...[
-                  Divider(),
-                  Text("削除するグループ選択"),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButton(
-                          isExpanded: true,
-                          items:
-                              viewModel.joinedGroups.data!.map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(value: value, child: Text(value, maxLines: 1));
-                              }).toList(),
-                          value: viewModel.selectedGroupId,
-                          onChanged: (String? value) {
-                            viewModel.selectGroup(value);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  RoundedButton(
-                    title: "グループ削除",
-                    onPressed: () async {
-                      print("Delete ${viewModel.selectedGroupId}");
-                      /* 本当はポップアップを出した方が良い */
-                      final ret = await viewModel.deleteGroup();
-                      if (ret.isSuccess) {
-                        context.pop();
-                      } else {
-                        ScaffoldMessenger.of(context).clearSnackBars();
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
-                      }
-                    },
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+            children: [
+              const SectionHeader(icon: Icons.group_add_outlined, title: "新しいグループ"),
+              BasicTextField(
+                controller: _groupNameController,
+                labelText: "グループ名",
+                hintText: "group id",
+                prefixIcon: const Icon(Icons.tag),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z0-9_\-@.]+'), // ← 使用を許可する文字だけ
                   ),
                 ],
+                onChanged: (val) {},
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
+                child: Text("英数字と _ - @ . のみ使えます", style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+              ),
+              const SizedBox(height: 16),
+              /* ユーザーを全部表示 */
+              SectionHeader(
+                icon: Icons.people_outline,
+                title: "メンバー",
+                trailing: allUsers.hasData && allUsers.data!.isNotEmpty ? "$checkedCount人選択中" : null,
+              ),
+              Card(
+                margin: EdgeInsets.zero,
+                clipBehavior: Clip.antiAlias,
+                child: allUsers.hasError
+                    ? Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          "エラーが出ています。${allUsers.error?.errorMessage}",
+                          style: TextStyle(color: colorScheme.error),
+                        ),
+                      )
+                    : !allUsers.hasData
+                    ? const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : allUsers.data!.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text("ユーザーがいません", style: TextStyle(color: colorScheme.onSurfaceVariant)),
+                      )
+                    /* チェックを変えるたびに全部再描画しているからくっそ遅い!!!! */
+                    /* @TODO おれしか使わないからいいが、将来的には直す!!! */
+                    : Column(
+                        children: [
+                          for (final user in allUsers.data!.values)
+                            UserCheckRow(
+                              user: user,
+                              onTap: () {
+                                print("tapped :${user.traveler.core.email}");
+                                viewModel.switchChecked(user.traveler.core.uid);
+                              },
+                            ),
+                        ],
+                      ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                icon: const Icon(Icons.add),
+                label: const Text("グループ作成"),
+                onPressed: () async {
+                  if (_groupNameController.text.isEmpty) {
+                    showSnackBar("グループ名を入力してください");
+                    return;
+                  }
+                  final ret = await viewModel.createGroup(_groupNameController.text);
+                  if (!context.mounted) return;
+                  if (ret.isSuccess) {
+                    context.pop();
+                  } else {
+                    showSnackBar("${ret.error?.errorMessage}");
+                  }
+                },
+              ),
+              if (viewModel.joinedGroups.hasData) ...[
+                const SizedBox(height: 32),
+                const Divider(),
+                const SizedBox(height: 8),
+                const SectionHeader(icon: Icons.delete_outline, title: "グループ削除"),
+                DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  initialValue: viewModel.selectedGroupId,
+                  hint: const Text("削除するグループ選択"),
+                  items: joinedGroups.map((String value) {
+                    return DropdownMenuItem<String>(value: value, child: Text(value, maxLines: 1));
+                  }).toList(),
+                  onChanged: (String? value) {
+                    viewModel.selectGroup(value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                    foregroundColor: colorScheme.error,
+                    side: BorderSide(color: colorScheme.error),
+                  ),
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text("グループ削除"),
+                  onPressed: viewModel.selectedGroupId == null
+                      ? null
+                      : () async {
+                          final groupId = viewModel.selectedGroupId;
+                          final confirmed = await showConfirmDialog(
+                            context,
+                            title: "グループを削除しますか？",
+                            message: "「$groupId」を削除します。この操作は取り消せません。",
+                            confirmLabel: "削除",
+                          );
+                          if (!confirmed) return;
+                          print("Delete $groupId");
+                          final ret = await viewModel.deleteGroup();
+                          if (!context.mounted) return;
+                          if (ret.isSuccess) {
+                            context.pop();
+                          } else {
+                            showSnackBar("${ret.error?.errorMessage}");
+                          }
+                        },
+                ),
               ],
-            ),
+            ],
           ),
         );
       },
@@ -155,18 +187,20 @@ class UserCheckRow extends StatelessWidget {
   final SelectedUser user;
   final VoidCallback? onTap;
 
-  UserCheckRow({required SelectedUser this.user, VoidCallback? this.onTap});
+  const UserCheckRow({required this.user, this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        children: [
-          Checkbox(value: user.isChecked, onChanged: (_) {}),
-          Expanded(flex: 1, child: Text("${user.traveler.core.email}", maxLines: 1)),
-          Expanded(flex: 1, child: Text("${user.traveler.core.uid}")),
-        ],
+    return CheckboxListTile(
+      value: user.isChecked,
+      onChanged: (_) => onTap?.call(),
+      controlAffinity: ListTileControlAffinity.leading,
+      title: Text(user.traveler.core.email, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        user.traveler.core.uid,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }

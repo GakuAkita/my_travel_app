@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart';
 import 'BasicTextField.dart';
-import 'RoundedButton.dart';
 
 class AuthForm extends StatefulWidget {
   final SCREEN_TYPE screenType;
@@ -27,45 +26,90 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   String email = "";
   String password = "";
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isLogin = widget.screenType == SCREEN_TYPE.LOGIN;
+
     return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: widget.onGoogleTap,
-              child: Image(image: AssetImage("assets/images/android_light_rd_ctn4x.png"), width: 250),
-            ),
-            SizedBox(height: 50),
-            BasicTextField(hintText: "Email", autofocus: true, onChanged: (value) => email = value),
-            SizedBox(height: 30),
-            BasicTextField(hintText: "Password", obscureText: true, onChanged: (value) => password = value),
-            SizedBox(height: 40),
-            RoundedButton(
-              title: widget.screenType == SCREEN_TYPE.LOGIN ? "Login" : "Sign Up",
-              onPressed: () async {
-                await widget.onSubmit(email, password);
-              },
-              textStyle: TextStyle(fontSize: 15),
-              buttonStyle: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 100)),
-            ),
-            if (widget.screenType == SCREEN_TYPE.LOGIN) ...[
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  widget.onForgotPassword?.call(email);
-                },
-                child: Text(
-                  "Forgot your password?",
-                  style: TextStyle(decoration: TextDecoration.underline, fontSize: 18),
-                ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                isLogin ? "ログイン" : "アカウント作成",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
+              const SizedBox(height: 32),
+              if (widget.onGoogleTap != null) ...[
+                Center(
+                  child: GestureDetector(
+                    onTap: widget.onGoogleTap,
+                    child: const Image(image: AssetImage("assets/images/android_light_rd_ctn4x.png"), width: 250),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text("またはメールアドレスで", style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
+              BasicTextField(
+                labelText: "Email",
+                hintText: "you@example.com",
+                prefixIcon: const Icon(Icons.mail_outline),
+                keyboardType: TextInputType.emailAddress,
+                autofocus: widget.onGoogleTap == null,
+                onChanged: (value) => email = value,
+              ),
+              const SizedBox(height: 16),
+              BasicTextField(
+                labelText: "Password",
+                hintText: "",
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: IconButton(
+                  tooltip: _obscurePassword ? "パスワードを表示" : "パスワードを隠す",
+                  icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                ),
+                obscureText: _obscurePassword,
+                onChanged: (value) => password = value,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+                onPressed: widget.isLoading
+                    ? null
+                    : () async {
+                        await widget.onSubmit(email, password);
+                      },
+                child: Text(isLogin ? "Login" : "Sign Up", style: const TextStyle(fontSize: 16)),
+              ),
+              if (isLogin) ...[
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () {
+                    widget.onForgotPassword?.call(email);
+                  },
+                  child: const Text("Forgot your password?"),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

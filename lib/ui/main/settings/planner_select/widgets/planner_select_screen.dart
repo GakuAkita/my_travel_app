@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:loading_overlay/loading_overlay.dart';
-import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
+import 'package:my_travel_app/ui/core/ui/bottom_action_bar.dart';
+import 'package:my_travel_app/ui/core/ui/section_header.dart';
 import 'package:my_travel_app/ui/main/settings/planner_select/view_models/planner_select_viewmodel.dart';
 
 class PlannerSelectScreen extends StatefulWidget {
@@ -32,45 +32,71 @@ class _PlannerSelectScreenState extends State<PlannerSelectScreen> {
     return ListenableBuilder(
       listenable: viewModel,
       builder: (context, _) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final selectables = viewModel.selectablePlanners.entries.toList();
+        final checkedCount = selectables.where((s) => s.value.isChecked).length;
         return Scaffold(
-          appBar: TopAppBar(automaticallyImplyLeading: true),
-          body: LoadingOverlay(
-            isLoading: false,
-            child: SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    ...viewModel.selectablePlanners.entries.map(
-                      (selectable) => CheckboxListTile(
-                        value: selectable.value.isChecked,
-                        title: Text(selectable.value.traveler.displayName),
-                        onChanged: (val) {
-                          if (val != null) {
-                            viewModel.onSelectChanged(selectable.key, val);
-                          }
-                        },
-                      ),
-                    ),
-                    RoundedButton(
-                      title: "プランナー保存",
-                      onPressed: () async {
-                        final ret = await viewModel.savePlanners();
-                        if (ret.isSuccess) {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("プランナーを設定しました")));
-                          context.pop();
-                        } else {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
-                        }
-                      },
-                    ),
-                  ],
+          appBar: TopAppBar(title: "プランナー選択", automaticallyImplyLeading: true),
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            children: [
+              SectionHeader(
+                icon: Icons.manage_accounts_outlined,
+                title: "プランナー",
+                trailing: selectables.isEmpty ? null : "$checkedCount / ${selectables.length}人",
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+                child: Text(
+                  "プランナーは表示中の旅行のしおりを編集できます。",
+                  style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
                 ),
               ),
-            ),
+              Card(
+                margin: EdgeInsets.zero,
+                clipBehavior: Clip.antiAlias,
+                child: selectables.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text("メンバーを読み込み中…", style: TextStyle(color: colorScheme.onSurfaceVariant)),
+                      )
+                    : Column(
+                        children: [
+                          for (final selectable in selectables)
+                            CheckboxListTile(
+                              value: selectable.value.isChecked,
+                              title: Text(
+                                selectable.value.traveler.displayName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              onChanged: (val) {
+                                if (val != null) {
+                                  viewModel.onSelectChanged(selectable.key, val);
+                                }
+                              },
+                            ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
+          bottomNavigationBar: BottomActionBar(
+            label: "プランナー保存",
+            onPressed: selectables.isEmpty
+                ? null
+                : () async {
+                    final ret = await viewModel.savePlanners();
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    if (ret.isSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("プランナーを設定しました")));
+                      context.pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
+                    }
+                  },
           ),
         );
       },
