@@ -4,6 +4,7 @@ import 'package:my_travel_app/ui/main/settings/travel_select/view_models/travle_
 
 import '../../../../../constants.dart';
 import '../../../../core/ui/empty_state.dart';
+import '../../../../core/ui/section_header.dart';
 import '../../../../core/ui/top_app_bar.dart';
 
 class TravelSelectScreen extends StatelessWidget {
@@ -95,7 +96,7 @@ class TravelSelectScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 8),
-        _SectionHeader(
+        SectionHeader(
           icon: Icons.how_to_reg_outlined,
           title: "参加者選択",
           trailing: participants.isEmpty ? null : "$checkedCount / ${participants.length}人",
@@ -176,7 +177,7 @@ class _GroupTravelsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _SectionHeader(icon: Icons.groups_outlined, title: groupId),
+        SectionHeader(icon: Icons.groups_outlined, title: groupId),
         Card(
           margin: const EdgeInsets.only(bottom: 16),
           clipBehavior: Clip.antiAlias,
@@ -199,38 +200,6 @@ class _GroupTravelsSection extends StatelessWidget {
                 ),
         ),
       ],
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? trailing;
-
-  const _SectionHeader({required this.icon, required this.title, this.trailing});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: colorScheme.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.primary),
-            ),
-          ),
-          if (trailing != null)
-            Text(trailing!, style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
-        ],
-      ),
     );
   }
 }

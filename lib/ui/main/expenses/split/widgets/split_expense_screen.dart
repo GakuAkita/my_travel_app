@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:my_travel_app/components/BasicTextField.dart';
-import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
+import 'package:my_travel_app/ui/core/ui/bottom_action_bar.dart';
+import 'package:my_travel_app/ui/core/ui/section_header.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/expenses/split/view_models/split_expense_viewmodel.dart';
 
@@ -30,8 +31,7 @@ class _SplitExpenseScreenState extends State<SplitExpenseScreen> {
 
   TextEditingController _itemController(String uid) => _itemControllers.putIfAbsent(uid, TextEditingController.new);
 
-  TextEditingController _amountController(String uid) =>
-      _amountControllers.putIfAbsent(uid, TextEditingController.new);
+  TextEditingController _amountController(String uid) => _amountControllers.putIfAbsent(uid, TextEditingController.new);
 
   @override
   void initState() {
@@ -98,81 +98,101 @@ class _SplitExpenseScreenState extends State<SplitExpenseScreen> {
     return ListenableBuilder(
       listenable: viewModel,
       builder: (context, _) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final hintStyle = TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant);
         return Scaffold(
           appBar: TopAppBar(automaticallyImplyLeading: true, title: "まとめて追加"),
           body: LoadingOverlay(
             isLoading: viewModel.isSaving,
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        DropdownButton<String>(
-                          /* メンバーがまだ読み込まれていないときはnull */
-                          value: viewModel.memberByUid(_payerUid) != null ? _payerUid : null,
-                          hint: Text("支払った人"),
-                          items: viewModel.groupMembers.map((member) {
-                            return DropdownMenuItem<String>(
-                              value: member.core.uid,
-                              child: Text(member.displayName, maxLines: 1),
-                            );
-                          }).toList(),
-                          onChanged: (String? uid) {
-                            setState(() {
-                              _payerUid = uid;
-                            });
-                          },
-                        ),
-                        Text(" がまとめて払った"),
-                      ],
+            /* メンバー数は少ないので全部組み立てる(ListViewだと画面外の行が作られない) */
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SectionHeader(icon: Icons.receipt_long_outlined, title: "まとめて払った内容"),
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    /* メンバーがまだ読み込まれていないときはnull */
+                    initialValue: viewModel.memberByUid(_payerUid) != null ? _payerUid : null,
+                    decoration: const InputDecoration(
+                      labelText: "支払った人",
+                      prefixIcon: Icon(Icons.account_circle_outlined),
                     ),
-                    BasicTextField(
-                      controller: _commonItemController,
-                      hintText: "何に使ったか(共通)",
-                      onChanged: (_) {
-                        /* 各行のヒントを更新する */
-                        setState(() {});
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    Text("誰の分？"),
-                    /* チェックした人の入力欄が追加される */
-                    Wrap(
-                      spacing: 8,
-                      children: viewModel.rowMembers.map((member) {
-                        final uid = member.core.uid;
-                        return FilterChip(
-                          key: ValueKey("select-$uid"),
-                          label: Text(member.displayName),
-                          selected: viewModel.isSelected(uid),
-                          onSelected: (_) => viewModel.toggleMember(uid),
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(height: 8),
-                    if (viewModel.selectedMembers.isEmpty)
-                      Text("メンバーを選ぶと入力欄が追加されます", style: TextStyle(fontSize: 12, color: Colors.white54))
-                    else
-                      Text("個別の品目は空なら共通の品目になります", style: TextStyle(fontSize: 12, color: Colors.white54)),
-                    ...viewModel.selectedMembers.map((member) => _buildMemberRow(member)),
-                    SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "合計 ¥${NumberFormat("#,###").format(_total.round())}",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    items: viewModel.groupMembers.map((member) {
+                      return DropdownMenuItem<String>(
+                        value: member.core.uid,
+                        child: Text(member.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      );
+                    }).toList(),
+                    onChanged: (String? uid) {
+                      setState(() {
+                        _payerUid = uid;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  BasicTextField(
+                    controller: _commonItemController,
+                    hintText: "何に使ったか(共通)",
+                    prefixIcon: const Icon(Icons.edit_note),
+                    onChanged: (_) {
+                      /* 各行のヒントを更新する */
+                      setState(() {});
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  SectionHeader(
+                    icon: Icons.group_outlined,
+                    title: "誰の分？",
+                    trailing: "${viewModel.selectedMembers.length}人",
+                  ),
+                  /* チェックした人の入力欄が追加される */
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: viewModel.rowMembers.map((member) {
+                      final uid = member.core.uid;
+                      return FilterChip(
+                        key: ValueKey("select-$uid"),
+                        label: Text(member.displayName),
+                        selected: viewModel.isSelected(uid),
+                        onSelected: (_) => viewModel.toggleMember(uid),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 12),
+                  if (viewModel.selectedMembers.isEmpty)
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text("メンバーを選ぶと入力欄が追加されます", textAlign: TextAlign.center, style: hintStyle),
                       ),
+                    )
+                  else ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+                      child: Text("個別の品目は空なら共通の品目になります", style: hintStyle),
                     ),
-                    SizedBox(height: 16),
-                    Center(
-                      child: RoundedButton(title: "まとめて保存", enabled: !viewModel.isSaving, onPressed: _save),
-                    ),
+                    ...viewModel.selectedMembers.map((member) => _buildMemberRow(member)),
                   ],
-                ),
+                ],
               ),
+            ),
+          ),
+          bottomNavigationBar: BottomActionBar(
+            label: "まとめて保存",
+            onPressed: viewModel.isSaving ? null : _save,
+            leading: Row(
+              children: [
+                Text("${viewModel.selectedMembers.length}件", style: hintStyle),
+                const Spacer(),
+                Text(
+                  "合計 ¥${NumberFormat("#,###").format(_total.round())}",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           ),
         );
@@ -183,39 +203,66 @@ class _SplitExpenseScreenState extends State<SplitExpenseScreen> {
   Widget _buildMemberRow(TravelerBasic member) {
     final uid = member.core.uid;
     final commonItem = _commonItemController.text;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(member.displayName, overflow: TextOverflow.ellipsis),
-          ),
-          Expanded(
-            flex: 3,
-            child: BasicTextField(
-              key: ValueKey("item-$uid"),
-              controller: _itemController(uid),
-              hintText: commonItem.isNotEmpty ? commonItem : "品目",
-              onChanged: (_) {},
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 12,
+                  backgroundColor: colorScheme.primary.withValues(alpha: 0.2),
+                  child: Text(
+                    member.displayName.characters.firstOrNull ?? "?",
+                    style: TextStyle(fontSize: 12, color: colorScheme.primary),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    member.displayName,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
             ),
-          ),
-          SizedBox(width: 8),
-          Expanded(
-            flex: 2,
-            child: BasicTextField(
-              key: ValueKey("amount-$uid"),
-              controller: _amountController(uid),
-              keyboardType: TextInputType.number,
-              hintText: "金額",
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-              onChanged: (_) {
-                /* 合計を更新する */
-                setState(() {});
-              },
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: BasicTextField(
+                    key: ValueKey("item-$uid"),
+                    controller: _itemController(uid),
+                    hintText: commonItem.isNotEmpty ? commonItem : "品目",
+                    onChanged: (_) {},
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: BasicTextField(
+                    key: ValueKey("amount-$uid"),
+                    controller: _amountController(uid),
+                    keyboardType: TextInputType.number,
+                    hintText: "金額",
+                    prefixText: "¥ ",
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                    onChanged: (_) {
+                      /* 合計を更新する */
+                      setState(() {});
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

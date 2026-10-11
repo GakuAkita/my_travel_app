@@ -43,72 +43,51 @@ class _VersionInfoScreenState extends State<VersionInfoScreen> {
   @override
   Widget build(BuildContext context) {
     const String githubUrl = "https://github.com/GakuAkita/my_travel_app";
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: TopAppBar(automaticallyImplyLeading: true),
-      body:
-          _loading
-              ? Center(child: CircularProgressIndicator())
-              : Padding(
-                padding: const EdgeInsets.all(16),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 16),
-                        _buildInfoRow("バージョン", _version),
-                        _buildInfoRow("ビルド番号", _buildNumber),
-                        _buildInfoRow(
-                          "GitHub",
-                          githubUrl,
-                          onTap: () => _launchUrl(githubUrl),
-                        ),
-                      ],
-                    ),
+      appBar: TopAppBar(title: "バージョン情報", automaticallyImplyLeading: true),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                const SizedBox(height: 16),
+                const Center(child: Image(image: AssetImage("assets/images/public_world.png"), width: 80)),
+                const SizedBox(height: 16),
+                Center(
+                  child: Text("Version $_version", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(height: 24),
+                Card(
+                  margin: EdgeInsets.zero,
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      _buildInfoTile(Icons.tag, "バージョン", _version),
+                      const Divider(height: 1, indent: 56),
+                      _buildInfoTile(Icons.build_outlined, "ビルド番号", _buildNumber),
+                      const Divider(height: 1, indent: 56),
+                      ListTile(
+                        leading: Icon(Icons.code, color: colorScheme.primary),
+                        title: const Text("ソースコード (GitHub)"),
+                        subtitle: Text(githubUrl, style: TextStyle(color: colorScheme.primary)),
+                        trailing: Icon(Icons.open_in_new, color: colorScheme.onSurfaceVariant),
+                        onTap: () => _launchUrl(githubUrl),
+                      ),
+                    ],
                   ),
                 ),
-              ),
+              ],
+            ),
     );
   }
 
-  /// もっと柔軟に作った方が良いが、、
-  Widget _buildInfoRow(String label, String value, {VoidCallback? onTap}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              "$label:",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child:
-                onTap == null
-                    ? Text(value, style: TextStyle(fontSize: 16))
-                    : GestureDetector(
-                      onTap: onTap,
-                      child: Text(
-                        value,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-          ),
-        ],
-      ),
+  Widget _buildInfoTile(IconData icon, String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ListTile(
+      leading: Icon(icon, color: colorScheme.primary),
+      title: Text(label),
+      trailing: Text(value, style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant)),
     );
   }
 }

@@ -27,14 +27,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       listenable: viewModel,
       builder: (context, _) {
         final isStoreLoading =
-            viewModel.isExpensesLoading ||
-            !viewModel.expenseStoreInitialized ||
-            !viewModel.travelScopeStoreInitialized;
+            viewModel.isExpensesLoading || !viewModel.expenseStoreInitialized || !viewModel.travelScopeStoreInitialized;
         return LoadingOverlay(
           isLoading: isStoreLoading,
           child: Scaffold(
-            floatingActionButton:
-                isStoreLoading || viewModel.isGroupMembersLoading || viewModel.isParticipantsLoading
+            floatingActionButton: isStoreLoading || viewModel.isGroupMembersLoading || viewModel.isParticipantsLoading
                 ? null
                 : AddExpenseSpeedDial(
                     onAddPressed: () {
@@ -85,11 +82,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           if (expenses.isEmpty)
             const SliverFillRemaining(
               hasScrollBody: false,
-              child: EmptyState(
-                icon: Icons.receipt_long_outlined,
-                message: "費用が何も記録されていません",
-                hint: "右下の＋ボタンから追加できます",
-              ),
+              child: EmptyState(icon: Icons.receipt_long_outlined, message: "費用が何も記録されていません", hint: "右下の＋ボタンから追加できます"),
             )
           else
             SliverPadding(
@@ -123,11 +116,7 @@ class _ExpenseSummaryCard extends StatelessWidget {
   /* nullのときは費用概算ボタンを出さない(プランナーとAdminだけは見れる) */
   final VoidCallback? onEstimatePressed;
 
-  const _ExpenseSummaryCard({
-    required this.expenses,
-    required this.onResultPressed,
-    this.onEstimatePressed,
-  });
+  const _ExpenseSummaryCard({required this.expenses, required this.onResultPressed, this.onEstimatePressed});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +126,6 @@ class _ExpenseSummaryCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

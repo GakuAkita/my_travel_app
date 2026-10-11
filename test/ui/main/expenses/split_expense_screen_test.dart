@@ -46,6 +46,8 @@ void main() {
   Finder field(String key) => find.descendant(of: find.byKey(ValueKey(key)), matching: find.byType(TextField));
 
   Future<void> select(WidgetTester tester, String uid) async {
+    /* 入力欄に文字を入れるとスクロールするので、チップが見えるところまで戻してからタップする */
+    await tester.ensureVisible(find.byKey(ValueKey("select-$uid")));
     await tester.tap(find.byKey(ValueKey("select-$uid")));
     await tester.pump();
   }

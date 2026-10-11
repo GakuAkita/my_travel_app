@@ -59,6 +59,10 @@ class _MultilineTextFieldState extends State<MultilineTextField> {
         hintText: widget.hintText,
         hintStyle: const TextStyle(color: Colors.white38),
         border: widget.border,
+        /* InputBorder.noneのときはテーマの枠線と背景も使わない(テーブルのセルなど) */
+        enabledBorder: widget.border == InputBorder.none ? InputBorder.none : null,
+        focusedBorder: widget.border == InputBorder.none ? InputBorder.none : null,
+        filled: widget.border == InputBorder.none ? false : null,
         contentPadding: const EdgeInsets.all(12),
       ),
       focusNode: widget.focusNode,

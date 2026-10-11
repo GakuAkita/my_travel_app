@@ -12,12 +12,22 @@ class BasicTextField extends StatefulWidget {
     this.focusNode,
     this.enabled = true,
     this.readOnly = false,
+    this.labelText,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.prefixText,
+    this.suffixText,
     required this.hintText,
     required this.onChanged,
     super.key,
   });
 
   final String hintText;
+  final String? labelText;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final String? prefixText;
+  final String? suffixText;
   final bool obscureText;
   final bool autofocus;
   final Function(String)? onChanged;
@@ -75,8 +85,11 @@ class _BasicTextFieldState extends State<BasicTextField> {
       inputFormatters: widget.inputFormatters ?? [FilteringTextInputFormatter.allow(RegExp(r'.*'))],
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: const TextStyle(color: Colors.grey),
-        border: const OutlineInputBorder(),
+        labelText: widget.labelText,
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: widget.suffixIcon,
+        prefixText: widget.prefixText,
+        suffixText: widget.suffixText,
       ),
       autofocus: widget.autofocus,
       obscureText: widget.obscureText,

@@ -7,6 +7,9 @@ import 'package:my_travel_app/components/BasicTextField.dart';
 class NumberField extends StatefulWidget {
   const NumberField({
     this.hintText,
+    this.labelText,
+    this.prefixText,
+    this.suffixText,
     this.initialValue,
     this.onChanged,
     this.intOnly = false,
@@ -17,6 +20,9 @@ class NumberField extends StatefulWidget {
   });
 
   final String? hintText;
+  final String? labelText;
+  final String? prefixText;
+  final String? suffixText;
   final double? initialValue;
 
   /* ２つ目の引数はmin,maxがあったときに範囲外になっているかどうかを返す */
@@ -42,7 +48,9 @@ class _NumberFieldState extends State<NumberField> {
     if (widget.intOnly && widget.initialValue != null) {
       initialText = widget.initialValue!.toInt().toString();
     } else {
-      initialText = widget.initialValue?.toString() ?? '';
+      /* 整数のときは "1500.0" ではなく "1500" と表示する */
+      final value = widget.initialValue;
+      initialText = value == null ? "" : (value == value.roundToDouble() ? value.toInt().toString() : value.toString());
     }
 
     _isExternalController = widget.controller != null;
@@ -78,10 +86,7 @@ class _NumberFieldState extends State<NumberField> {
         }
 
         if (clampedValue != value) {
-          final newText =
-              widget.intOnly
-                  ? clampedValue.toInt().toString()
-                  : clampedValue.toString();
+          final newText = widget.intOnly ? clampedValue.toInt().toString() : clampedValue.toString();
           _controller.text = newText;
         }
 
@@ -91,10 +96,7 @@ class _NumberFieldState extends State<NumberField> {
       } else {
         // Handle cases where the text is empty or invalid on unfocus (e.g., ".")
         final double fallbackValue = widget.minValue ?? 0.0;
-        final newText =
-            widget.intOnly
-                ? fallbackValue.toInt().toString()
-                : fallbackValue.toString();
+        final newText = widget.intOnly ? fallbackValue.toInt().toString() : fallbackValue.toString();
         _controller.text = newText;
         if (widget.onChanged != null) {
           widget.onChanged!(fallbackValue);
@@ -109,12 +111,13 @@ class _NumberFieldState extends State<NumberField> {
       focusNode: _focusNode,
       controller: _controller,
       hintText: widget.hintText ?? "",
+      labelText: widget.labelText,
+      prefixText: widget.prefixText,
+      suffixText: widget.suffixText,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
         // Allow only digits and a single dot
-        FilteringTextInputFormatter.allow(
-          RegExp(widget.intOnly ? r'[0-9]' : r'[0-9.]'),
-        ),
+        FilteringTextInputFormatter.allow(RegExp(widget.intOnly ? r'[0-9]' : r'[0-9.]')),
         // Prevent multiple dots
         TextInputFormatter.withFunction((oldValue, newValue) {
           if (widget.intOnly) {
@@ -132,9 +135,7 @@ class _NumberFieldState extends State<NumberField> {
               // The text was changed (e.g. "05" -> "5"), update the text field.
               return newValue.copyWith(
                 text: normalizedText,
-                selection: TextSelection.collapsed(
-                  offset: normalizedText.length,
-                ),
+                selection: TextSelection.collapsed(offset: normalizedText.length),
               );
             }
             return newValue;
