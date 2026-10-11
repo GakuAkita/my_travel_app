@@ -6,6 +6,7 @@ import 'package:my_travel_app/ui/main/expenses/main/view_models/expenses_viewmod
 
 import '../../../../../components/BasicText.dart';
 import '../../../../../components/RoundedButton.dart';
+import 'add_expense_speed_dial.dart';
 import 'expense_tile.dart';
 
 class ExpensesScreen extends StatefulWidget {
@@ -42,12 +43,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         viewModel.isGroupMembersLoading ||
                         viewModel.isParticipantsLoading
                     ? null
-                    : FloatingActionButton(
-                      onPressed: () {
+                    : AddExpenseSpeedDial(
+                      onAddPressed: () {
                         /* 新規作成 */
                         context.push(Routes.expenses_add_edit);
                       },
-                      child: Icon(Icons.add),
+                      onSplitAddPressed: () {
+                        /* 1人がまとめて払ったときにメンバーごとに入力 */
+                        context.push(Routes.expenses_split_add);
+                      },
                     ),
             body:
                 viewModel.isExpensesLoading

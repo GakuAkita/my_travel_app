@@ -36,6 +36,16 @@ void main() {
     expect(find.text("費用概算"), findsOneWidget);
   });
 
+  testWidgets('+を押すと費用を追加・まとめて追加が展開される', (tester) async {
+    await pumpExpenses(tester);
+
+    await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.add));
+    await tester.pump();
+
+    expect(find.text("費用を追加"), findsOneWidget);
+    expect(find.text("まとめて追加"), findsOneWidget);
+  });
+
   testWidgets('DBに支出が追加されると一覧に反映される', (tester) async {
     final backend = await pumpExpenses(tester, email: FakeBackend.alice.email);
     expect(find.text("お土産"), findsNothing);
