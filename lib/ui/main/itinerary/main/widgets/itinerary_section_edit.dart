@@ -1,30 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
-import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/section_edit/itinerary_markdown_edit.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/widgets/section_edit/itinerary_table_edit_button.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../routing/routes.dart';
 
 class ItinerarySectionEdit extends StatelessWidget {
-  final String id;
+  final ItinerarySection section;
 
-  /* 内部で結局ViewModelを参照することになる */
-  const ItinerarySectionEdit({super.key, required this.id});
+  /* Markdownが編集されたときに呼ばれる */
+  final void Function(String title, String content) onMarkdownChanged;
+
+  const ItinerarySectionEdit({super.key, required this.section, required this.onMarkdownChanged});
 
   @override
   Widget build(BuildContext context) {
-    final section = context.watch<ItineraryViewModel>().getSectionById(id);
+    final section = this.section;
     switch (section) {
       case MarkdownSection():
-        return ItineraryMarkdownEdit(section_id: id);
+        return ItineraryMarkdownEdit(section: section, onChanged: onMarkdownChanged);
       case TableSection():
         return ItineraryTableEditButton(
           onPressed: () {
             /* idを渡してTableEditScreenを立ち上が得る */
-            context.push(Routes.itinerary_table_edit, extra: id);
+            context.push(Routes.itinerary_table_edit, extra: section.id);
           },
         );
       case SpaceSection():

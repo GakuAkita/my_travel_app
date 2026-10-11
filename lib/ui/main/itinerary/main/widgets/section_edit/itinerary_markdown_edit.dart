@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:my_travel_app/data/model/itinerary_section/itinerary_section.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../../components/MultilineTextField.dart';
 import '../../../../../../components/SimpleSwitch.dart';
-import '../../view_models/itinerary_viewmodel.dart';
 
 class ItineraryMarkdownEdit extends StatefulWidget {
-  final String section_id;
+  final MarkdownSection section;
+  final void Function(String title, String content) onChanged;
 
-  const ItineraryMarkdownEdit({required this.section_id, super.key});
+  const ItineraryMarkdownEdit({required this.section, required this.onChanged, super.key});
 
   @override
   State<ItineraryMarkdownEdit> createState() => _ItineraryMarkdownEditState();
@@ -27,8 +26,7 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
     // TODO: implement initState
     super.initState();
 
-    final viewModel = context.read<ItineraryViewModel>();
-    final section = viewModel.getSectionById(widget.section_id) as MarkdownSection;
+    final section = widget.section;
 
     _titleController.text = section.title;
     _contentController.text = section.content;
@@ -44,13 +42,8 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<ItineraryViewModel>();
     void _updateMarkdown() {
-      viewModel.updateItineraryMarkdownSection(
-        sectionId: widget.section_id,
-        title: _titleController.text,
-        content: _contentController.text,
-      );
+      widget.onChanged(_titleController.text, _contentController.text);
     }
     /* 2回書くから関数化しているだけ */
 

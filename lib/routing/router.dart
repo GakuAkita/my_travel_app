@@ -82,7 +82,7 @@ GoRouter createRouter(AppSession session) {
             emailAuthRepository: innerContext.read(),
             googleAuthRepository: innerContext.read(),
           ),
-          child: SignUpScreen(),
+          builder: (innerContext, _) => SignUpScreen(viewModel: innerContext.read()),
         ),
       ),
       GoRoute(
@@ -92,7 +92,7 @@ GoRouter createRouter(AppSession session) {
             emailAuthRepository: innerContext.read(),
             googleAuthRepository: innerContext.read(),
           ),
-          child: SignInScreen(),
+          builder: (innerContext, _) => SignInScreen(viewModel: innerContext.read()),
         ),
       ),
       GoRoute(
@@ -101,7 +101,7 @@ GoRouter createRouter(AppSession session) {
           final String email = state.extra as String? ?? "";
           return ChangeNotifierProvider(
             create: (innerContext) => ResetPasswordViewModel(emailAuthRepository: innerContext.read()),
-            child: ResetPasswordScreen(initialEmail: email),
+            builder: (innerContext, _) => ResetPasswordScreen(initialEmail: email, viewModel: innerContext.read()),
           );
         },
       ),
@@ -120,11 +120,11 @@ GoRouter createRouter(AppSession session) {
             branches: [
               StatefulShellBranch(
                 navigatorKey: itineraryNavigatorKey,
-                routes: [GoRoute(path: Routes.itinerary, builder: (context, state) => ItineraryScreen())],
+                routes: [GoRoute(path: Routes.itinerary, builder: (context, state) => ItineraryScreen(viewModel: context.read()))],
               ),
               StatefulShellBranch(
                 navigatorKey: expensesNavigatorKey,
-                routes: [GoRoute(path: Routes.expenses, builder: (context, state) => ExpensesScreen())],
+                routes: [GoRoute(path: Routes.expenses, builder: (context, state) => ExpensesScreen(viewModel: context.read()))],
               ),
               StatefulShellBranch(
                 navigatorKey: settingsNavigatorKey,
@@ -149,7 +149,7 @@ GoRouter createRouter(AppSession session) {
             path: Routes.itinerary_table_edit,
             builder: (context, state) {
               final sectionId = state.extra as String? ?? "";
-              return ItineraryTableEditScreen(sectionId: sectionId);
+              return ItineraryTableEditScreen(sectionId: sectionId, viewModel: context.read());
             },
           ),
           GoRoute(
@@ -165,7 +165,7 @@ GoRouter createRouter(AppSession session) {
                   travelSession: innerContext.read(),
                   appSession: innerContext.read(),
                 ),
-                child: AddEditExpenseScreen(),
+                builder: (innerContext, _) => AddEditExpenseScreen(viewModel: innerContext.read()),
               );
             },
           ),
@@ -180,7 +180,7 @@ GoRouter createRouter(AppSession session) {
                   moneyExchangeRepository: innerContext.read(),
                   balanceInfoRepository: innerContext.read(),
                 ),
-                child: ExpenseResultScreen(),
+                builder: (innerContext, _) => ExpenseResultScreen(viewModel: innerContext.read()),
               );
             },
           ),
@@ -194,7 +194,7 @@ GoRouter createRouter(AppSession session) {
                   travelScopeStore: innerContext.read(),
                   estimatedExpenseRepository: innerContext.read(),
                 ),
-                child: EstimatedExpenseScreen(),
+                builder: (innerContext, _) => EstimatedExpenseScreen(viewModel: innerContext.read()),
               );
             },
           ),
@@ -215,7 +215,7 @@ GoRouter createRouter(AppSession session) {
                   participantsRepository: innerContext.read(),
                   userRole: role,
                 ),
-                child: TravelSelectScreen(userRole: role),
+                builder: (innerContext, _) => TravelSelectScreen(userRole: role, viewModel: innerContext.read()),
               );
             },
           ),
@@ -229,7 +229,7 @@ GoRouter createRouter(AppSession session) {
                 crudGroupUseCase: innerContext.read(),
                 joinedGroupRepository: innerContext.read(),
               ),
-              child: GroupCreateScreen(),
+              builder: (innerContext, _) => GroupCreateScreen(viewModel: innerContext.read()),
             ),
           ),
           GoRoute(
@@ -242,7 +242,7 @@ GoRouter createRouter(AppSession session) {
                 joinedGroupsRepository: innerContext.read(),
                 getUserTravelsUseCase: innerContext.read(),
               ),
-              child: TravelCreateScreen(),
+              builder: (innerContext, _) => TravelCreateScreen(viewModel: innerContext.read()),
             ),
           ),
           GoRoute(
@@ -252,7 +252,7 @@ GoRouter createRouter(AppSession session) {
                 appSession: innerContext.read(),
                 userSettingsRepository: innerContext.read(),
               ),
-              child: ProfileScreen(),
+              builder: (innerContext, _) => ProfileScreen(viewModel: innerContext.read()),
             ),
           ),
           GoRoute(
@@ -263,7 +263,7 @@ GoRouter createRouter(AppSession session) {
                 travelScopeStore: innerContext.read(),
                 plannersRepository: innerContext.read(),
               ),
-              child: PlannerSelectScreen(),
+              builder: (innerContext, _) => PlannerSelectScreen(viewModel: innerContext.read()),
             ),
           ),
         ],

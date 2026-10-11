@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/expenses/result/exchange_tile_list.dart';
 import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../components/ScrollableDialog.dart';
 import '../../../../../data/model/traveler/traveler_basic.dart';
 
 class ExpenseResultScreen extends StatefulWidget {
-  const ExpenseResultScreen({super.key});
+  final ExpenseResultViewModel viewModel;
+
+  const ExpenseResultScreen({super.key, required this.viewModel});
 
   @override
   State<ExpenseResultScreen> createState() => _ExpenseResultScreenState();
@@ -19,7 +20,7 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    final viewModel = context.read<ExpenseResultViewModel>();
+    final viewModel = widget.viewModel;
     viewModel.fetchMoneyExchanges(); /* 初期化時に一度だけ呼ぶ */
     viewModel.fetchMoneyExchangesLastUpdated();
     viewModel.fetchBalanceInfo();
@@ -27,247 +28,252 @@ class _ExpenseResultScreenState extends State<ExpenseResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<ExpenseResultViewModel>();
-    return Scaffold(
-      appBar: TopAppBar(automaticallyImplyLeading: true, title: "結果"),
-      body: SingleChildScrollView(
-        child: Column(
-          children:
-              viewModel.exchangeList.isEmpty
-                  ? [Text("費用が追加されていません")]
-                  : [
-                    if (viewModel.isExpensesUpdated)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Card(
-                                color: Theme.of(context).colorScheme.error,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Text(
-                                      "!!費用が更新されました!! \n一度戻って再度開いてください",
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.onError,
+    final viewModel = widget.viewModel;
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, _) {
+        return Scaffold(
+          appBar: TopAppBar(automaticallyImplyLeading: true, title: "結果"),
+          body: SingleChildScrollView(
+            child: Column(
+              children:
+                  viewModel.exchangeList.isEmpty
+                      ? [Text("費用が追加されていません")]
+                      : [
+                        if (viewModel.isExpensesUpdated)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Card(
+                                    color: Theme.of(context).colorScheme.error,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Center(
+                                        child: Text(
+                                          "!!費用が更新されました!! \n一度戻って再度開いてください",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onError,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    Text("最終更新日: ${viewModel.lastUpdated ?? ""}"),
-                    ExchangeTileList(
-                      exgData: viewModel.exchangeList,
-                      groupMembers: viewModel.groupMembers(),
-                    ),
-                    SizedBox(height: 20),
-                    Divider(),
-                    SizedBox(height: 20),
-                    if (viewModel.allDetails.isNotEmpty &&
-                        viewModel.balanceInfo.isNotEmpty) /* 基本trueに入るはず。 */
-                      Table(
-                        children: [
-                          FourRowTableRow(
-                            first: Text("名前"),
-                            second: Text("払った金額(計)"),
-                            third: Text("かかった金額(計)"),
-                            fourth: Text("受け取る金額(負の場合は払う)"),
                           ),
-                          ...viewModel.allDetails.entries.map((entry) {
-                            final uid = entry.key;
-                            final profileName = viewModel
-                                .groupMembers()
-                                .getProfileName(uid);
+                        Text("最終更新日: ${viewModel.lastUpdated ?? ""}"),
+                        ExchangeTileList(
+                          exgData: viewModel.exchangeList,
+                          groupMembers: viewModel.groupMembers(),
+                        ),
+                        SizedBox(height: 20),
+                        Divider(),
+                        SizedBox(height: 20),
+                        if (viewModel.allDetails.isNotEmpty &&
+                            viewModel.balanceInfo.isNotEmpty) /* 基本trueに入るはず。 */
+                          Table(
+                            children: [
+                              FourRowTableRow(
+                                first: Text("名前"),
+                                second: Text("払った金額(計)"),
+                                third: Text("かかった金額(計)"),
+                                fourth: Text("受け取る金額(負の場合は払う)"),
+                              ),
+                              ...viewModel.allDetails.entries.map((entry) {
+                                final uid = entry.key;
+                                final profileName = viewModel
+                                    .groupMembers()
+                                    .getProfileName(uid);
 
-                            final details = entry.value;
-                            final paidTotal = details.fold<double>(
-                              0,
-                              (sum, d) => sum + d.paidAmount,
-                            );
-                            final owedTotal = details.fold<double>(
-                              0,
-                              (sum, d) => sum + d.owedAmount,
-                            );
+                                final details = entry.value;
+                                final paidTotal = details.fold<double>(
+                                  0,
+                                  (sum, d) => sum + d.paidAmount,
+                                );
+                                final owedTotal = details.fold<double>(
+                                  0,
+                                  (sum, d) => sum + d.owedAmount,
+                                );
 
-                            final balance = paidTotal - owedTotal;
+                                final balance = paidTotal - owedTotal;
 
-                            /* なんとかUI側に伝えたいが、、 */
-                            if (balance !=
-                                viewModel.balanceInfo[uid]?.netTotal) {
-                              print(
-                                "Error!!: $balance != ${viewModel.balanceInfo[uid]?.netTotal}",
-                              );
-                            }
+                                /* なんとかUI側に伝えたいが、、 */
+                                if (balance !=
+                                    viewModel.balanceInfo[uid]?.netTotal) {
+                                  print(
+                                    "Error!!: $balance != ${viewModel.balanceInfo[uid]?.netTotal}",
+                                  );
+                                }
 
-                            return buildBalancesRow(
-                              name: profileName,
-                              paidSum: paidTotal,
-                              reimbursedSum: owedTotal,
-                              netTotal: balance,
-                              roundDouble: false,
-                              onPaidTap: () {
-                                /* 自分で支払いのやつを表示する */
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    final paidList = viewModel.buildPaidDetails(
-                                      uid,
-                                    );
-                                    /* 関数化したい、、 */
-                                    return ScrollableDialog(
-                                      head: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(3),
-                                            child: Text(
-                                              "支払った金額詳細 $profileName",
-                                              maxLines: 1,
+                                return buildBalancesRow(
+                                  name: profileName,
+                                  paidSum: paidTotal,
+                                  reimbursedSum: owedTotal,
+                                  netTotal: balance,
+                                  roundDouble: false,
+                                  onPaidTap: () {
+                                    /* 自分で支払いのやつを表示する */
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        final paidList = viewModel.buildPaidDetails(
+                                          uid,
+                                        );
+                                        /* 関数化したい、、 */
+                                        return ScrollableDialog(
+                                          head: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(3),
+                                                child: Text(
+                                                  "支払った金額詳細 $profileName",
+                                                  maxLines: 1,
+                                                ),
+                                              ),
+                                              Divider(color: Colors.cyan),
+                                            ],
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              children: [
+                                                Table(
+                                                  border: TableBorder.all(
+                                                    color: Colors.grey,
+                                                  ), // 枠線を付けたい場合
+                                                  columnWidths: const {
+                                                    /* 票の横幅を調整 */
+                                                    0: FlexColumnWidth(1),
+                                                    1: FlexColumnWidth(1),
+                                                  },
+                                                  children:
+                                                      paidList.map((data) {
+                                                        return TableRow(
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    8.0,
+                                                                  ),
+                                                              child: Text(
+                                                                data.expenseItem,
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    8.0,
+                                                                  ),
+                                                              child: Text(
+                                                                "${data.paidAmount.round()}円",
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      }).toList(),
+                                                ),
+                                                paidTotal ==
+                                                        viewModel
+                                                            .balanceInfo[uid]
+                                                            ?.paidSum
+                                                    ? Text("合計：$paidTotal円")
+                                                    : Text(
+                                                      "Warning!!! $paidTotal != ${viewModel.balanceInfo[uid]?.paidSum}",
+                                                    ),
+                                              ],
                                             ),
                                           ),
-                                          Divider(color: Colors.cyan),
-                                        ],
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          children: [
-                                            Table(
-                                              border: TableBorder.all(
-                                                color: Colors.grey,
-                                              ), // 枠線を付けたい場合
-                                              columnWidths: const {
-                                                /* 票の横幅を調整 */
-                                                0: FlexColumnWidth(1),
-                                                1: FlexColumnWidth(1),
-                                              },
-                                              children:
-                                                  paidList.map((data) {
-                                                    return TableRow(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                8.0,
-                                                              ),
-                                                          child: Text(
-                                                            data.expenseItem,
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                8.0,
-                                                              ),
-                                                          child: Text(
-                                                            "${data.paidAmount.round()}円",
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }).toList(),
-                                            ),
-                                            paidTotal ==
-                                                    viewModel
-                                                        .balanceInfo[uid]
-                                                        ?.paidSum
-                                                ? Text("合計：$paidTotal円")
-                                                : Text(
-                                                  "Warning!!! $paidTotal != ${viewModel.balanceInfo[uid]?.paidSum}",
+                                        );
+                                      },
+                                    );
+                                  },
+                                  onReimbursedTap: () {
+                                    /* 支払ってもらったリスト表示する */
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        final reimbursedList = viewModel
+                                            .buildReimbursedDetails(uid);
+                                        return ScrollableDialog(
+                                          head: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(3),
+                                                child: Text(
+                                                  "かかった金額詳細 $profileName",
                                                 ),
-                                          ],
-                                        ),
-                                      ),
+                                              ),
+                                              Divider(color: Colors.cyan),
+                                            ],
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              children: [
+                                                Table(
+                                                  border: TableBorder.all(
+                                                    color: Colors.grey,
+                                                  ), // 枠線を付けたい場合
+                                                  columnWidths: const {
+                                                    0: FlexColumnWidth(1),
+                                                    1: FlexColumnWidth(1),
+                                                  },
+                                                  children:
+                                                      reimbursedList.map((data) {
+                                                        return TableRow(
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    8.0,
+                                                                  ),
+                                                              child: Text(
+                                                                data.expenseItem,
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    8.0,
+                                                                  ),
+                                                              child: Text(
+                                                                "${data.owedAmount.toStringAsFixed(2)}円",
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      }).toList(),
+                                                ),
+                                                owedTotal ==
+                                                        viewModel
+                                                            .balanceInfo[uid]
+                                                            ?.reimbursedSum
+                                                    ? Text("合計：$owedTotal円")
+                                                    : Text(
+                                                      "合計：${owedTotal.toStringAsFixed(2)}円",
+                                                    ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
                                 );
-                              },
-                              onReimbursedTap: () {
-                                /* 支払ってもらったリスト表示する */
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    final reimbursedList = viewModel
-                                        .buildReimbursedDetails(uid);
-                                    return ScrollableDialog(
-                                      head: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(3),
-                                            child: Text(
-                                              "かかった金額詳細 $profileName",
-                                            ),
-                                          ),
-                                          Divider(color: Colors.cyan),
-                                        ],
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          children: [
-                                            Table(
-                                              border: TableBorder.all(
-                                                color: Colors.grey,
-                                              ), // 枠線を付けたい場合
-                                              columnWidths: const {
-                                                0: FlexColumnWidth(1),
-                                                1: FlexColumnWidth(1),
-                                              },
-                                              children:
-                                                  reimbursedList.map((data) {
-                                                    return TableRow(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                8.0,
-                                                              ),
-                                                          child: Text(
-                                                            data.expenseItem,
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                8.0,
-                                                              ),
-                                                          child: Text(
-                                                            "${data.owedAmount.toStringAsFixed(2)}円",
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }).toList(),
-                                            ),
-                                            owedTotal ==
-                                                    viewModel
-                                                        .balanceInfo[uid]
-                                                        ?.reimbursedSum
-                                                ? Text("合計：$owedTotal円")
-                                                : Text(
-                                                  "合計：${owedTotal.toStringAsFixed(2)}円",
-                                                ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          }),
-                        ],
-                      ),
-                  ],
-        ),
-      ),
+                              }),
+                            ],
+                          ),
+                      ],
+            ),
+          ),
+        );
+      },
     );
     ;
   }

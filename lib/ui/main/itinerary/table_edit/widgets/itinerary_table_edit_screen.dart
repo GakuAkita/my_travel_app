@@ -6,15 +6,15 @@ import 'package:my_travel_app/data/model/itinerary_table/itinerary_table.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/itinerary/main/view_models/itinerary_viewmodel.dart';
 import 'package:my_travel_app/ui/main/itinerary/table_edit/editing_itinerary_table.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicText.dart';
 
 /// @todo これ戻り値みたいにしてItinerary Mainで編集後のデータを受け取ってあっちで保存した法が良い。
 class ItineraryTableEditScreen extends StatefulWidget {
   final String sectionId;
+  final ItineraryViewModel viewModel;
 
-  const ItineraryTableEditScreen({required this.sectionId, super.key});
+  const ItineraryTableEditScreen({required this.sectionId, required this.viewModel, super.key});
 
   @override
   State<ItineraryTableEditScreen> createState() => _ItineraryTableEditScreenState();
@@ -31,7 +31,7 @@ class _ItineraryTableEditScreenState extends State<ItineraryTableEditScreen> {
     // TODO: implement initState
     super.initState();
 
-    _viewModel = context.read<ItineraryViewModel>();
+    _viewModel = widget.viewModel;
     final table = _viewModel.getTableById(widget.sectionId);
     if (table == null) {
       return;

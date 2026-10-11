@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_travel_app/components/CircleIconButton.dart';
 import 'package:my_travel_app/components/RoundedButton.dart';
 import 'package:my_travel_app/ui/main/expenses/estimated/view_models/estimated_expense_viewmodel.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../components/BasicTextField.dart';
 import '../../../../../components/NumberField.dart';
@@ -10,7 +9,9 @@ import '../../../../../data/model/estimated_expense/estimated_expense_info.dart'
 import '../../../../core/ui/top_app_bar.dart';
 
 class EstimatedExpenseScreen extends StatefulWidget {
-  const EstimatedExpenseScreen({super.key});
+  final EstimatedExpenseViewModel viewModel;
+
+  const EstimatedExpenseScreen({super.key, required this.viewModel});
 
   @override
   State<EstimatedExpenseScreen> createState() => _EstimatedExpenseScreenState();
@@ -24,7 +25,7 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
     /* 計算する */
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final viewModel = context.read<EstimatedExpenseViewModel>();
+      final viewModel = widget.viewModel;
       viewModel.createEstimatedExpensesFromItinerary(isNotify: true);
       viewModel.createEstimatedExpenseListFromManual();
     });
@@ -32,94 +33,99 @@ class _EstimatedExpenseScreenState extends State<EstimatedExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<EstimatedExpenseViewModel>();
-    return Scaffold(
-      appBar: TopAppBar(automaticallyImplyLeading: true),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ...viewModel.estimatedExpenseListFromItinerary.map((estimated) {
-              return EstimatedExpenseRow(
-                initialEstimated: estimated,
-                isAdjustable: false,
-                onValueChanged: (estimated) {},
-              );
-            }),
-            Text("合計:${viewModel.sumFromItinerary()}"),
+    final viewModel = widget.viewModel;
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, _) {
+        return Scaffold(
+          appBar: TopAppBar(automaticallyImplyLeading: true),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                ...viewModel.estimatedExpenseListFromItinerary.map((estimated) {
+                  return EstimatedExpenseRow(
+                    initialEstimated: estimated,
+                    isAdjustable: false,
+                    onValueChanged: (estimated) {},
+                  );
+                }),
+                Text("合計:${viewModel.sumFromItinerary()}"),
 
-            SizedBox(height: 20),
-            viewModel.isLoading
-                ? CircularProgressIndicator()
-                : Column(
-                  children: [
-                    Text("===========手動で入力============"),
-                    Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
-                    Column(
+                SizedBox(height: 20),
+                viewModel.isLoading
+                    ? CircularProgressIndicator()
+                    : Column(
                       children: [
-                        ...viewModel.estimatedExpenseListFromManual.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final estimated = entry.value;
-                          return EstimatedExpenseRow(
-                            initialEstimated: estimated,
-                            isAdjustable: true,
-                            onValueChanged: (val) {
-                              viewModel.updateEstimatedExpense(index: index, estimated: val);
-                            },
-                            onDelete: (val) {
-                              viewModel.removeEstimatedExpenseFromManualAt(index);
-                            },
-                          );
-                        }),
+                        Text("===========手動で入力============"),
+                        Text("使うもの | 総額 | 人数 | 一人当たりの金額"),
+                        Column(
+                          children: [
+                            ...viewModel.estimatedExpenseListFromManual.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final estimated = entry.value;
+                              return EstimatedExpenseRow(
+                                initialEstimated: estimated,
+                                isAdjustable: true,
+                                onValueChanged: (val) {
+                                  viewModel.updateEstimatedExpense(index: index, estimated: val);
+                                },
+                                onDelete: (val) {
+                                  viewModel.removeEstimatedExpenseFromManualAt(index);
+                                },
+                              );
+                            }),
 
-                        Padding(
-                          padding: const EdgeInsetsGeometry.all(8.0),
-                          child: CircleIconButton(
-                            icon: Icons.add,
-                            onPressed: () {
-                              viewModel.addEStimatedExpenseFromManual();
-                            },
-                          ),
-                        ),
-
-                        Text("手動合計:${viewModel.sumFromManual()}"),
-
-                        Text("============================="),
-                        Text("すべての合計=${viewModel.sumFromItinerary() + viewModel.sumFromManual()}"),
-                        viewModel.isSavingLoading
-                            ? CircularProgressIndicator()
-                            : RoundedButton(
-                              title: "保存",
-                              onPressed: () async {
-                                final precheck = viewModel.saveEstimatedExpensesListFromManualPreCheck();
-                                if (!precheck.isSuccess) {
-                                  ScaffoldMessenger.of(context).clearSnackBars();
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(SnackBar(content: Text(precheck.error?.errorMessage ?? "")));
-                                  return;
-                                }
-                                print("precheck OK");
-
-                                final ret = await viewModel.saveEstimatedExpensesListFromManual();
-                                ScaffoldMessenger.of(context).clearSnackBars();
-                                if (ret.isSuccess) {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(SnackBar(content: Text("保存に成功しました")));
-                                } else {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
-                                }
-                              },
+                            Padding(
+                              padding: const EdgeInsetsGeometry.all(8.0),
+                              child: CircleIconButton(
+                                icon: Icons.add,
+                                onPressed: () {
+                                  viewModel.addEStimatedExpenseFromManual();
+                                },
+                              ),
                             ),
+
+                            Text("手動合計:${viewModel.sumFromManual()}"),
+
+                            Text("============================="),
+                            Text("すべての合計=${viewModel.sumFromItinerary() + viewModel.sumFromManual()}"),
+                            viewModel.isSavingLoading
+                                ? CircularProgressIndicator()
+                                : RoundedButton(
+                                  title: "保存",
+                                  onPressed: () async {
+                                    final precheck = viewModel.saveEstimatedExpensesListFromManualPreCheck();
+                                    if (!precheck.isSuccess) {
+                                      ScaffoldMessenger.of(context).clearSnackBars();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(SnackBar(content: Text(precheck.error?.errorMessage ?? "")));
+                                      return;
+                                    }
+                                    print("precheck OK");
+
+                                    final ret = await viewModel.saveEstimatedExpensesListFromManual();
+                                    ScaffoldMessenger.of(context).clearSnackBars();
+                                    if (ret.isSuccess) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(SnackBar(content: Text("保存に成功しました")));
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(SnackBar(content: Text("${ret.error?.errorMessage}")));
+                                    }
+                                  },
+                                ),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
-          ],
-        ),
-      ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
