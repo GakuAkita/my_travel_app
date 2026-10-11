@@ -11,6 +11,8 @@ import 'package:my_travel_app/ui/core/store/expense_store.dart';
 import 'package:my_travel_app/ui/core/store/itinerary_store.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/add_edit_expenses_screen.dart';
+import 'package:my_travel_app/ui/main/expenses/split/view_models/split_expense_viewmodel.dart';
+import 'package:my_travel_app/ui/main/expenses/split/widgets/split_expense_screen.dart';
 import 'package:my_travel_app/ui/main/expenses/estimated/view_models/estimated_expense_viewmodel.dart';
 import 'package:my_travel_app/ui/main/expenses/estimated/widgets/estimated_expense_screen.dart';
 import 'package:my_travel_app/ui/main/expenses/result/view_models/expense_result_viewmodel.dart';
@@ -168,6 +170,18 @@ GoRouter createRouter(AppSession session) {
                 builder: (innerContext, _) => AddEditExpenseScreen(viewModel: innerContext.read()),
               );
             },
+          ),
+          GoRoute(
+            path: Routes.expenses_split_add,
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (innerContext) => SplitExpenseViewModel(
+                expenseRepository: innerContext.read(),
+                travelScopeStore: innerContext.read(),
+                travelSession: innerContext.read(),
+                appSession: innerContext.read(),
+              ),
+              builder: (innerContext, _) => SplitExpenseScreen(viewModel: innerContext.read()),
+            ),
           ),
           GoRoute(
             path: Routes.expenses_result,

@@ -10,6 +10,7 @@ abstract final class Routes {
 
   static const itinerary_table_edit = "/itinerary_table_edit";
   static const expenses_add_edit = "/expenses_add_edit";
+  static const expenses_split_add = "/expenses_split_add";
   static const expenses_result = "/expenses_result";
   static const estimated_expense = "/estimated_expense";
   static const settings_profile = "/settings_profile";
