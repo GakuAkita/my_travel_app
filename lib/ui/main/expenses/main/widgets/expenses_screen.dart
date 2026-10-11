@@ -43,6 +43,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     /* 新規作成 */
                     context.push(Routes.expenses_add_edit);
                   },
+                  child: Icon(Icons.add),
                 ),
         body:
             viewModel.isExpensesLoading
