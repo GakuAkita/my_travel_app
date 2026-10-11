@@ -1,3 +1,4 @@
+import 'package:my_travel_app/constants.dart';
 import 'package:my_travel_app/data/firebase_database_paths.dart';
 import 'package:my_travel_app/data/model/estimated_expense/estimated_expense_info.dart';
 import 'package:my_travel_app/data/model/expense/expense_info.dart';
@@ -12,7 +13,7 @@ import 'package:my_travel_app/data/services/fake/fake_database.dart';
 /// Fakeモードのバックエンド一式(Firebase Auth + Realtime Database の代わり)
 /// アプリ起動中はずっと生きているので、サインアウトしてもデータは残る。
 class FakeBackend {
-  /* デモ用アカウント。パスワードは全員 "password" */
+  /* デモ用アカウント。パスワードは全員 "password"。demoUserだけadmin */
   static const demoPassword = "password";
   static const demoUser = TravelerCore(uid: "demo-user", email: "demo@example.com");
   static const alice = TravelerCore(uid: "alice", email: "alice@example.com");
@@ -39,7 +40,9 @@ class FakeBackend {
 
   void _seed() {
     final db = database;
-    final members = {for (final t in [demoUser, alice, bob]) t.uid: t};
+    final members = {
+      for (final t in [demoUser, alice, bob]) t.uid: t,
+    };
     final profileNames = {demoUser.uid: "Demo", alice.uid: "Alice", bob.uid: "Bob"};
 
     /* ユーザー */
@@ -48,6 +51,9 @@ class FakeBackend {
       FakeCloudFunctions.onUserCreate(db, traveler.uid, traveler.email);
       final settings = FirebaseDatabasePaths.user(traveler.uid).settings;
       db.set(settings.profile_name, profileNames[traveler.uid]);
+      if (traveler.uid == demoUser.uid) {
+        db.set(FirebaseDatabasePaths.user(traveler.uid).role, UserRole.admin);
+      }
       db.set(settings.joined_group(demoGroupId), true);
       db.set(
         settings.shown_travel,
@@ -86,28 +92,39 @@ class FakeBackend {
     }
     FakeCloudFunctions.onExpenseDataChange(db, demoGroupId, demoTravelId);
 
-    db.set(travel.expenses.estimatedData, [
-      const EstimatedExpenseInfo(id: "estimated-1", expenseItem: "レンタカー", amount: 12000, reimbursedByCnt: 3),
-      const EstimatedExpenseInfo(id: "estimated-2", expenseItem: "入場料", amount: 1500, reimbursedByCnt: 1),
-    ].map((e) => e.toJson()).toList());
+    db.set(
+      travel.expenses.estimatedData,
+      [
+        const EstimatedExpenseInfo(
+          id: "estimated-1",
+          expenseItem: "レンタカー",
+          amount: 12000,
+          reimbursedByCnt: 3,
+        ),
+        const EstimatedExpenseInfo(id: "estimated-2", expenseItem: "入場料", amount: 1500, reimbursedByCnt: 1),
+      ].map((e) => e.toJson()).toList(),
+    );
 
     /* 旅程 */
-    db.set(travel.itinerary.sections, [
-      const ItinerarySection.markdown(
-        id: "section-1",
-        title: "1日目",
-        content: "## 集合\n- 9:00 東京駅\n- 新幹線で移動",
-      ),
-      const ItinerarySection.table(
-        id: "section-2",
-        tableData: ItineraryTable(
-          tableCells: [
-            ["10:00", "京都駅", "到着"],
-            ["12:00", "錦市場", "昼食"],
-          ],
+    db.set(
+      travel.itinerary.sections,
+      [
+        const ItinerarySection.markdown(
+          id: "section-1",
+          title: "1日目",
+          content: "## 集合\n- 9:00 東京駅\n- 新幹線で移動",
         ),
-      ),
-      const ItinerarySection.space(id: "section-3"),
-    ].map((e) => e.toJson()).toList());
+        const ItinerarySection.table(
+          id: "section-2",
+          tableData: ItineraryTable(
+            tableCells: [
+              ["10:00", "京都駅", "到着"],
+              ["12:00", "錦市場", "昼食"],
+            ],
+          ),
+        ),
+        const ItinerarySection.space(id: "section-3"),
+      ].map((e) => e.toJson()).toList(),
+    );
   }
 }
