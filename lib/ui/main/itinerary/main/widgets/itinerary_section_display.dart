@@ -21,9 +21,7 @@ class ItinerarySectionDisplay extends StatelessWidget {
     }
     // その他の一般的なプロトコルエラーを修正
     final protocolMatch = RegExp(r'^https?[a-z]+://').firstMatch(url);
-    if (protocolMatch != null &&
-        protocolMatch.group(0) != 'https://' &&
-        protocolMatch.group(0) != 'http://') {
+    if (protocolMatch != null && protocolMatch.group(0) != 'https://' && protocolMatch.group(0) != 'http://') {
       // httpsXX:// のような形式を https:// に修正
       url = url.replaceFirst(protocolMatch.group(0)!, 'https://');
     }
@@ -46,24 +44,18 @@ class ItinerarySectionDisplay extends StatelessWidget {
         print('起動できない URL: $href (正規化後: $normalizedUrl)');
         // スナックバーで元のURLを表示
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('URLを開けませんでした: $href'),
-              duration: const Duration(seconds: 3),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('URLを開けませんでした: $href'), duration: const Duration(seconds: 3)));
         }
       }
     } catch (e) {
       print('URL起動エラー: $e (URL: $href)');
       // エラー時にもスナックバーを表示
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('URL起動エラー: $href'),
-            duration: const Duration(seconds: 3),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('URL起動エラー: $href'), duration: const Duration(seconds: 3)));
       }
     }
   }
@@ -76,24 +68,27 @@ class ItinerarySectionDisplay extends StatelessWidget {
         final markdown = itiSection as MarkdownSection;
         return Padding(
           padding: const EdgeInsets.only(bottom: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (markdown.title != "")
-                Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.only(left: 10),
-                  decoration: BoxDecoration(
-                    border: Border(left: BorderSide(color: colorScheme.primary, width: 4)),
+          /* タイトルから本文まで(見出し・改行をまたいで)まとめて選択できるようにする */
+          child: SelectionArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (markdown.title != "")
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(left: 10),
+                    decoration: BoxDecoration(
+                      border: Border(left: BorderSide(color: colorScheme.primary, width: 4)),
+                    ),
+                    child: Text(markdown.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
                   ),
-                  child: Text(markdown.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
-                ),
-              if (markdown.content != "")
-                WhiteMarkdownBody(
-                  data: markdown.content,
-                  onTapLink: (text, href, title) => _handleLinkTap(context, href),
-                ),
-            ],
+                if (markdown.content != "")
+                  WhiteMarkdownBody(
+                    data: markdown.content,
+                    onTapLink: (text, href, title) => _handleLinkTap(context, href),
+                  ),
+              ],
+            ),
           ),
         );
 
@@ -107,44 +102,46 @@ class ItinerarySectionDisplay extends StatelessWidget {
               border: Border.all(color: colorScheme.primary.withValues(alpha: 0.6)),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Table(
-              columnWidths: {
-                for (int i = 0; i < table.tableData.flexes.length; i++)
-                  i: FlexColumnWidth(table.tableData.flexes[i].toDouble()),
-              },
-              border: TableBorder.symmetric(inside: BorderSide(color: colorScheme.primary.withValues(alpha: 0.3))),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                // ヘッダー行
-                TableRow(
-                  decoration: BoxDecoration(color: colorScheme.primary.withValues(alpha: 0.15)),
-                  children: [
-                    for (int i = 0; i < table.tableData.header.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                        child: Text(
-                          table.tableData.header[i],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.w700, color: colorScheme.primary),
-                        ),
-                      ),
-                  ],
-                ),
-                // データ行
-                for (final row in table.tableData.tableCells)
+            child: SelectionArea(
+              child: Table(
+                columnWidths: {
+                  for (int i = 0; i < table.tableData.flexes.length; i++)
+                    i: FlexColumnWidth(table.tableData.flexes[i].toDouble()),
+                },
+                border: TableBorder.symmetric(inside: BorderSide(color: colorScheme.primary.withValues(alpha: 0.3))),
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: [
+                  // ヘッダー行
                   TableRow(
+                    decoration: BoxDecoration(color: colorScheme.primary.withValues(alpha: 0.15)),
                     children: [
                       for (int i = 0; i < table.tableData.header.length; i++)
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          child: WhiteMarkdownBody(
-                            data: row.length > i ? row[i] : '',
-                            onTapLink: (text, href, title) => _handleLinkTap(context, href),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                          child: Text(
+                            table.tableData.header[i],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontWeight: FontWeight.w700, color: colorScheme.primary),
                           ),
                         ),
                     ],
                   ),
-              ],
+                  // データ行
+                  for (final row in table.tableData.tableCells)
+                    TableRow(
+                      children: [
+                        for (int i = 0; i < table.tableData.header.length; i++)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            child: WhiteMarkdownBody(
+                              data: row.length > i ? row[i] : '',
+                              onTapLink: (text, href, title) => _handleLinkTap(context, href),
+                            ),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
         );

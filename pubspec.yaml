@@ -44,7 +44,6 @@ dependencies:
   firebase_database: ^11.3.5
   intl: ^0.20.2
   flutter_advanced_switch: ^3.1.0
-  flutter_markdown: ^0.7.7
   flutter_slidable: ^4.0.0
   uuid: ^4.5.3
   editable: ^2.0.0
@@ -59,6 +58,7 @@ dependencies:
   go_router: ^17.1.0
   cloud_firestore: ^5.6.12
   google_sign_in: ^7.2.0
+  flutter_markdown_plus: ^1.0.12
 
 dev_dependencies:
   flutter_test:

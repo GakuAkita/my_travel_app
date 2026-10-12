@@ -87,7 +87,7 @@ class _ItineraryMarkdownEditState extends State<ItineraryMarkdownEdit> {
               border: Border.all(color: colorScheme.outlineVariant),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: WhiteMarkdownBody(data: _contentController.text, selectable: false),
+            child: WhiteMarkdownBody(data: _contentController.text),
           )
         else
           MultilineTextField(
