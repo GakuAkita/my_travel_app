@@ -80,17 +80,14 @@ class _SpeedDialOption extends StatelessWidget {
           child: Card(
             margin: EdgeInsets.zero,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Text(label),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Text(label, style: Theme.of(context).textTheme.titleMedium),
             ),
           ),
         ),
         SizedBox(width: 12),
-        /* メインのボタン(56)と中心を揃える */
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: FloatingActionButton.small(heroTag: heroTag, onPressed: onPressed, child: Icon(icon)),
-        ),
+        /* メインのボタンと同じ大きさにする */
+        FloatingActionButton(heroTag: heroTag, onPressed: onPressed, child: Icon(icon)),
       ],
     );
   }
