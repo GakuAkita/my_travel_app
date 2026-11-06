@@ -40,7 +40,7 @@ class SplitExpenseViewModel extends ChangeNotifier {
     return participants.isNotEmpty ? participants : members;
   }
 
-  /* チェックされたメンバーのuid。最初は自分だけ選ばれている */
+  /* チェックされたメンバーのuid。最初は誰も選ばれていない */
   final Set<String> _selectedUids = {};
 
   bool isSelected(String uid) => _selectedUids.contains(uid);
@@ -79,11 +79,6 @@ class SplitExpenseViewModel extends ChangeNotifier {
        _travelScopeStore = travelScopeStore,
        _travelSession = travelSession,
        _appSession = appSession {
-    /* 自分の分は大抵あるので最初からチェックしておく(メンバーの読み込み前でもuidだけ入れておけばよい) */
-    final myUid = appSession.currentUser?.uid;
-    if (myUid != null) {
-      _selectedUids.add(myUid);
-    }
     /* メンバーや参加者が更新されたら画面も更新する */
     _travelScopeStore.addListener(notifyListeners);
   }

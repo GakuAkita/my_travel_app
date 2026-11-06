@@ -10,7 +10,6 @@ class StartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -24,12 +23,6 @@ class StartScreen extends StatelessWidget {
                 '精神的なこと、\nこれも技術のうち。',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, height: 1.4),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                "旅のしおりと割り勘を、みんなで。",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
               ),
               const Spacer(flex: 4),
               FilledButton(
