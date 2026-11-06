@@ -197,6 +197,12 @@ class TravelScopeStore extends ChangeNotifier {
       final travelId = _session.currentTravel!.travelId!;
       final data = await _participantsRepository.getAllTravelers(groupId, travelId);
       _participants = DataState(data: data, isLoading: false, error: null);
+    } catch (e) {
+      _participants = DataState(
+        data: null,
+        isLoading: false,
+        error: ErrorInfo(errorMessage: e.toString()),
+      );
     } finally {
       if (isLastNotify) {
         notifyListeners();

@@ -10,6 +10,7 @@ import 'package:my_travel_app/domain/use_cases/get_user_travels_use_case.dart';
 import 'package:my_travel_app/state/session/app_session.dart';
 import 'package:my_travel_app/state/session/shown_travel_session.dart';
 import 'package:my_travel_app/ui/core/store/itinerary_store.dart';
+import 'package:my_travel_app/ui/core/store/travel_scope_store.dart';
 import 'package:my_travel_app/ui/main/expenses/selectable_traveler.dart';
 
 import '../../../../../data/model/travel/shown_travel_basic/shown_travel_basic.dart';
@@ -19,6 +20,7 @@ class TravelSelectViewModel extends ChangeNotifier {
   final AppSession _appSession;
   final ShownTravelSession _travelSession;
   final ItineraryStore _itineraryStore;
+  final TravelScopeStore _travelScopeStore;
   final UserSettingsRepository _userSettingsRepository;
   final String? userRole;
   final GroupMembersRepository _groupMembersRepository;
@@ -28,6 +30,7 @@ class TravelSelectViewModel extends ChangeNotifier {
     required AppSession appSession,
     required ShownTravelSession travelSession,
     required ItineraryStore itineraryStore,
+    required TravelScopeStore travelScopeStore,
     required GetUserTravelsUseCase getUserTravelsUseCase,
     required UserSettingsRepository userSettingsRepository,
     required GroupMembersRepository groupMembersRepository,
@@ -37,6 +40,7 @@ class TravelSelectViewModel extends ChangeNotifier {
        _appSession = appSession,
        _travelSession = travelSession,
        _itineraryStore = itineraryStore,
+       _travelScopeStore = travelScopeStore,
        _userSettingsRepository = userSettingsRepository,
        _groupMembersRepository = groupMembersRepository,
        _participantsRepository = participantsRepository {
@@ -157,37 +161,36 @@ class TravelSelectViewModel extends ChangeNotifier {
     notifyListeners();
 
     print("Selected travelId GroupId =$groupId");
-    /* グループメンバーを取得する */
-    bool doneNotify = false;
-    if (_cachedGroupMembers[groupId] == null) {
-      try {
-        _cachedGroupMembers[groupId] = await _groupMembersRepository.getAllGroupMembers(groupId);
+    try {
+      /* グループメンバーはキャッシュするが、参加者は旅行ごとに変わるので毎回取得する */
+      final members = _cachedGroupMembers[groupId] ??= await _groupMembersRepository.getAllGroupMembers(groupId);
+      final participants = await _participantsRepository.getAllTravelers(groupId, localTravelId);
 
-        if (localTravelId == _selectedTravelId) {
-          /* 非同期処理中にユーザーが別の旅行を選択してしまった場合はおかしくなるので、ここでチェックをいれる */
-          /* 変わっていなかったら値をいれる */
-          _selectableParticipants = createSelectableParticipants(_cachedGroupMembers[groupId]!);
-          doneNotify = true;
-          notifyListeners();
-        } else {}
-      } catch (e) {
-        print("${e.toString()}");
-      }
-    } else {
-      /* Do Nothing */
-      if (!doneNotify) {
-        print("All ready loaded ${groupId}");
-        /* 初回ですでにnotifyしている場合はいらない */
-        _selectableParticipants = createSelectableParticipants(_cachedGroupMembers[groupId]!);
+      if (localTravelId == _selectedTravelId) {
+        /* 非同期処理中にユーザーが別の旅行を選択してしまった場合はおかしくなるので、ここでチェックをいれる */
+        /* 変わっていなかったら値をいれる */
+        _selectableParticipants = createSelectableParticipants(members, participants);
         notifyListeners();
       }
+    } catch (e) {
+      /* 取得に失敗したらリストは空のまま。更新ボタンが押せないので、誤った内容で上書きされない */
+      print("${e.toString()}");
     }
   }
 
-  List<SelectableTraveler> createSelectableParticipants(Map<String, TravelerCore> gMembers) {
+  /* 保存されている参加者だけにチェックを入れる */
+  List<SelectableTraveler> createSelectableParticipants(
+    Map<String, TravelerCore> gMembers,
+    Map<String, TravelerCore> participants,
+  ) {
     print("createSelectableParticipants called");
     return gMembers.entries
-        .map((entry) => SelectableTraveler(traveler: TravelerBasic(core: entry.value), isChecked: true))
+        .map(
+          (entry) => SelectableTraveler(
+            traveler: TravelerBasic(core: entry.value),
+            isChecked: participants.containsKey(entry.key),
+          ),
+        )
         .toList();
   }
 
@@ -230,6 +233,11 @@ class TravelSelectViewModel extends ChangeNotifier {
         travelId: travelId,
         travelers: participants,
       );
+      /* 表示中の旅行の参加者を変えたときだけStoreを更新する。別の旅行ならStoreは影響を受けない */
+      if (travelId == currentTravelId) {
+        /* 画面を閉じた直後に参加者を読む画面があるので、取得完了まで待つ */
+        await _travelScopeStore.refreshParticipants();
+      }
       return ResultInfo.success();
     } catch (e) {
       return ResultInfo.failed(error: ErrorInfo(errorMessage: e.toString()));
