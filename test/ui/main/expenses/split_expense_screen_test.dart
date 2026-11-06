@@ -53,16 +53,14 @@ void main() {
   }
 
   group('メンバー選択', () {
-    testWidgets('最初は自分(サインインしているユーザー)だけ選ばれている', (tester) async {
+    testWidgets('最初は誰も選ばれていない', (tester) async {
       await pumpSplit(tester);
 
-      expect(viewModel.selectedMembers.map((m) => m.core.uid), [FakeBackend.demoUser.uid]);
+      expect(viewModel.selectedMembers, isEmpty);
     });
 
     testWidgets('toggleMemberで選択/解除でき、並び順は参加者の順になる', (tester) async {
       await pumpSplit(tester);
-      viewModel.toggleMember(FakeBackend.demoUser.uid); /* 自分を外して空にする */
-      expect(viewModel.selectedMembers, isEmpty);
       final order = viewModel.rowMembers.map((m) => m.core.uid).toList();
 
       viewModel.toggleMember(order[2]);
@@ -181,22 +179,22 @@ void main() {
   });
 
   group('SplitExpenseScreen', () {
-    testWidgets('最初は自分の入力欄だけがあり、チェックした人の入力欄が追加される', (tester) async {
+    testWidgets('最初は入力欄がなく案内が出て、チェックした人の入力欄が追加される', (tester) async {
       await pumpSplit(tester);
       final alice = FakeBackend.alice.uid;
 
-      expect(find.byKey(ValueKey("amount-${FakeBackend.demoUser.uid}")), findsOneWidget);
+      expect(find.byKey(ValueKey("amount-${FakeBackend.demoUser.uid}")), findsNothing);
       expect(find.byKey(ValueKey("amount-$alice")), findsNothing);
+      expect(find.text("メンバーを選ぶと入力欄が追加されます"), findsOneWidget);
 
       await select(tester, alice);
       expect(find.byKey(ValueKey("amount-$alice")), findsOneWidget);
       expect(find.byKey(ValueKey("amount-${FakeBackend.bob.uid}")), findsNothing);
+      expect(find.text("メンバーを選ぶと入力欄が追加されます"), findsNothing);
 
+      /* 全員外すと案内が出る */
       await select(tester, alice);
       expect(find.byKey(ValueKey("amount-$alice")), findsNothing);
-
-      /* 自分も外すと案内が出る */
-      await select(tester, FakeBackend.demoUser.uid);
       expect(find.text("メンバーを選ぶと入力欄が追加されます"), findsOneWidget);
     });
 
@@ -251,9 +249,6 @@ void main() {
       await tester.enterText(field("item-$alice"), "パスタ");
       await tester.enterText(field("amount-$alice"), "1200");
       await tester.enterText(field("amount-$bob"), "900");
-      await tester.enterText(field("amount-${FakeBackend.demoUser.uid}"), "1000");
-      /* Demoは解除するので保存されない */
-      await select(tester, FakeBackend.demoUser.uid);
 
       await tester.tap(find.text("まとめて保存"));
       await settle(tester);
@@ -277,12 +272,26 @@ void main() {
       final backend = await pumpSplit(tester, pushed: true);
       final before = savedExpenses(backend).length;
 
-      /* 最初から選ばれている自分の金額が空のまま */
+      /* 選んだBobの金額が空のまま */
+      await tester.enterText(find.widgetWithText(TextField, "何に使ったか(共通)"), "ランチ");
+      await select(tester, FakeBackend.bob.uid);
+      await tester.tap(find.text("まとめて保存"));
+      await tester.pump();
+
+      expect(find.text("Bobの金額が入力されていません"), findsOneWidget);
+      expect(savedExpenses(backend).length, before);
+      expect(find.text(fakeAppHomeText), findsNothing);
+    });
+
+    testWidgets('誰も選ばずに保存するとエラーを表示する', (tester) async {
+      final backend = await pumpSplit(tester, pushed: true);
+      final before = savedExpenses(backend).length;
+
       await tester.enterText(find.widgetWithText(TextField, "何に使ったか(共通)"), "ランチ");
       await tester.tap(find.text("まとめて保存"));
       await tester.pump();
 
-      expect(find.text("Demoの金額が入力されていません"), findsOneWidget);
+      expect(find.text("メンバーが選択されていません"), findsOneWidget);
       expect(savedExpenses(backend).length, before);
       expect(find.text(fakeAppHomeText), findsNothing);
     });
