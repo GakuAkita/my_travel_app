@@ -223,6 +223,7 @@ GoRouter createRouter(AppSession session) {
                   appSession: innerContext.read(),
                   travelSession: innerContext.read(),
                   itineraryStore: innerContext.read(),
+                  travelScopeStore: innerContext.read(),
                   getUserTravelsUseCase: innerContext.read(),
                   userSettingsRepository: innerContext.read(),
                   groupMembersRepository: innerContext.read(),
