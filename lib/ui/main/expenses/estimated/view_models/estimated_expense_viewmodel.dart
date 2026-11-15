@@ -169,7 +169,7 @@ class EstimatedExpenseViewModel extends ChangeNotifier {
         return ResultInfo.failed(error: ErrorInfo(errorMessage: "This is inappropriate. no participants"));
       } else {
         _estimatedExpenseListFromItinerary = [];
-        /* Tableの一番右の列で"****円/○人" または "****/○人"(円省略) を正規表現で取得する。 */
+        // Tableの一番右の列で"****円/○人" または "****/○人"(円省略) を正規表現で取得する。
         final expenseReg = RegExp(r'(\d+)円?/(\d+)?人');
         final etcReg = RegExp(r'ETC([^\d]?)(\d+)円', caseSensitive: false);
         sections.forEach((sec) {
