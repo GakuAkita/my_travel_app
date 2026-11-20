@@ -31,8 +31,10 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
+      # CanvasKit(描画エンジン)をgstaticのCDNではなく自前のHostingから配信する。
+      # CDNから読み込めないとFlutter自体が起動せずスプラッシュで止まるため。
       - name: Build the Web
-        run: flutter build web --release
+        run: flutter build web --release --no-web-resources-cdn
 
       - name: Deploy the Web
         run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
