@@ -7,6 +7,7 @@ import 'package:my_travel_app/ui/core/ui/confirm_dialog.dart';
 import 'package:my_travel_app/ui/core/ui/section_header.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/view_models/add_edit_expense_viewmodel.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/expense_calculator_sheet.dart';
 import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/selected_user.dart';
 
 import '../../../../../components/BasicTextField.dart';
@@ -159,6 +160,12 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
                 labelText: "金額",
                 hintText: "0",
                 prefixIcon: const Icon(Icons.currency_yen),
+                suffixIcon: IconButton(
+                  key: const Key('open_expense_calculator'),
+                  tooltip: "電卓で計算",
+                  icon: const Icon(Icons.calculate_outlined),
+                  onPressed: _openCalculator,
+                ),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
                 onChanged: (value) {
                   String sanitized = value.replaceFirst(RegExp(r'^0+'), '');
@@ -257,6 +264,18 @@ class _AddEditExpenseScreenState extends State<AddEditExpenseScreen> {
         );
       },
     );
+  }
+
+  Future<void> _openCalculator() async {
+    FocusScope.of(context).unfocus();
+    final result = await showExpenseCalculator(context, initialExpression: _expenseController.text);
+    if (result == null || !mounted) return;
+    setState(() {
+      _expenseController.value = TextEditingValue(
+        text: result,
+        selection: TextSelection.collapsed(offset: result.length),
+      );
+    });
   }
 
   void _showSnackBar(String message) {
