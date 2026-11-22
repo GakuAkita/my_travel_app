@@ -21,6 +21,14 @@ jobs:
         id: version_tag
         uses: ./.github/actions/manage-version-tag
 
+      # ubuntu-latest now defaults to JDK 25, and Gradle 8.10 / AGP 8.7 cannot
+      # parse its version string ("25.0.5"), which fails the build. Pin JDK 17.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter
         with:
