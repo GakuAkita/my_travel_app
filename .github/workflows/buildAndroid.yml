@@ -21,6 +21,14 @@ jobs:
         id: version_tag
         uses: ./.github/actions/manage-version-tag
 
+      # ubuntu-latest のデフォルトJDKが25になり、Gradle 8.10 / AGP 8.7 が
+      # バージョン文字列 "25.0.5" を解釈できずビルドが失敗するため17に固定する
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter
         with:
