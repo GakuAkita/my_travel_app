@@ -237,6 +237,34 @@ void main() {
       expect(find.text("合計 ¥1,200"), findsOneWidget);
     });
 
+    testWidgets('電卓で計算した金額がその人の欄に入り、合計も更新される', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      addTearDown(tester.view.reset);
+      await pumpSplit(tester);
+      final alice = FakeBackend.alice.uid;
+      final bob = FakeBackend.bob.uid;
+
+      await select(tester, alice);
+      await select(tester, bob);
+      await tester.enterText(field("amount-$bob"), "900");
+
+      await tester.ensureVisible(find.byKey(ValueKey("calculator-$alice")));
+      await tester.tap(find.byKey(ValueKey("calculator-$alice")));
+      await tester.pumpAndSettle();
+      expect(find.text("${member(alice).displayName} の金額"), findsOneWidget);
+
+      for (final k in ['1', '2', '0', '0', '+', '8', '0', '0']) {
+        await tester.tap(find.byKey(Key('calculator_key_$k')));
+        await tester.pump();
+      }
+      await tester.tap(find.text('¥2,000 を入力'));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(field("amount-$alice")).controller?.text, "2000");
+      expect(tester.widget<TextField>(field("amount-$bob")).controller?.text, "900");
+      expect(find.text("合計 ¥2,900"), findsOneWidget);
+    });
+
     testWidgets('まとめて保存するとチェックした人だけ1人1件の費用として保存され、前の画面に戻る', (tester) async {
       final backend = await pumpSplit(tester, pushed: true);
       final before = savedExpenses(backend).length;
