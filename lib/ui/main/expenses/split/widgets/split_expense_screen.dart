@@ -8,6 +8,7 @@ import 'package:my_travel_app/data/model/traveler/traveler_basic.dart';
 import 'package:my_travel_app/ui/core/ui/bottom_action_bar.dart';
 import 'package:my_travel_app/ui/core/ui/section_header.dart';
 import 'package:my_travel_app/ui/core/ui/top_app_bar.dart';
+import 'package:my_travel_app/ui/main/expenses/add_edit/widgets/expense_calculator_sheet.dart';
 import 'package:my_travel_app/ui/main/expenses/split/view_models/split_expense_viewmodel.dart';
 
 /// 1人がまとめて払ったときに、メンバーごとの金額を1画面で入力する
@@ -54,6 +55,24 @@ class _SplitExpenseScreenState extends State<SplitExpenseScreen> {
       0,
       (sum, member) => sum + (double.tryParse(_amountController(member.core.uid).text) ?? 0),
     );
+  }
+
+  Future<void> _openCalculator(TravelerBasic member) async {
+    FocusScope.of(context).unfocus();
+    final controller = _amountController(member.core.uid);
+    final result = await showExpenseCalculator(
+      context,
+      initialExpression: controller.text,
+      title: "${member.displayName} の金額",
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      /* 合計も更新される */
+      controller.value = TextEditingValue(
+        text: result,
+        selection: TextSelection.collapsed(offset: result.length),
+      );
+    });
   }
 
   void _showSnackBar(String message) {
@@ -252,6 +271,13 @@ class _SplitExpenseScreenState extends State<SplitExpenseScreen> {
                     keyboardType: TextInputType.number,
                     hintText: "金額",
                     prefixText: "¥ ",
+                    suffixIcon: IconButton(
+                      key: ValueKey("calculator-$uid"),
+                      tooltip: "電卓で計算",
+                      icon: const Icon(Icons.calculate_outlined),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => _openCalculator(member),
+                    ),
                     inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
                     onChanged: (_) {
                       /* 合計を更新する */

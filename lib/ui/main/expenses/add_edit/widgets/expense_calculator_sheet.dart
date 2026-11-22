@@ -4,19 +4,21 @@ import 'package:my_travel_app/core/utils/currency_format.dart';
 
 /// 金額入力用の電卓をボトムシートで開く。
 /// 「確定」で金額欄に入れる文字列(例: "1250", "3333.33")を返す。閉じた場合は null。
-Future<String?> showExpenseCalculator(BuildContext context, {String initialExpression = ""}) {
+/// [title] を渡すと上部に表示する(まとめて追加で誰の金額か分かるように)。
+Future<String?> showExpenseCalculator(BuildContext context, {String initialExpression = "", String? title}) {
   return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => ExpenseCalculatorSheet(initialExpression: initialExpression),
+    builder: (_) => ExpenseCalculatorSheet(initialExpression: initialExpression, title: title),
   );
 }
 
 class ExpenseCalculatorSheet extends StatefulWidget {
   final String initialExpression;
+  final String? title;
 
-  const ExpenseCalculatorSheet({super.key, this.initialExpression = ""});
+  const ExpenseCalculatorSheet({super.key, this.initialExpression = "", this.title});
 
   @override
   State<ExpenseCalculatorSheet> createState() => _ExpenseCalculatorSheetState();
@@ -109,6 +111,17 @@ class _ExpenseCalculatorSheetState extends State<ExpenseCalculatorSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (widget.title != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  widget.title!,
+                  key: const Key('calculator_title'),
+                  style: textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
